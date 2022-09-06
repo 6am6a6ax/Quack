@@ -1,5 +1,5 @@
 #ifndef _GPU_DEVICE_
-#defint _GPU_DEVICE_
+#define _GPU_DEVICE_
 
 class GPUBuffer;
 class GPUTexure;
