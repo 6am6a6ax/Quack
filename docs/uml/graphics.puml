@@ -30,6 +30,8 @@ GPUResource <|-- GPUBuffer
 GPUResource <|-- GPUPipelineState
 GPUResource <|-- GPUShader
 
+GPUContext --* GPUDevice
+
 GPUTexture --* GPUTextureDescription
 GPUTextureDescription --* GPUResourceUsage
 GPUTextureDescription --* PixelFormat
@@ -119,6 +121,55 @@ class GPUResource {
     ==
     - Resource : unsigned int
 
+}
+
+class GPUContext {
+    + GPUContext ( GPUDevice )
+    ==
+    + FrameBegin () : void
+    + FrameEnd () : void
+    --
+    + EventBegin () : void
+    + EventEnd () : void
+    --
+    + Clear (GPUTexture, Color) : void
+    --
+    + UpdateBuffer ( GPUBuffer, ...) : void
+    + CopyBuffer ( GPUBuffer, GPUBuffer ) : void 
+    --
+    + UpdateTexture ( GPUTexture ) : void
+    + CopyTexture ( GPUTexture, GPUTexture ) : void
+    --
+    + SetRenderTarget ( ? ) : void
+    --
+    + BindTexture () : void
+    + BindIndexBuffer () : void
+    + BindVertexBuffer () : void
+    + BindConstantBuffer () : void
+    --
+    + Draw ( ? ) : void
+    + DrawTriangle ( ? ) : void
+    + DrawIndexed ( ? ) : void
+    --
+    + SetViewport ( ? ) : void
+    --
+    + SetPipelineState ( GPUPipelineState ) : void
+    + GetPipelineState () : GPUPipelineState
+    --
+    + GetDevice () : GPUDevice
+    ==
+    - Device : GPUDevice
+}
+
+class GPUAdapter {
+    + IsValid () : bool
+    --
+    + GetVendorId () : int
+    + GetDescription () : string
+}
+
+class GPUSwapChain {
+    ???
 }
 
 '-------------------------------------
