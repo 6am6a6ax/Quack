@@ -6,7 +6,7 @@
 #include "graphics/gpu_buffer.hpp"
 
 namespace Quack {
-class GPUBufferOpenGL : public GPUBuffer {
+class GPUBufferOpenGL final : public GPUBuffer {
 public:
     GPUBufferOpenGL() : GPUBuffer() {}
     explicit GPUBufferOpenGL(GPUBufferDescription desc) : GPUBuffer(desc) {}
@@ -18,10 +18,14 @@ public:
     GPUBufferOpenGL & operator=(GPUBufferOpenGL &&) = default;
 
 public:
-    void Bind() {
+    ~GPUBufferOpenGL() final = default;
+
+public:
+    virtual void Bind() final {
         std::cout << "Buffer were binded!\n";
     }
-    void Unbind() {
+
+    virtual void Unbind() final {
         std::cout << "Buffer were unbinded!\n";
     }
 };

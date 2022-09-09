@@ -15,7 +15,7 @@ public:
     GPUResource & operator=(GPUResource &&) = default;
 
 public:
-    virtual ~GPUResource() {}
+    virtual ~GPUResource() = default;
 
 public:
     virtual void Bind() = 0;

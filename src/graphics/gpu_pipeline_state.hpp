@@ -4,7 +4,7 @@
 namespace Quack {
 class GPUPipelineState {
 public:
-    virtual GPUPipelineState() {}
+    GPUPipelineState() {}
 
 public:
 
