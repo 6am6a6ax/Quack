@@ -33,10 +33,10 @@ public:
     }
 
     LayerStack(const LayerStack &) = default;
-    LayerStack(LayerStack &&) = default;
+    LayerStack(LayerStack &) = default;
 
     LayerStack & operator=(const LayerStack &) = default;
-    LayerStack & operator=(LayerStack &&) = default;
+    LayerStack & operator=(LayerStack &) = default;
 
     ~LayerStack() = default;
 
@@ -60,14 +60,14 @@ public:
     size_t GetMaxSize() const {}
 
     void Reserve(int size) {}
-    void Resize(int size, const std::shared_ptr<Layer> && = std::move(std::shared_ptr<Layer>())) {}
+    void Resize(int size, const std::shared_ptr<Layer> & = std::move(std::shared_ptr<Layer>())) {}
 
     void ShrinkToFit() {}
 
 public:
     void Clear() {}
 
-    void PushBack(std::shared_ptr<Layer> && layer) {}
+    void PushBack(std::shared_ptr<Layer> & layer) {}
     void PopBack();
 
 public:
@@ -125,12 +125,12 @@ public:
     using Iterator = std::vector<std::shared_ptr<Layer>>::iterator;
 
 public:
-    void Push(std::shared_ptr<Layer> && layer) {
+    void Push(std::shared_ptr<Layer> layer) {
         layer->OnAttach();
         _elements.push_back(std::forward<std::shared_ptr<Layer>>(layer));
     }
 
-    void Pop(std::shared_ptr<Layer> && layer) {
+    void Pop(std::shared_ptr<Layer> layer) {
         layer->OnDetach();
         for (auto it = _elements.begin(); it != _elements.end(); ++it) {
             if (*it == layer) {

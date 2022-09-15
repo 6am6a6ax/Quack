@@ -1,5 +1,8 @@
 #include "quack/window_glfw.h"
 
+#include "quack/mouse_event.h"
+#include "quack/window_event.h"
+
 void Quack::WindowGLFW::Show() {
     glfwShowWindow(_window);
 }
@@ -16,8 +19,7 @@ void Quack::WindowGLFW::Maximize() {
     glfwMaximizeWindow(_window);
 }
 
-void Quack::WindowGLFW::OnMouseMove(MouseMovedEvent && event) {
-    std::cout << "Mouse moved!\t" << "X: " << event.GetX() << "\t" << "Y: " << event.GetY() << "\n";
+void Quack::WindowGLFW::OnMouseMove(MouseMovedEvent & event) {
 }
 
 
@@ -26,8 +28,8 @@ void Quack::WindowGLFW::OnUpdate() {
     glfwSwapBuffers(_window);
 }
 
-Quack::WindowGLFW::WindowGLFW(Quack::WindowDescription && description)
-    : Window(std::forward<Quack::WindowDescription>(description))
+Quack::WindowGLFW::WindowGLFW(const Quack::WindowDescription & description)
+    : Window(description)
 {
     glfwInit();
     _window = glfwCreateWindow(static_cast<int>(_description.GetSize().Width),
@@ -41,12 +43,42 @@ Quack::WindowGLFW::WindowGLFW(Quack::WindowDescription && description)
 
     glfwSetWindowSizeCallback(_window, [](GLFWwindow * window, int width, int height){
         auto desc = static_cast<WindowDescription *>(glfwGetWindowUserPointer(window));
-        desc->GetEventCallback()(WindowResizedEvent());
+        WindowResizedEvent e(width, height);
+        desc->GetEventCallback()(e);
     });
 
     glfwSetCursorPosCallback(_window, [](GLFWwindow * window, double x, double y) {
         auto desc = static_cast<WindowDescription*>(glfwGetWindowUserPointer(window));
-        desc->GetEventCallback()(MouseMovedEvent(static_cast<float>(x), static_cast<float>(y)));
+        MouseMovedEvent e(static_cast<float>(x), static_cast<float>(y));
+        desc->GetEventCallback()(e);
+    });
+
+    glfwSetMouseButtonCallback(_window, [](GLFWwindow * window, int button, int action, int mods) {
+        auto desc = static_cast<WindowDescription*>(glfwGetWindowUserPointer(window));
+        switch (action) {
+            case GLFW_PRESS: {
+                MouseButtonPressedEvent e(static_cast<MouseCode>(button));
+                desc->GetEventCallback()(e);
+                break;
+            }
+            case GLFW_RELEASE: {
+                MouseButtonReleasedEvent e(static_cast<MouseCode>(button));
+                desc->GetEventCallback()(e);
+                break;
+            }
+        }
+    });
+
+    glfwSetScrollCallback(_window, [](GLFWwindow * window, double xoffset, double yoffset) {
+        auto desc = static_cast<WindowDescription*>(glfwGetWindowUserPointer(window));
+        MouseScrolledEvent e(static_cast<float>(xoffset), static_cast<float>(yoffset));
+        desc->GetEventCallback()(e);
+    });
+
+    glfwSetWindowSizeCallback(_window, [](GLFWwindow * window, int width, int height) {
+        auto desc = static_cast<WindowDescription*>(glfwGetWindowUserPointer(window));
+        WindowResizedEvent e(width, height);
+        desc->GetEventCallback()(e);
     });
 }
 
@@ -54,14 +86,13 @@ Quack::WindowGLFW::~WindowGLFW() {
     glfwDestroyWindow(_window);
 }
 
-void Quack::WindowGLFW::OnWindowResize(Quack::WindowResizedEvent && e) {
-    std::cout << "Window has been resized\n";
+void Quack::WindowGLFW::OnWindowResize(Quack::WindowResizedEvent & e) {
 }
 
 const GLFWwindow * const Quack::WindowGLFW::GetWindow() const {
     return _window;
 }
 
-Quack::Window * Quack::WindowGLFW::Create(Quack::WindowDescription && description) {
-    return new Quack::WindowGLFW(std::forward<Quack::WindowDescription>(description));
+Quack::Window * Quack::WindowGLFW::Create(const Quack::WindowDescription & description) {
+    return new Quack::WindowGLFW(description);
 }

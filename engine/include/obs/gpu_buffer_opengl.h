@@ -12,10 +12,10 @@ public:
     explicit GPUBufferOpenGL(GPUBufferDescription desc) : GPUBuffer(desc) {}
 
     GPUBufferOpenGL(GPUBufferOpenGL const &) = default;
-    GPUBufferOpenGL(GPUBufferOpenGL &&) = default;
+    GPUBufferOpenGL(GPUBufferOpenGL &) = default;
 
     GPUBufferOpenGL & operator=(GPUBufferOpenGL const &) = default;
-    GPUBufferOpenGL & operator=(GPUBufferOpenGL &&) = default;
+    GPUBufferOpenGL & operator=(GPUBufferOpenGL &) = default;
 
 public:
     ~GPUBufferOpenGL() final = default;

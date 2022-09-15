@@ -9,10 +9,10 @@ public:
     GPUResource(uint32_t resource) : _resource(resource) {}
 
     GPUResource(GPUResource const &) = default;
-    GPUResource(GPUResource &&) = default;
+    GPUResource(GPUResource &) = default;
 
     GPUResource & operator=(GPUResource const &) = default;
-    GPUResource & operator=(GPUResource &&) = default;
+    GPUResource & operator=(GPUResource &) = default;
 
 public:
     virtual ~GPUResource() = default;

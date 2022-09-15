@@ -19,15 +19,15 @@ public:
     Application & operator=(const Application &) = delete;
 
 public:
-    void Init(WindowDescription &&);
+    void Init(const WindowDescription &);
     void Run();
 
 public:
-    void OnEvent(Event &&) const;
+    void OnEvent(Event &);
 
 public:
-    const ApplicationDescription & GetDescription() const;
-    void SetDescription(ApplicationDescription &&);
+    ApplicationDescription & GetDescription();
+    void SetDescription(ApplicationDescription &);
 
 private:
     ApplicationDescription _description;

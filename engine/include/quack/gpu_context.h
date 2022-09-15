@@ -1,5 +1,5 @@
-#ifndef GPU_CONTEXT_H
-#define GPU_CONTEXT_H
+#ifndef QUACK_GPU_CONTEXT_H
+#define QUACK_GPU_CONTEXT_H
 
 #include "gpu_device.h"
 

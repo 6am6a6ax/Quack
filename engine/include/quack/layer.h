@@ -9,7 +9,7 @@ namespace Quack {
 class Layer {
 public:
     Layer() : _name("Unnamed layer") {}
-    explicit Layer(std::string && name) : _name(std::forward<const std::string>(name)) {}
+    explicit Layer(const std::string & name) : _name(name) {}
 
     virtual ~Layer() = default;
 
@@ -18,10 +18,10 @@ public:
     virtual void OnDetach() {}
 
     virtual void OnUpdate() {}
-    virtual void OnEvent(Event &&) {}
+    virtual void OnEvent(Event &) {}
 
     const std::string & GetName() const { return _name; }
-    void SetName(std::string && name) { _name = std::forward<std::string>(name); }
+    void SetName(const std::string & name) { _name = name; }
 
 private:
     std::string _name;

@@ -11,30 +11,30 @@ const Quack::WindowDescription::Size &Quack::WindowDescription::GetSize() const 
     return _size;
 }
 
-void Quack::WindowDescription::SetSize(Quack::WindowDescription::Size && size) {
-    _size = std::forward<Quack::WindowDescription::Size>(size);
+void Quack::WindowDescription::SetSize(const Quack::WindowDescription::Size & size) {
+    _size = size;
 }
 
 const Quack::WindowDescription::Position &Quack::WindowDescription::GetPosition() const {
     return _position;
 }
 
-void Quack::WindowDescription::SetPosition(Quack::WindowDescription::Position && position) {
-    _position = std::forward<Quack::WindowDescription::Position>(position);
+void Quack::WindowDescription::SetPosition(const Quack::WindowDescription::Position & position) {
+    _position = position;
 }
 
 const std::string &Quack::WindowDescription::GetTitle() const {
     return _title;
 }
 
-void Quack::WindowDescription::SetTitle(std::string && title) {
-    _title = std::forward<std::string>(title);
+void Quack::WindowDescription::SetTitle(const std::string & title) {
+    _title = title;
 }
 
 const Quack::WindowDescription::EventCallbackFn & Quack::WindowDescription::GetEventCallback() const {
     return _eventCallback;
 }
 
-void Quack::WindowDescription::SetEventCallback(Quack::WindowDescription::EventCallbackFn && eventCallback) {
-    _eventCallback = std::forward<Quack::WindowDescription::EventCallbackFn>(eventCallback);
+void Quack::WindowDescription::SetEventCallback(const Quack::WindowDescription::EventCallbackFn & eventCallback) {
+    _eventCallback = eventCallback;
 }

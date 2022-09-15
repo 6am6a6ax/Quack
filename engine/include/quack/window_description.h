@@ -12,16 +12,8 @@ class WindowDescription {
 public:
     WindowDescription();
 
-    WindowDescription(const WindowDescription &) = default;
-    WindowDescription(WindowDescription &&) = default;
-
-    WindowDescription & operator=(const WindowDescription &) = default;
-    WindowDescription & operator=(WindowDescription &&) = default;
-
-    ~WindowDescription() = default;
-
 public:
-    using EventCallbackFn = std::function<void(Event &&)>;
+    using EventCallbackFn = std::function<void(Event &)>;
 
     struct Size {
         uint32_t Width, Height;
@@ -33,16 +25,16 @@ public:
 
 public:
     const Size & GetSize() const;
-    void SetSize(Size && size);
+    void SetSize(const Size & size);
 
     const Position & GetPosition() const;
-    void SetPosition(Position && position);
+    void SetPosition(const Position & position);
 
     const std::string & GetTitle() const;
-    void SetTitle(std::string && title);
+    void SetTitle(const std::string & title);
 
     const EventCallbackFn & GetEventCallback() const;
-    void SetEventCallback(EventCallbackFn && eventCallback);
+    void SetEventCallback(const EventCallbackFn & eventCallback);
 
 private:
     Size _size;

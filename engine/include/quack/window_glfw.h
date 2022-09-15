@@ -10,19 +10,13 @@
 namespace Quack {
 class WindowGLFW final : public Window {
 public:
-    explicit WindowGLFW(WindowDescription &&);
-
-    WindowGLFW(const WindowGLFW &) = default;
-    WindowGLFW(WindowGLFW &&) noexcept = default;
-
-    WindowGLFW & operator=(const WindowGLFW &) = default;
-    WindowGLFW & operator=(WindowGLFW &&) noexcept = default;
+    explicit WindowGLFW(const WindowDescription &);
 
 public:
     ~WindowGLFW() override;
 
 public:
-    static Window * Create(WindowDescription &&);
+    static Window * Create(const WindowDescription &);
 
 public:
     void Show() override;
@@ -33,12 +27,12 @@ public:
     void Maximize() override;
     void OnUpdate() override;
 
-    void OnMouseMove(MouseMovedEvent &&) override;
-    void OnWindowResize(WindowResizedEvent &&) override;
+    void OnMouseMove(MouseMovedEvent &) override;
+    void OnWindowResize(WindowResizedEvent &) override;
 
 public:
     const GLFWwindow * const GetWindow() const;
-    void SetWindow(const GLFWwindow &);
+    void SetWindow(GLFWwindow &);
 
 private:
     GLFWwindow * _window;

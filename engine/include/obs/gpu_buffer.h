@@ -16,10 +16,10 @@ public:
     explicit GPUBuffer(GPUBufferDescription desc);
 
     GPUBuffer(const GPUBuffer &);
-    GPUBuffer(GPUBuffer &&) noexcept;
+    GPUBuffer(GPUBuffer &) noexcept;
 
     GPUBuffer & operator=(const GPUBuffer &);
-    GPUBuffer & operator=(GPUBuffer &&) noexcept;
+    GPUBuffer & operator=(GPUBuffer &) noexcept;
 
 public:
     ~GPUBuffer() override;

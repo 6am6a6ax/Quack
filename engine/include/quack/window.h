@@ -15,13 +15,13 @@ namespace Quack {
 class Window {
 public:
     //explicit Window(const WindowDescription & description);
-    explicit Window(WindowDescription &&);
+    explicit Window(const WindowDescription &);
 
 public:
     virtual ~Window() = default;
 
 public:
-    static const Window * const Create(WindowDescription &&) = delete;
+    static const Window * const Create(const WindowDescription &) = delete;
 
 public:
     virtual void Show() = 0;
@@ -32,11 +32,11 @@ public:
 
 public:
     virtual void OnUpdate() = 0;
-    virtual void OnEvent(Event && e);
+    virtual void OnEvent(Event & e);
 
 public:
-    virtual void OnMouseMove(MouseMovedEvent &&) = 0;
-    virtual void OnWindowResize(WindowResizedEvent &&) = 0;
+    virtual void OnMouseMove(MouseMovedEvent &) = 0;
+    virtual void OnWindowResize(WindowResizedEvent &) = 0;
 
 public:
     WindowDescription & GetDescription() { return _description; }
