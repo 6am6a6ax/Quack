@@ -5,6 +5,7 @@
 #include "gpu_shader.h"
 #include "gpu_vertex_array.h"
 #include "gpu_shader_program.h"
+#include "gpu_texture.h"
 
 namespace Quack {
 class GPUDevice {
@@ -18,6 +19,7 @@ public:
     virtual GPUBuffer * CreateBuffer(const GPUBuffer::Description &) const = 0;
     virtual GPUShaderProgram * CreateShaderProgram(const GPUShaderProgramDescription &) const = 0;
     virtual GPUVertexArray * CreateVertexArray() const = 0;
+    virtual GPUTexture * CreateTexture(const GPUTextureDescription &) const = 0;
 
 public:
 //    virtual const GPUAdapter * GetAdapter() const = 0;

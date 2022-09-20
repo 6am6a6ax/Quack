@@ -6,6 +6,8 @@
 #include "event.h"
 #include "application_description.h"
 
+#include "quack/core/timestep.h"
+
 namespace Quack {
 class Application {
     Application() = default;
@@ -31,6 +33,8 @@ public:
 
 private:
     ApplicationDescription _description;
+
+    float _lastFrameTime;
 };
 }
 

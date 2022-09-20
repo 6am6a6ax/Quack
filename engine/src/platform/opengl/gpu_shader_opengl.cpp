@@ -1,6 +1,7 @@
 #include "quack/platform/opengl/gpu_shader_opengl.h"
 
 #include <GL/glew.h>
+#include <glm/gtc/type_ptr.hpp>
 
 Quack::GPUShaderOpenGL::GPUShaderOpenGL(const Quack::GPUShaderDescription & desc)
     : GPUShader(desc)
@@ -38,4 +39,14 @@ void Quack::GPUShaderOpenGL::Bind() const {
 
 void Quack::GPUShaderOpenGL::Unbind() const {
     glUseProgram(0);
+}
+
+void Quack::GPUShaderOpenGL::UploadUniformMat4(const std::string & name, const Quack::Mat4f & matrix) {
+    GLint location = glGetUniformLocation(_resource, name.c_str());
+    glUniformMatrix4fv(location, 1, GL_FALSE, glm::value_ptr(matrix));
+}
+
+void Quack::GPUShaderOpenGL::UploadUniformInt(const std::string & name, int slot) {
+    GLint location = glGetUniformLocation(_resource, name.c_str());
+    glUniform1i(location, slot);
 }

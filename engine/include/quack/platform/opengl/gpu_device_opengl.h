@@ -3,10 +3,6 @@
 
 #include "quack/graphics/gpu_device.h"
 
-#include "quack/graphics/gpu_shader.h"
-#include "quack/graphics/gpu_shader_program.h"
-#include "quack/graphics/gpu_vertex_array.h"
-
 namespace Quack {
 class GPUDeviceOpenGL final : public GPUDevice {
 public:
@@ -14,6 +10,7 @@ public:
     GPUShader * CreateShader(const GPUShaderDescription &) const override;
     GPUShaderProgram * CreateShaderProgram(const GPUShaderProgramDescription &) const override;
     GPUVertexArray * CreateVertexArray() const override;
+    GPUTexture * CreateTexture(const GPUTextureDescription &) const override;
 };
 }
 

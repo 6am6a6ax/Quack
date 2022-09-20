@@ -12,6 +12,10 @@ public:
 public:
     void Bind() const override;
     void Unbind() const override;
+
+public:
+    void UploadUniformMat4(const std::string &, const Mat4f &) override;
+    void UploadUniformInt(const std::string &, int) override;
 };
 }
 
