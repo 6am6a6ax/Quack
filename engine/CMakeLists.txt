@@ -17,14 +17,23 @@ include_directories(include)
 include_directories(vendor/imgui)
 
 set(SOURCES
-        src/application.cpp
-        src/gpu_buffer.cpp
-        src/gpu_context.cpp
-        src/window_glfw.cpp
-        src/application_description.cpp
-        src/window.cpp
-        src/window_description.cpp
-        src/layer_imgui.cpp
+        src/core/application.cpp
+        src/core/application_description.cpp
+        src/core/window.cpp
+        src/core/window_description.cpp
+        /
+        src/graphics/gpu_buffer.cpp
+        /
+        src/platform/glfw/window_glfw.cpp
+        /
+        src/platform/imgui/layer_imgui.cpp
+        /
+        src/platform/opengl/gpu_context_opengl.cpp
+        src/platform/opengl/gpu_buffer_opengl.cpp
+        src/platform/opengl/gpu_device_opengl.cpp
+        src/platform/opengl/gpu_shader_opengl.cpp
+        src/platform/opengl/gpu_shader_program_opengl.cpp
+        src/platform/opengl/gpu_vertex_array_opengl.cpp
 )
 
 add_library(${PROJECT_NAME} STATIC ${SOURCES})

@@ -1,11 +1,15 @@
 #include <iostream>
 
-#include "quack/application.h"
+#include "quack/core/application.h"
+
+#include "quack/platform/opengl/gpu_device_opengl.h"
 
 int main() {
     std::cout << "Hello, World! Starting...\n";
 
     Quack::ApplicationDescription appDesc;
+    appDesc.SetDevice(new Quack::GPUDeviceOpenGL());
+
     Quack::Application::GetInstance().SetDescription(appDesc);
 
     Quack::WindowDescription windowDesc;
