@@ -1,14 +1,18 @@
 #ifndef QUACK_APPLICATION_H
 #define QUACK_APPLICATION_H
 
-#include <memory>
+#include "quack/core/event.h"
+#include "quack/core/window.h"
 
-#include "event.h"
-#include "application_description.h"
-
-#include "quack/core/timestep.h"
+#include "quack/graphics/gpu_device.h"
 
 namespace Quack {
+struct ApplicationDescription {
+    Quack::Window * Window;
+    Quack::GPUDevice * GPUDevice;
+    Quack::LayerStack LayerStack;
+};
+
 class Application {
     Application() = default;
 
@@ -21,20 +25,30 @@ public:
     Application & operator=(const Application &) = delete;
 
 public:
-    void Init(const WindowDescription &);
+    void Init(const ApplicationDescription &);
     void Run();
 
 public:
     void OnEvent(Event &);
 
 public:
-    ApplicationDescription & GetDescription();
-    void SetDescription(ApplicationDescription &);
+    const ApplicationDescription & GetDescription();
+    void SetDescription(const ApplicationDescription &);
+
+    Window * GetWindow();
+    void SetWindow(Window *);
+
+    GPUDevice * GetDevice();
+    void SetDevice(GPUDevice *);
+
+    LayerStack & GetLayerStack();
+    void SetLayerStack(const LayerStack &);
 
 private:
-    ApplicationDescription _description;
+    void BindBaseCallbackAndLayerStack();
 
-    float _lastFrameTime;
+private:
+    ApplicationDescription _desc;
 };
 }
 

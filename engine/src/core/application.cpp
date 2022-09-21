@@ -19,16 +19,10 @@ Quack::Application & Quack::Application::GetInstance() {
     return application;
 }
 
-void Quack::Application::Init(const Quack::WindowDescription & windowDescription) {
-    _description.SetWindow(std::make_shared<Quack::Window*>(Quack::WindowGLFW::Create(windowDescription)));
-
-    // TODO
-    //_description.GetWindow()->GetDescription().SetEventCallback(std::bind(&Quack::WindowGLFW::OnEvent, std::ref(*_description.GetWindow()), std::placeholders::_1));
-    _description.GetWindow()->GetDescription().SetEventCallback(std::bind(&Quack::Application::OnEvent, this, std::placeholders::_1));
-
-    _description.GetLayerStack().Push(std::make_shared<LayerImGUI>());
+void Quack::Application::Init(const Quack::ApplicationDescription & desc) {
+    SetDescription(desc);
+    BindBaseCallbackAndLayerStack();
 }
-
 
 void Quack::Application::Run() {
     float vertices[4 * 9] = {
@@ -51,16 +45,16 @@ void Quack::Application::Run() {
     vertexBufferDesc.Data = &vertices;
     vertexBufferDesc.Size = sizeof(vertices);
     vertexBufferDesc.Type = BufferType::Vertex;
-    GPUBuffer * vertexBuffer = _description.GetDevice()->CreateBuffer(vertexBufferDesc);
+    GPUBuffer * vertexBuffer = GetDevice()->CreateBuffer(vertexBufferDesc);
 
-    GPUVertexArray * vertexArray = _description.GetDevice()->CreateVertexArray();
+    GPUVertexArray * vertexArray = GetDevice()->CreateVertexArray();
     vertexArray->AddBuffer(*vertexBuffer);
 
     GPUBuffer::Description indexBufferDesc;
     indexBufferDesc.Data = &indices;
     indexBufferDesc.Size = sizeof(indices);
     indexBufferDesc.Type = BufferType::Index;
-    GPUBuffer * indexBuffer = _description.GetDevice()->CreateBuffer(indexBufferDesc);
+    GPUBuffer * indexBuffer = GetDevice()->CreateBuffer(indexBufferDesc);
 
     indexBuffer->Bind();
 //
@@ -103,21 +97,21 @@ void Quack::Application::Run() {
     GPUShaderProgramDescription vertexShaderProgramDesc;
     vertexShaderProgramDesc.Source = vertexShaderSrc;
     vertexShaderProgramDesc.Type = ShaderProgramType::Vertex;
-    GPUShaderProgram * vertexShaderProgram = _description.GetDevice()->CreateShaderProgram(vertexShaderProgramDesc);
+    GPUShaderProgram * vertexShaderProgram = GetDevice()->CreateShaderProgram(vertexShaderProgramDesc);
 
     GPUShaderProgramDescription fragmentShaderProgramDesc;
     fragmentShaderProgramDesc.Source = fragmentShaderSrc;
     fragmentShaderProgramDesc.Type = ShaderProgramType::Fragment;
-    GPUShaderProgram * fragmentShaderProgram = _description.GetDevice()->CreateShaderProgram(fragmentShaderProgramDesc);
+    GPUShaderProgram * fragmentShaderProgram = GetDevice()->CreateShaderProgram(fragmentShaderProgramDesc);
 
     GPUShaderDescription shaderDescription{};
     shaderDescription.VertexShader = vertexShaderProgram;
     shaderDescription.FragmentShader = fragmentShaderProgram;
-    GPUShader * shader = _description.GetDevice()->CreateShader(shaderDescription);
+    GPUShader * shader = GetDevice()->CreateShader(shaderDescription);
 
     GPUTextureDescription textureDescription;
     textureDescription.Path = "text.png";
-    GPUTexture * texture = _description.GetDevice()->CreateTexture(textureDescription);
+    GPUTexture * texture = GetDevice()->CreateTexture(textureDescription);
 
 //    GLuint m_VertexArray, m_VertexBuffer, m_IndexBuffer;
 //
@@ -153,9 +147,9 @@ void Quack::Application::Run() {
 
     OrtographicCamera camera(-1.0f, 1.0f, -1.0f, 1.0f);
     while (true) {
-        float time = (float)glfwGetTime(); //Application::GetTime();
-        Timestep timestep = time - _lastFrameTime;
-        _lastFrameTime = time;
+        //float time = (float)glfwGetTime(); //Application::GetTime();
+        //Timestep timestep = time - _lastFrameTime;
+        //static float _lastFrameTime = time;
 
         glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
@@ -170,31 +164,59 @@ void Quack::Application::Run() {
 
         texture->Bind();
 
-
-//        shader->Bind();
-//        glBindVertexArray(m_VertexArray);
-
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);
 
-        for (const auto & layer : _description.GetLayerStack()) {
+        for (const auto & layer : GetLayerStack()) {
             layer->OnUpdate();
         }
-        _description.GetWindow()->OnUpdate();
+
+        auto t = GetWindow();
+
+        GetWindow()->OnUpdate();
     }
 }
 
 void Quack::Application::OnEvent(Quack::Event & e) {
-    _description.GetWindow()->OnEvent(e);
-    for (const auto & layer : _description.GetLayerStack()) {
+    GetWindow()->OnEvent(e);
+    for (const auto & layer : GetLayerStack()) {
         layer->OnEvent(e);
     }
 }
 
-Quack::ApplicationDescription & Quack::Application::GetDescription() {
-    return _description;
+const Quack::ApplicationDescription & Quack::Application::GetDescription() {
+    return _desc;
 }
 
-void Quack::Application::SetDescription(Quack::ApplicationDescription & description) {
-    _description = std::forward<Quack::ApplicationDescription>(description);
+void Quack::Application::BindBaseCallbackAndLayerStack() {
+    GetWindow()->SetEventCallback(std::bind(&Quack::Application::OnEvent, this, std::placeholders::_1));
+    GetLayerStack().Push(std::make_shared<LayerImGUI>());
+}
+
+void Quack::Application::SetDescription(const Quack::ApplicationDescription & desc) {
+    _desc = desc;
+}
+
+Quack::Window * Quack::Application::GetWindow() {
+    return _desc.Window;
+}
+
+void Quack::Application::SetWindow(Quack::Window * window) {
+    _desc.Window = window;
+}
+
+Quack::GPUDevice * Quack::Application::GetDevice() {
+    return _desc.GPUDevice;
+}
+
+void Quack::Application::SetDevice(Quack::GPUDevice * device) {
+    _desc.GPUDevice = device;
+}
+
+Quack::LayerStack & Quack::Application::GetLayerStack() {
+    return _desc.LayerStack;
+}
+
+void Quack::Application::SetLayerStack(const Quack::LayerStack & layerStack) {
+    _desc.LayerStack = layerStack;
 }
 

@@ -22,9 +22,7 @@ include_directories(vendor/stb)
 
 set(SOURCES
         src/core/application.cpp
-        src/core/application_description.cpp
         src/core/window.cpp
-        src/core/window_description.cpp
         /
         src/graphics/gpu_buffer.cpp
         /

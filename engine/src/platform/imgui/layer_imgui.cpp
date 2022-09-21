@@ -19,8 +19,8 @@ void Quack::LayerImGUI::OnAttach() {
     io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
     io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
 
-    io.DisplaySize = ImVec2(Quack::Application::GetInstance().GetDescription().GetWindow()->GetDescription().GetSize().Width,
-                            Quack::Application::GetInstance().GetDescription().GetWindow()->GetDescription().GetSize().Height);
+    io.DisplaySize = ImVec2(Quack::Application::GetInstance().GetWindow()->GetSize().Width,
+                            Quack::Application::GetInstance().GetWindow()->GetSize().Height);
 
     ImGui_ImplOpenGL3_Init("#version 410");
 }

@@ -2,6 +2,7 @@
 #define QUACK_WINDOW_H
 
 #include <string>
+#include <functional>
 
 #include "event.h"
 #include "event_type.h"
@@ -9,21 +10,32 @@
 #include "window_event.h"
 
 #include "layer_stack.h"
-#include "window_description.h"
 
 #include "quack/graphics/gpu_context.h"
 
 namespace Quack {
+struct WindowDescription {
+    struct Size {
+        uint32_t Width;
+        uint32_t Height;
+    } WindowSize;
+
+    struct Position {
+        uint32_t X;
+        uint32_t Y;
+    } Pos;
+
+    std::string Title;
+    GPUContext * Context;
+
+    using EventCallbackFn = std::function<void(Event &)>;
+    Quack::WindowDescription::EventCallbackFn EventCallback;
+};
+
 class Window {
 public:
-    //explicit Window(const WindowDescription & description);
     explicit Window(const WindowDescription &);
-
-public:
     virtual ~Window() = default;
-
-public:
-    static const Window * const Create(const WindowDescription &) = delete;
 
 public:
     virtual void Show() = 0;
@@ -41,11 +53,26 @@ public:
     virtual void OnWindowResize(WindowResizedEvent &) = 0;
 
 public:
-    WindowDescription & GetDescription() { return _description; }
+    const WindowDescription & GetDescription();
+    void SetDescription(const WindowDescription &);
+
+    const WindowDescription::Size & GetSize() const;
+    void SetSize(const WindowDescription::Size &);
+
+    const WindowDescription::Position & GetPosition() const;
+    void SetPosition(const WindowDescription::Position &);
+
+    const WindowDescription::EventCallbackFn & GetEventCallback() const;
+    void SetEventCallback(const WindowDescription::EventCallbackFn &);
+
+    const std::string & GetTitle() const;
+    void SetTitle(const std::string &);
+
+    GPUContext * GetContext();
+    void SetContext(GPUContext *);
 
 protected:
-    WindowDescription _description;
-    GPUContext * _context;
+    WindowDescription _desc;
 };
 }
 

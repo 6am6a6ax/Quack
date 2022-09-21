@@ -1,22 +1,18 @@
-#include <iostream>
-
 #include "quack/core/application.h"
 
+#include "quack/platform/glfw/window_glfw.h"
 #include "quack/platform/opengl/gpu_device_opengl.h"
 
 int main() {
-    std::cout << "Hello, World! Starting...\n";
+    Quack::WindowDescription windowDesc;
+    windowDesc.WindowSize = {1280, 720};
+    windowDesc.Title = "Quack Editor";
 
     Quack::ApplicationDescription appDesc;
-    appDesc.SetDevice(new Quack::GPUDeviceOpenGL());
+    appDesc.Window = new Quack::WindowGLFW(windowDesc);
+    appDesc.GPUDevice = new Quack::GPUDeviceOpenGL();
 
-    Quack::Application::GetInstance().SetDescription(appDesc);
-
-    Quack::WindowDescription windowDesc;
-    windowDesc.SetSize({1280, 720});
-    windowDesc.SetTitle("Quack Editor");
-    Quack::Application::GetInstance().Init(windowDesc);
-
+    Quack::Application::GetInstance().Init(appDesc);
     Quack::Application::GetInstance().Run();
 
     return 0;
