@@ -11,6 +11,7 @@ public:
     GPUShaderProgram * CreateShaderProgram(const GPUShaderProgramDescription &) const override;
     GPUVertexArray * CreateVertexArray() const override;
     GPUTexture * CreateTexture(const GPUTextureDescription &) const override;
+    GPUFramebuffer * CreateFramebuffer(const GPUFramebufferDescription &) const override;
 };
 }
 

@@ -9,10 +9,13 @@
 #include "quack/graphics/gpu_shader.h"
 #include "quack/graphics/gpu_shader_program.h"
 #include "quack/graphics/gpu_texture.h"
-
 #include "quack/graphics/gpu_vertex_array.h"
+#include "quack/graphics/gpu_framebuffer.h"
 
 #include "quack/render/ortographic_camera.h"
+
+#include <imgui.h>
+#include <backends/imgui_impl_opengl3.h>
 
 Quack::Application & Quack::Application::GetInstance() {
     static Application application;
@@ -113,6 +116,11 @@ void Quack::Application::Run() {
     textureDescription.Path = "text.png";
     GPUTexture * texture = GetDevice()->CreateTexture(textureDescription);
 
+    GPUFramebufferDescription framebufferDescription;
+    framebufferDescription.FrameSize = { 800, 600 };
+
+    GPUFramebuffer * framebuffer = GetDevice()->CreateFramebuffer(framebufferDescription);
+
 //    GLuint m_VertexArray, m_VertexBuffer, m_IndexBuffer;
 //
 //    glGenVertexArrays(1, &m_VertexArray);
@@ -145,13 +153,16 @@ void Quack::Application::Run() {
 //
 //    indexBuffer->Bind();
 
-    OrtographicCamera camera(-1.0f, 1.0f, -1.0f, 1.0f);
+    OrtographicCamera camera(-5.0f, 5.0f, -5.0f, 5.0f);
     while (true) {
+
         //float time = (float)glfwGetTime(); //Application::GetTime();
         //Timestep timestep = time - _lastFrameTime;
         //static float _lastFrameTime = time;
 
-        glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
+        framebuffer->Bind();
+
+        glClearColor(1.0f, 0.0f, 1.0f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
         //camera.SetRotation(camera.GetRotation() + .1f);
         //camera.SetPosition({0.5f, 0.5f, 0.0f});
@@ -166,11 +177,37 @@ void Quack::Application::Run() {
 
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);
 
+
+        ImGui_ImplOpenGL3_NewFrame();
+        ImGui::NewFrame();
+
         for (const auto & layer : GetLayerStack()) {
             layer->OnUpdate();
         }
 
-        auto t = GetWindow();
+
+        framebuffer->Unbind();
+
+        ImGui::Begin("test");
+
+        uint32_t tex = framebuffer->GetColorAttachment();
+        ImGui::Image((void*)tex, ImVec2{600, 480});
+
+        ImGui::End();
+
+        ImGui::Render();
+        ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+
+
+////        float time = (float)glfwGetTime();
+////
+//        ImGuiIO & io = ImGui::GetIO();
+////    io.DisplaySize = ImVec2(Quack::Application::GetInstance().GetWindow()->GetSize().Width,
+////                            Quack::Application::GetInstance().GetWindow()->GetSize().Height);
+//        io.DeltaTime = 1.0f;
+//
+//        static bool show = true;
+//        ImGui::ShowDemoWindow(&show);
 
         GetWindow()->OnUpdate();
     }

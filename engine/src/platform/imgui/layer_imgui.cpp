@@ -23,24 +23,25 @@ void Quack::LayerImGUI::OnAttach() {
                             Quack::Application::GetInstance().GetWindow()->GetSize().Height);
 
     ImGui_ImplOpenGL3_Init("#version 410");
+
 }
 
 void Quack::LayerImGUI::OnUpdate() {
-    ImGui_ImplOpenGL3_NewFrame();
-    ImGui::NewFrame();
+//    ImGui_ImplOpenGL3_NewFrame();
+//    ImGui::NewFrame();
 
 //        float time = (float)glfwGetTime();
 //
     ImGuiIO & io = ImGui::GetIO();
-//    io.DisplaySize = ImVec2(Quack::Application::GetInstance().GetDescription().GetWindow()->GetDescription().GetSize().Width,
-//                            Quack::Application::GetInstance().GetDescription().GetWindow()->GetDescription().GetSize().Height);
+//    io.DisplaySize = ImVec2(Quack::Application::GetInstance().GetWindow()->GetSize().Width,
+//                            Quack::Application::GetInstance().GetWindow()->GetSize().Height);
     io.DeltaTime = 1.0f;
 
     static bool show = true;
     ImGui::ShowDemoWindow(&show);
-
-    ImGui::Render();
-    ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+//
+//    ImGui::Render();
+//    ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 }
 
 void Quack::LayerImGUI::OnEvent(Quack::Event & e) {

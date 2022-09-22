@@ -37,6 +37,7 @@ set(SOURCES
         src/platform/opengl/gpu_shader_program_opengl.cpp
         src/platform/opengl/gpu_vertex_array_opengl.cpp
         src/platform/opengl/gpu_texture_opengl.cpp
+        src/platform/opengl/gpu_framebuffer_opengl.cpp
         /
         src/render/ortographic_camera.cpp
 )
