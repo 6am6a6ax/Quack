@@ -4,5 +4,5 @@ project(quack)
 
 add_subdirectory(engine)
 add_subdirectory(editor)
+add_subdirectory(model_loader)
 
-target_link_libraries(editor PUBLIC engine)
