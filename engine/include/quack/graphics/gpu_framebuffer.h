@@ -22,6 +22,7 @@ public:
 
 public:
     virtual void Invalidate() = 0;
+    virtual void Resize(float width, float height) = 0;
 
 public:
     const GPUFramebufferDescription & GetDescription() const { return _desc; }

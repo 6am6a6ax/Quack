@@ -1,6 +1,4 @@
-#include <GL/glew.h>
-
-#include "quack/platform/opengl/gpu_context_opengl.h"
+#include "quack/quack.h"
 
 Quack::GPUContextOpenGL::GPUContextOpenGL(GLFWwindow * handle) : _handle(handle) {}
 

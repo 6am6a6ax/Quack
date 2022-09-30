@@ -14,8 +14,6 @@ public:
     virtual ~GPUDevice() = default;
 
 public:
-//    virtual const GPUPipelineState * CreatePipelineState(const GPUPipelineStateDesctiption &) = 0;
-//    virtual const GPUTexture * CreateTexture(const GPUTextureDescription &) const = 0;
     virtual GPUShader * CreateShader(const GPUShaderDescription &) const = 0;
     virtual GPUBuffer * CreateBuffer(const GPUBuffer::Description &) const = 0;
     virtual GPUShaderProgram * CreateShaderProgram(const GPUShaderProgramDescription &) const = 0;

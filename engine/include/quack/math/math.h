@@ -2,6 +2,10 @@
 #define QUACK_MATH_H
 
 #include <glm/glm.hpp>
+#include <glm/gtc/type_ptr.hpp>
+
+#define GLM_ENABLE_EXPERIMENTAL
+#include <glm/gtx/quaternion.hpp>
 
 namespace Quack {
     using Vector1f = glm::vec1;

@@ -1,11 +1,4 @@
-#include "quack/platform/opengl/gpu_shader_program_opengl.h"
-
-#include <GL/glew.h>
-
-#include <vector>
-
-//  TODO: Debug
-#include <iostream>
+#include "quack/quack.h"
 
 static GLint ShaderProgramTypeToOpenGLType(const Quack::ShaderProgramType & shaderProgramType) {
     switch (shaderProgramType) {

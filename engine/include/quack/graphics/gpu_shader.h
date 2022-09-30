@@ -14,6 +14,7 @@ public:
 
     virtual void UploadUniformMat4(const std::string &, const Mat4f &) = 0;
     virtual void UploadUniformInt(const std::string &, int) = 0;
+    virtual void UploadUniformVec4(const std::string &, const Vector4f &) = 0;
 
 public:
     const GPUShaderDescription & GetDescription() const;

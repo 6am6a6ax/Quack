@@ -9,6 +9,16 @@ public:
     virtual ~Event() = default;
     virtual const EventType GetType() const = 0;
 };
+
+class ApplicationUpdated final : public Event {
+public:
+    ApplicationUpdated() = default;
+
+public:
+    const EventType GetType() const {
+        return EventType::ApplicationUpdated;
+    }
+};
 }
 
 #endif

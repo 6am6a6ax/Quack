@@ -3,10 +3,11 @@
 
 namespace Quack {
 enum class EventType {
-    WindowResizedEvent,
+    WindowResizedEvent, ApplicationUpdated,
     KeyPressedEvent, KeyReleasedEvent,
     MouseMovedEvent, MouseButtonPressedEvent, MouseButtonReleasedEvent, MouseScrolledEvent
 };
 }
 
 #endif
+

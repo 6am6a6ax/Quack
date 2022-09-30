@@ -1,6 +1,4 @@
-#include "quack/render/ortographic_camera.h"
-
-#include <glm/gtc/matrix_transform.hpp>
+#include "quack/quack.h"
 
 Quack::OrtographicCamera::OrtographicCamera(float left, float right, float bottom, float top)
     : _rot(.0f), _projection(glm::ortho(left, right, bottom, top)), _view(1.f)

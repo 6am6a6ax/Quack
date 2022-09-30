@@ -1,11 +1,4 @@
-#include "quack/platform/opengl/gpu_device_opengl.h"
-
-#include "quack/platform/opengl/gpu_buffer_opengl.h"
-#include "quack/platform/opengl/gpu_vertex_array_opengl.h"
-#include "quack/platform/opengl/gpu_shader_opengl.h"
-#include "quack/platform/opengl/gpu_shader_program_opengl.h"
-#include "quack/platform/opengl/gpu_texture_opengl.h"
-#include "quack/platform/opengl/gpu_framebuffer_opengl.h"
+#include "quack/quack.h"
 
 Quack::GPUBuffer * Quack::GPUDeviceOpenGL::CreateBuffer(const GPUBuffer::Description & desc) const {
     return new Quack::GPUBufferOpenGL(desc);

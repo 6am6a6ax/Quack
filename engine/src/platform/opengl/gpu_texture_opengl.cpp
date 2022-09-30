@@ -1,9 +1,7 @@
-#include "quack/platform/opengl/gpu_texture_opengl.h"
+#include "quack/quack.h"
 
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb_image.h>
-
-#include <GL/glew.h>
 
 Quack::GPUTextureOpenGL::GPUTextureOpenGL(const Quack::GPUTextureDescription & desc) : GPUTexture(desc) {
     int width, height, channels;

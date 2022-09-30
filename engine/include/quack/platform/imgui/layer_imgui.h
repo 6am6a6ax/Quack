@@ -7,6 +7,9 @@
 #include "quack/core/mouse_event.h"
 #include "quack/core/window_event.h"
 
+#include <imgui.h>
+#include <backends/imgui_impl_opengl3.h>
+
 namespace Quack {
 class LayerImGUI final : public Layer {
 public:

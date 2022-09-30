@@ -6,11 +6,15 @@
 
 #include "quack/graphics/gpu_device.h"
 
+#include "quack/render/scene.h"
+
 namespace Quack {
 struct ApplicationDescription {
     Quack::Window * Window;
     Quack::GPUDevice * GPUDevice;
     Quack::LayerStack LayerStack;
+
+    Quack::Scene * Scene;
 };
 
 class Application {
@@ -29,6 +33,7 @@ public:
     void Run();
 
 public:
+    void OnUpdate();
     void OnEvent(Event &);
 
 public:
@@ -43,6 +48,9 @@ public:
 
     LayerStack & GetLayerStack();
     void SetLayerStack(const LayerStack &);
+
+    Scene * GetScene();
+    void SetScene(Scene *);
 
 private:
     void BindBaseCallbackAndLayerStack();

@@ -1,6 +1,4 @@
-#include "quack/platform/glfw/window_glfw.h"
-
-#include "quack/platform/opengl/gpu_context_opengl.h"
+#include "quack/quack.h"
 
 Quack::WindowGLFW::WindowGLFW(const Quack::WindowDescription & desc) : Window(desc)
 {

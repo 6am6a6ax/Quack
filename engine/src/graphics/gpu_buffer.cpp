@@ -1,4 +1,4 @@
-#include "quack/graphics/gpu_buffer.h"
+#include "quack/quack.h"
 
 Quack::GPUBuffer::GPUBuffer(const Quack::GPUBuffer::Description & desc) : _desc(desc) {}
 

@@ -1,6 +1,4 @@
-#include "quack/platform/opengl/gpu_buffer_opengl.h"
-
-#include <GL/glew.h>
+#include "quack/quack.h"
 
 static GLenum BufferTypeToOpenGLType(Quack::BufferType type) {
     switch (type) {

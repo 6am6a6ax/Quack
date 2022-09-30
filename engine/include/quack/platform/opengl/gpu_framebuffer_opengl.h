@@ -11,6 +11,7 @@ public:
 
 public:
     void Invalidate() override;
+    void Resize(float width, float height) override;
 
 public:
     void Bind() const override;

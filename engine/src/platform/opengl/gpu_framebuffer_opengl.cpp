@@ -1,8 +1,4 @@
-#include "quack/platform/opengl/gpu_framebuffer_opengl.h"
-
-#include <GL/glew.h>
-
-#include <iostream>
+#include "quack/quack.h"
 
 Quack::GPUFramebufferOpenGL::GPUFramebufferOpenGL(const Quack::GPUFramebufferDescription & desc)
     : GPUFramebuffer(desc)
@@ -47,8 +43,16 @@ void Quack::GPUFramebufferOpenGL::Invalidate() {
 
 void Quack::GPUFramebufferOpenGL::Bind() const {
     glBindFramebuffer(GL_FRAMEBUFFER, _resource);
+    glViewport(0, 0, _desc.FrameSize.Width, _desc.FrameSize.Height);
+
 }
 
 void Quack::GPUFramebufferOpenGL::Unbind() const {
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
+}
+
+void Quack::GPUFramebufferOpenGL::Resize(float width, float height) {
+    _desc.FrameSize.Width = width;
+    _desc.FrameSize.Height = height;
+    Invalidate();
 }

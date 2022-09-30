@@ -1,8 +1,4 @@
-#include "quack/platform/opengl/gpu_vertex_array_opengl.h"
-
-#include <GL/glew.h>
-
-#include "quack/graphics/gpu_buffer.h"
+#include "quack/quack.h"
 
 namespace Quack {
     static GLenum ShaderDataTypeToOpenGLBaseType(ShaderDataType type) {

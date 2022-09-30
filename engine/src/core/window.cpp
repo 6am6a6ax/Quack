@@ -1,4 +1,4 @@
-#include "quack/core/window.h"
+#include "quack/quack.h"
 
 Quack::Window::Window(const Quack::WindowDescription & desc) : _desc(desc) {}
 
