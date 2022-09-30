@@ -22,47 +22,40 @@ add_subdirectory(deps/yaml-cpp)
 add_subdirectory(deps/stb)
 #add_subdirectory(deps/assimp)
 
-include_directories(include)
-include_directories(deps/imgui)
-include_directories(deps/glm)
-include_directories(deps/stb)
-include_directories(deps/entt/src)
-include_directories(deps/yaml-cpp/include)
-
-#include_directories(deps/assimp/include)
-
-set(SOURCES
-        src/core/application.cpp
-        src/core/window.cpp
+add_library(${PROJECT_NAME} STATIC /
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/core/application.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/core/window.cpp
         /
-        src/graphics/gpu_buffer.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/graphics/gpu_buffer.cpp
         /
-        src/platform/glfw/window_glfw.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/platform/glfw/window_glfw.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/platform/imgui/layer_imgui.cpp
         /
-        src/platform/imgui/layer_imgui.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/platform/opengl/gpu_context_opengl.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/platform/opengl/gpu_buffer_opengl.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/platform/opengl/gpu_device_opengl.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/platform/opengl/gpu_shader_opengl.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/platform/opengl/gpu_shader_program_opengl.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/platform/opengl/gpu_vertex_array_opengl.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/platform/opengl/gpu_texture_opengl.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/platform/opengl/gpu_framebuffer_opengl.cpp
         /
-        src/platform/opengl/gpu_context_opengl.cpp
-        src/platform/opengl/gpu_buffer_opengl.cpp
-        src/platform/opengl/gpu_device_opengl.cpp
-        src/platform/opengl/gpu_shader_opengl.cpp
-        src/platform/opengl/gpu_shader_program_opengl.cpp
-        src/platform/opengl/gpu_vertex_array_opengl.cpp
-        src/platform/opengl/gpu_texture_opengl.cpp
-        src/platform/opengl/gpu_framebuffer_opengl.cpp
-        /
-        src/render/ortographic_camera.cpp
-        src/render/scene.cpp
-        src/render/scene_serializer.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/render/ortographic_camera.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/render/scene.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/render/scene_serializer.cpp
 )
 
+target_precompile_headers(${PROJECT_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include/quack/quack.h)
 
-add_library(${PROJECT_NAME} STATIC ${SOURCES})
-
-target_precompile_headers(${PROJECT_NAME} PUBLIC include/quack/quack.h)
-
-target_include_directories(${PROJECT_NAME} PUBLIC deps/imgui)
-
-#add_library(${PROJECT_NAME} STATIC ${SOURCES})
+target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include/)
+target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/deps/assimp/)
+target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/deps/entt/)
+target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/deps/glew/)
+target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/deps/glfw/)
+target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/deps/glm/)
+target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/deps/imgui/)
+target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/deps/stb/)
+target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/deps/yaml-cpp/)
 
 target_link_libraries(${PROJECT_NAME} PUBLIC glfw)
 target_link_libraries(${PROJECT_NAME} PUBLIC glew)

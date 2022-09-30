@@ -4,13 +4,11 @@ project(model_loader)
 
 set(CMAKE_CXX_STANDARD 14)
 
-include_directories(include)
-include_directories(deps/imgui) 
+add_subdirectory(deps/engine)
 
-include_directories(../engine/include)
-
-set(SOURCES
-    src/main.cpp
+add_executable(${PROJECT_NAME} /
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/main.cpp
 )
 
-add_executable(${PROJECT_NAME} ${SOURCES})
+target_include_directories(${PROJECT_NAME} PRIVATE engine)
+target_link_libraries(${PROJECT_NAME} PRIVATE engine)
