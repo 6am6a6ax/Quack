@@ -1,10 +1,4 @@
-#include <iostream>
-
-#include "quack/core/application.h"
-
-#include "quack/platform/glfw/window_glfw.h"
-#include "quack/platform/opengl/gpu_device_opengl.h"
-#include "quack/platform/opengl/gpu_context_opengl.h"
+#include <quack/quack.h>
 
 int main() {
     Quack::WindowDescription wndDesc;
