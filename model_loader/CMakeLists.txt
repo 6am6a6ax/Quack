@@ -4,11 +4,12 @@ project(model_loader)
 
 set(CMAKE_CXX_STANDARD 14)
 
-add_subdirectory(deps/engine)
+if (NOT TARGET engine)
+    add_subdirectory(deps/engine)
+endif()
 
 add_executable(${PROJECT_NAME} /
     ${CMAKE_CURRENT_SOURCE_DIR}/src/main.cpp
 )
 
-target_include_directories(${PROJECT_NAME} PRIVATE engine)
 target_link_libraries(${PROJECT_NAME} PRIVATE engine)
