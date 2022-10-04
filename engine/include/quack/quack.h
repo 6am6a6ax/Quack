@@ -20,6 +20,10 @@
 
 #include <entt/entt.hpp>
 
+#include <assimp/Importer.hpp>
+#include <assimp/scene.h>
+#include <assimp/postprocess.h>
+
 #include "math/math.h"
 
 #include "core/application.h"
@@ -63,10 +67,12 @@
 #include "platform/opengl/gpu_texture_opengl.h"
 #include "platform/opengl/gpu_vertex_array_opengl.h"
 
-#include "render/components.h"
-#include "render/entity.h"
-#include "render/mesh.h"
 #include "render/ortographic_camera.h"
-#include "render/scene.h"
+
+#include "scene/components.h"
+#include "scene/entity.h"
+#include "scene/mesh.h"
+#include "scene/scene.h"
+#include "scene/model.h"
 //#include "render/scene_camera.h"
 //#include "render/scene_serializer.h"

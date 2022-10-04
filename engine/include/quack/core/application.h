@@ -6,7 +6,7 @@
 
 #include "quack/graphics/gpu_device.h"
 
-#include "quack/render/scene.h"
+#include "quack/scene/scene.h"
 
 namespace Quack {
 struct ApplicationDescription {

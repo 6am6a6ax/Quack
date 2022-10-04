@@ -1,8 +1,8 @@
 #ifndef QUACK_SCENE_EDITOR_H
 #define QUACK_SCENE_EDITOR_H
 
-#include "quack/render/scene.h"
-#include "quack/render/entity.h"
+#include "quack/scene/scene.h"
+#include "quack/scene/entity.h"
 
 namespace Quack {
 class SceneEditor final : public Scene {

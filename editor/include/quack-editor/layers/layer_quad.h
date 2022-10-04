@@ -7,10 +7,10 @@
 #include "quack/graphics/gpu_vertex_array.h"
 #include "quack/graphics/gpu_device.h"
 
-#include "quack/render/scene.h"
-#include "quack/render/entity.h"
+#include "quack/scene/scene.h"
+#include "quack/scene/entity.h"
 #include "quack/render/ortographic_camera.h"
-#include "quack/render/components.h"
+#include "quack/scene/components.h"
 
 #include "quack/core/application.h"
 

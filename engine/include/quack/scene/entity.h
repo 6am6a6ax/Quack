@@ -2,7 +2,7 @@
 #define QUACK_ENTITY_H
 
 #include <entt/entt.hpp>
-#include "quack/render/scene.h"
+#include "quack/scene/scene.h"
 
 namespace Quack {
 class Entity {
