@@ -1,12 +1,10 @@
 #ifndef QUACK_GPU_RESOURCE_H
 #define QUACK_GPU_RESOURCE_H
 
-#include <cstdint>
-
 class GPUResource {
 public:
-    GPUResource() : _resource(0) {}
-    GPUResource(uint32_t resource) : _resource(resource) {}
+    GPUResource() = default;
+    GPUResource(unsigned resource) : _resource(resource) {}
 
     virtual ~GPUResource() = default;
 
@@ -15,10 +13,11 @@ public:
     virtual void Unbind() const = 0;
 
 public:
-    uint32_t GetResource() { return _resource; }
+    unsigned GetResource() { return _resource; }
+    void SetResource(unsigned resource) { _resource = resource; }
 
 protected:
-    uint32_t _resource;
+    unsigned _resource;
 };
 
 #endif
