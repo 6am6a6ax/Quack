@@ -84,3 +84,5 @@ target_link_libraries(${PROJECT_NAME} PUBLIC imgui)
 target_link_libraries(${PROJECT_NAME} PUBLIC assimp)
 target_link_libraries(${PROJECT_NAME} PUBLIC yaml-cpp)
 target_link_libraries(${PROJECT_NAME} PUBLIC ImGuizmo)
+
+file(COPY assets DESTINATION ${CMAKE_BINARY_DIR})
