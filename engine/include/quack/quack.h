@@ -38,6 +38,8 @@
 #include "core/layer_stack.h"
 #include "core/timestep.h"
 
+#include "core/asset_library.h"
+
 #include "graphics/gpu_adapter.h"
 #include "graphics/gpu_buffer.h"
 #include "graphics/gpu_context.h"
@@ -47,7 +49,6 @@
 #include "graphics/gpu_resource.h"
 #include "graphics/gpu_resource_usage.h"
 #include "graphics/gpu_shader.h"
-#include "graphics/gpu_shader_description.h"
 #include "graphics/gpu_shader_program.h"
 #include "graphics/gpu_shader_program_description.h"
 #include "graphics/gpu_shader_program_stage.h"
