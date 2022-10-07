@@ -1,6 +1,7 @@
 #ifndef QUACK_APPLICATION_H
 #define QUACK_APPLICATION_H
 
+#include "quack/core/asset_library.h"
 #include "quack/core/event.h"
 #include "quack/core/window.h"
 
@@ -13,6 +14,7 @@ struct ApplicationDescription {
     Quack::Window * Window;
     Quack::GPUDevice * GPUDevice;
     Quack::LayerStack LayerStack;
+    Quack::AssetLibrary AssetLibrary;
 
     Quack::Scene * Scene;
 };
@@ -51,6 +53,9 @@ public:
 
     Scene * GetScene();
     void SetScene(Scene *);
+
+    AssetLibrary GetAssetLibrary() const { return _desc.AssetLibrary; }
+    void SetAssetLibrary(const AssetLibrary& assetLibrary) { _desc.AssetLibrary = assetLibrary; }
 
 private:
     void BindBaseCallbackAndLayerStack();

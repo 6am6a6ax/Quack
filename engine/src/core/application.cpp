@@ -1,3 +1,4 @@
+#include "quack/core/asset_library.h"
 #include "quack/quack.h"
 
 Quack::Application & Quack::Application::GetInstance() {
@@ -8,6 +9,7 @@ Quack::Application & Quack::Application::GetInstance() {
 void Quack::Application::Init(const Quack::ApplicationDescription & desc) {
     SetDescription(desc);
     BindBaseCallbackAndLayerStack();
+    _desc.AssetLibrary = AssetLibrary();
 }
 
 void Quack::Application::Run() {
