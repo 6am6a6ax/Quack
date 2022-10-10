@@ -5,6 +5,7 @@
 #include <utility>
 #include <functional>
 #include <iostream>
+#include <fstream>
 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
@@ -55,6 +56,7 @@
 #include "graphics/gpu_texture.h"
 #include "graphics/gpu_texture_description.h"
 #include "graphics/gpu_vertex_array.h"
+#include "graphics/gpu_shader_uniform.h"
 
 #include "platform/glfw/window_glfw.h"
 #include "platform/imgui/layer_imgui.h"
@@ -67,8 +69,12 @@
 #include "platform/opengl/gpu_shader_program_opengl.h"
 #include "platform/opengl/gpu_texture_opengl.h"
 #include "platform/opengl/gpu_vertex_array_opengl.h"
+#include "platform/opengl/gpu_shader_uniform_opengl.h"
 
 #include "render/ortographic_camera.h"
+#include "render/material.h"
+#include "render/renderer.h"
+#include "render/camera.h"
 
 #include "scene/components.h"
 #include "scene/entity.h"

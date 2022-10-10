@@ -1,12 +1,19 @@
 #ifndef QUACK_ORTOGRAPHIC_CAMERA_H
 #define QUACK_ORTOGRAPHIC_CAMERA_H
 
-#include "quack/math/math.h"
+#include "quack/render/camera.h"
 
 namespace Quack {
-class OrtographicCamera {
+class OrtographicCamera final : public ICamera {
 public:
     OrtographicCamera(float left, float right, float bottom, float top);
+
+public:
+    void OnEvent(Event&) override {}
+    void OnUpdate(Timestep) override {}
+
+    bool IsActive() const override {}
+    void SetActive(bool) override {}
 
 public:
     const Vector3f & GetPosition() const;

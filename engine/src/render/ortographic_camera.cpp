@@ -1,9 +1,10 @@
 #include "quack/quack.h"
 
 Quack::OrtographicCamera::OrtographicCamera(float left, float right, float bottom, float top)
-    : _rot(.0f), _projection(glm::ortho(left, right, bottom, top)), _view(1.f)
+    : _rot(.0f), _projection(glm::ortho(left, right, bottom, top)), _view(1.f), _position(0.0f, 0.0f, 0.0f)
 {
     _viewProj = _projection * _view;
+    RecalculateViewMatrix();
 }
 
 const Quack::Vector3f &Quack::OrtographicCamera::GetPosition() const {
