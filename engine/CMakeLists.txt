@@ -49,6 +49,7 @@ endif()
 add_library(${PROJECT_NAME} STATIC /
         ${CMAKE_CURRENT_SOURCE_DIR}/src/core/window.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/src/core/application.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/core/asset_library.cpp
         /
         ${CMAKE_CURRENT_SOURCE_DIR}/src/graphics/gpu_buffer.cpp
         /
@@ -65,6 +66,7 @@ add_library(${PROJECT_NAME} STATIC /
         ${CMAKE_CURRENT_SOURCE_DIR}/src/platform/opengl/gpu_shader_program_opengl.cpp
         /
         ${CMAKE_CURRENT_SOURCE_DIR}/src/render/ortographic_camera.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/render/renderer.cpp
         /
         ${CMAKE_CURRENT_SOURCE_DIR}/src/scene/scene.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/src/scene/scene_serializer.cpp
