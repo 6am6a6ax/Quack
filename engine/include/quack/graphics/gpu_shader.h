@@ -1,17 +1,20 @@
 #ifndef QUACK_GPU_SHADER_H
 #define QUACK_GPU_SHADER_H
 
+#include <cstdint>
+#include <memory>
+#include <sys/types.h>
 #include <vector>
 
 #include "quack/math/math.h"
 #include "quack/graphics/gpu_resource.h"
 #include "quack/graphics/gpu_shader_program.h"
+#include "quack/graphics/gpu_shader_uniform.h"
 
 namespace Quack {
 struct GPUShaderDescription {
-    GPUShaderProgram* VertexShader;
-    GPUShaderProgram* GeometryShader;
-    GPUShaderProgram* FragmentShader;
+    std::shared_ptr<GPUShaderProgram> VertexShader;
+    std::shared_ptr<GPUShaderProgram> FragmentShader;
 };
 
 class GPUShader : public GPUResource {
@@ -57,6 +60,11 @@ public:
 
     virtual void UploadUniformMat3x4f(const std::string&, const Mat3x4f&) const = 0;
     virtual void UploadUniformMat4x3f(const std::string&, const Mat4x3f&) const = 0;
+
+public:
+    // virtual std::vector<std::string> GetAttachedProgramsNames() const = 0;
+
+    virtual const IGPUShaderUniform::List& GetUniformList() const = 0;
 
 public:
     const GPUShaderDescription& GetDescription() const;

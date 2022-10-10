@@ -1,4 +1,5 @@
 #include "quack/quack.h"
+#include <memory>
 
 namespace Quack {
     static GLenum ShaderDataTypeToOpenGLBaseType(ShaderDataType type) {
@@ -44,10 +45,10 @@ void Quack::GPUVertexArrayOpenGL::Unbind() const {
     glBindVertexArray(0);
 }
 
-void Quack::GPUVertexArrayOpenGL::AddBuffer(const GPUBuffer & buffer) {
+void Quack::GPUVertexArrayOpenGL::AddBuffer(std::shared_ptr<Quack::GPUBuffer> buffer) {
     Bind();
-    buffer.Bind();
-    SetBufferLayout(buffer.GetLayout());
+    buffer->Bind();
+    SetBufferLayout(buffer->GetLayout());
 }
 
 void Quack::GPUVertexArrayOpenGL::SetBufferLayout(const GPUBuffer::Layout & layout) {

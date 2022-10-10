@@ -12,7 +12,7 @@ public:
     virtual ~GPUVertexArray() = default;
 
 public:
-    virtual void AddBuffer(const GPUBuffer &) = 0;
+    virtual void AddBuffer(std::shared_ptr<GPUBuffer>) = 0;
 
 private:
     virtual void SetBufferLayout(const GPUBuffer::Layout &) = 0;
