@@ -4,7 +4,7 @@
 namespace Quack {
 class Timestep {
 public:
-    Timestep(float time = .0f) {}
+    Timestep(float time = .0f) : _time(time) {}
 
 public:
     float GetSeconds() const { return _time; }

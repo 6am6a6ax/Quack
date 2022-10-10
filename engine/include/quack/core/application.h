@@ -6,6 +6,9 @@
 #include "quack/core/window.h"
 
 #include "quack/graphics/gpu_device.h"
+#include "quack/graphics/gpu_framebuffer.h"
+#include "quack/render/renderer.h"
+#include "quack/render/camera.h"
 
 #include "quack/scene/scene.h"
 
@@ -15,8 +18,9 @@ struct ApplicationDescription {
     Quack::GPUDevice * GPUDevice;
     Quack::LayerStack LayerStack;
     Quack::AssetLibrary AssetLibrary;
-
     Quack::Scene * Scene;
+    Quack::ICamera * Camera;
+    Quack::GPUFramebuffer * framebuffer;
 };
 
 class Application {
@@ -56,6 +60,8 @@ public:
 
     AssetLibrary GetAssetLibrary() const { return _desc.AssetLibrary; }
     void SetAssetLibrary(const AssetLibrary& assetLibrary) { _desc.AssetLibrary = assetLibrary; }
+
+    ICamera * GetCamera() const { return _desc.Camera; }
 
 private:
     void BindBaseCallbackAndLayerStack();
