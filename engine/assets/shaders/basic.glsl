@@ -6,16 +6,17 @@ layout(location = 0) in vec3 a_Position;
 layout(location = 1) in vec4 a_Color;
 layout(location = 2) in vec2 a_TexCoord;
 
-uniform mat4 u_ViewProj;
 uniform vec4 u_Color;
 uniform mat4 u_Transform;
+
+uniform mat4 u_ViewProj;
 
 out vec4 o_Color;
 out vec2 o_TexCoord;
 
 void main()
 {
-    gl_Position = u_Transform * u_ViewProj * vec4(a_Position, 1.0);
+    gl_Position = vec4(a_Position, 1.0f);
     o_Color = u_Color;
     o_TexCoord = a_TexCoord;
 }
