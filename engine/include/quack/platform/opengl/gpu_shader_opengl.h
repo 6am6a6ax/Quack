@@ -52,6 +52,9 @@ public:
     void UploadUniformMat3x4f(const std::string&, const Mat3x4f&) const override;
     void UploadUniformMat4x3f(const std::string&, const Mat4x3f&) const override;
 
+public:
+    IGPUShaderUniform::List& GetUniformList() const override;
+
 private:
     void Create();
     void Delete() const;
