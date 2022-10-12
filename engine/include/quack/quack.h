@@ -25,12 +25,15 @@
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
 
+#include <spdlog/spdlog.h>
+
 #include "math/math.h"
 
 #include "core/application.h"
 #include "core/event.h"
 #include "core/event_type.h"
 #include "core/key_event.h"
+#include "core/key_code.h"
 #include "core/mouse_event.h"
 #include "core/mouse_code.h"
 #include "core/window_event.h"

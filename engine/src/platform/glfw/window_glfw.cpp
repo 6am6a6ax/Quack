@@ -62,6 +62,27 @@ Quack::WindowGLFW::WindowGLFW(const Quack::WindowDescription & desc) : Window(de
         WindowResizedEvent e(width, height);
         desc->EventCallback(e);
     });
+
+    glfwSetKeyCallback(_window, [](GLFWwindow *window, int key, int scancode, int action, int mods) {
+        auto desc = static_cast<WindowDescription*>(glfwGetWindowUserPointer(window));
+        switch(action) {
+            case GLFW_PRESS: {
+                KeyPressedEvent event { static_cast<KeyCode>(key) };
+                desc->EventCallback(event);
+                break;
+            }
+            case GLFW_REPEAT: {
+                KeyPressedEvent event { static_cast<KeyCode>(key) };
+                desc->EventCallback(event);
+                break;
+            }
+            case GLFW_RELEASE: {
+                KeyReleasedEvent event { static_cast<KeyCode>(key) };
+                desc->EventCallback(event);
+                break;
+            }
+        }
+    });
 }
 
 Quack::WindowGLFW::~WindowGLFW() {
