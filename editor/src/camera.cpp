@@ -5,6 +5,7 @@
 #include "glm/geometric.hpp"
 #include "glm/matrix.hpp"
 #include "glm/trigonometric.hpp"
+#include "quack/core/application.h"
 #include "quack/core/event.h"
 #include "quack/core/event_type.h"
 #include "quack/core/key_event.h"
@@ -43,25 +44,14 @@ void Quack::Editor::CameraEditor::OnEvent(Event& e) {
 }
 
 void Quack::Editor::CameraEditor::OnMouseMoved(MouseMovedEvent& e) {
-    std::cout << "X Offset: " << e.GetXOffset() << "\n";
-    std::cout << "Y Offset: " << e.GetYOffset() << "\n";
-
     if (_isActive) {
-    _yaw += e.GetXOffset();
-    _pitch += e.GetYOffset();
+        _yaw += e.GetXOffset();
+        _pitch += e.GetYOffset();
     }
 }
 
 void Quack::Editor::CameraEditor::OnMouseButtonPressed(MouseButtonPressedEvent& e) {
-    static float speed = .5f;
-
-    if (e.GetMouseCode() == MouseCode::Button4) {
-        _position += _forward * speed  * Application::GetInstance().GetWindow()->GetTime();
-    }
-    else if (e.GetMouseCode() == MouseCode::Button3) {
-        _position -= _forward * speed * Application::GetInstance().GetWindow()->GetTime();
-    }
-    else if (e.GetMouseCode() == MouseCode::Button1) {
+    if (e.GetMouseCode() == MouseCode::Button1) {
         _isActive = true;
     }
 }
@@ -73,21 +63,25 @@ void Quack::Editor::CameraEditor::OnMouseButtonReleased(MouseButtonReleasedEvent
 }
 
 void Quack::Editor::CameraEditor::OnKeyPressed(KeyPressedEvent& e) {
+    static float speed = .05f;
 
+    if (e.GetKeyCode() == KeyCode::W) {
+        _position += (_forward * speed  * Application::GetInstance().GetWindow()->GetTime());
+    }
+    else if (e.GetKeyCode() == KeyCode::S) {
+        _position -= _forward * speed * Application::GetInstance().GetWindow()->GetTime();
+    }
+    else if (e.GetKeyCode() == KeyCode::A) {
+        _position -= _right * speed * Application::GetInstance().GetWindow()->GetTime();
+    }
+    else if (e.GetKeyCode() == KeyCode::D) {
+        _position += _right * speed * Application::GetInstance().GetWindow()->GetTime();
+    }
 }
-
 
 void Quack::Editor::CameraEditor::OnUpdate(Timestep ts) {
 
     Mat4f proj = glm::perspective(45.0f, (float)1280 / (float)720, 1.0f, 100.0f);
-    // Mat4f view = glm::lookAt(Vector3f(-1.0f, 1.0f, 1.0f), 
-    //                          _target, 
-    //                          Vector3f(0.0f, 1.0f, 0.0f));
-
-    // float radius = 2.5f;
-
-    // float x = sinf(Quack::Application::GetInstance().GetWindow()->GetTime()) * radius;
-    // float z = cosf(Quack::Application::GetInstance().GetWindow()->GetTime()) * radius;
 
     if (_pitch > 89.0f)
         _pitch = 89.0f;
