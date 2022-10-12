@@ -77,6 +77,12 @@ void Quack::Editor::CameraEditor::OnKeyPressed(KeyPressedEvent& e) {
     else if (e.GetKeyCode() == KeyCode::D) {
         _position += _right * speed * Application::GetInstance().GetWindow()->GetTime();
     }
+    else if (e.GetKeyCode() == KeyCode::Q) {
+        _position += _up * speed * Application::GetInstance().GetWindow()->GetTime();
+    }
+    else if (e.GetKeyCode() == KeyCode::Z) {
+        _position -= _up * speed * Application::GetInstance().GetWindow()->GetTime();
+    }
 }
 
 void Quack::Editor::CameraEditor::OnUpdate(Timestep ts) {
