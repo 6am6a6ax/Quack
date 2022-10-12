@@ -23,7 +23,15 @@ Quack::WindowGLFW::WindowGLFW(const Quack::WindowDescription & desc) : Window(de
 
     glfwSetCursorPosCallback(_window, [](GLFWwindow * window, double x, double y) {
         auto desc = static_cast<WindowDescription*>(glfwGetWindowUserPointer(window));
-        MouseMovedEvent e(static_cast<float>(x), static_cast<float>(y));
+
+        static float lastX;
+        static float lastY;
+
+        MouseMovedEvent e(static_cast<float>(x), static_cast<float>(y), lastX, lastY);
+
+        lastX = static_cast<float>(x);
+        lastY = static_cast<float>(y);
+
         desc->EventCallback(e);
     });
 

@@ -23,7 +23,10 @@ public:
 
 public:
     void OnKeyPressed(KeyPressedEvent&);
+
+    void OnMouseMoved(MouseMovedEvent&);
     void OnMouseButtonPressed(MouseButtonPressedEvent&);
+    void OnMouseButtonReleased(MouseButtonReleasedEvent&);
 
 public:
     const Viewport& GetViewport() const;
@@ -42,16 +45,21 @@ public:
     void SetViewport(uint32_t width, uint32_t height);
 
 private:
-    Vector3f _position;
-    Vector3f _target;
+    Vector3f _position = {0.0f, 0.0f, 0.0f};
+    Vector3f _target = {0.0f, 0.0f, 0.0f};
 
-    Vector3f _up;
-    Vector3f _right;
-    Vector3f _forward;
+    float _yaw = 0;
+    float _pitch = 0;
 
-    Mat4f _view;
-    Mat4f _proj;
-    Mat4f _viewProj;
+    bool _isActive = false;
+
+    Vector3f _up = {0.0f, 1.0f, 0.0f};
+    Vector3f _right = {1.0f, 0.0f, 0.0f};
+    Vector3f _forward = {0.0f, 0.0f, 1.0f};
+
+    Mat4f _view = Mat4f(1.0f);
+    Mat4f _proj = Mat4f(1.0f);
+    Mat4f _viewProj = Mat4f(1.0f);
 
     Viewport _viewport;
 };

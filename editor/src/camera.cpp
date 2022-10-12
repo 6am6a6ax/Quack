@@ -4,9 +4,11 @@
 #include "glm/fwd.hpp"
 #include "glm/geometric.hpp"
 #include "glm/matrix.hpp"
+#include "glm/trigonometric.hpp"
 #include "quack/core/event.h"
 #include "quack/core/event_type.h"
 #include "quack/core/key_event.h"
+#include "quack/core/mouse_code.h"
 #include "quack/core/mouse_event.h"
 #include "quack/math/math.h"
 #include "quack/render/camera.h"
@@ -25,8 +27,14 @@ Quack::Editor::CameraEditor::CameraEditor() : Quack::Camera(),
 
 void Quack::Editor::CameraEditor::OnEvent(Event& e) {
     switch (e.GetType()) {
+        case Quack::EventType::MouseMovedEvent:
+            OnMouseMoved(dynamic_cast<MouseMovedEvent&>(e));
+            break;
         case Quack::EventType::MouseButtonPressedEvent: 
             OnMouseButtonPressed(dynamic_cast<MouseButtonPressedEvent&>(e));
+            break;
+        case Quack::EventType::MouseButtonReleasedEvent: 
+            OnMouseButtonReleased(dynamic_cast<MouseButtonReleasedEvent&>(e));
             break;
         case Quack::EventType::KeyPressedEvent: 
             OnKeyPressed(dynamic_cast<KeyPressedEvent&>(e));
@@ -34,29 +42,71 @@ void Quack::Editor::CameraEditor::OnEvent(Event& e) {
     }
 }
 
+void Quack::Editor::CameraEditor::OnMouseMoved(MouseMovedEvent& e) {
+    std::cout << "X Offset: " << e.GetXOffset() << "\n";
+    std::cout << "Y Offset: " << e.GetYOffset() << "\n";
+
+    if (_isActive) {
+    _yaw += e.GetXOffset();
+    _pitch += e.GetYOffset();
+    }
+}
+
 void Quack::Editor::CameraEditor::OnMouseButtonPressed(MouseButtonPressedEvent& e) {
+    static float speed = .5f;
+
+    if (e.GetMouseCode() == MouseCode::Button4) {
+        _position += _forward * speed  * Application::GetInstance().GetWindow()->GetTime();
+    }
+    else if (e.GetMouseCode() == MouseCode::Button3) {
+        _position -= _forward * speed * Application::GetInstance().GetWindow()->GetTime();
+    }
+    else if (e.GetMouseCode() == MouseCode::Button1) {
+        _isActive = true;
+    }
+}
+
+void Quack::Editor::CameraEditor::OnMouseButtonReleased(MouseButtonReleasedEvent& e) {
+    if (e.GetMouseCode() == MouseCode::Button1) {
+        _isActive = false;
+    }
 }
 
 void Quack::Editor::CameraEditor::OnKeyPressed(KeyPressedEvent& e) {
+
 }
 
 
 void Quack::Editor::CameraEditor::OnUpdate(Timestep ts) {
 
-    Mat4f proj = glm::perspective(90.0f, (float)1280 / (float)720, 1.0f, 100.0f);
+    Mat4f proj = glm::perspective(45.0f, (float)1280 / (float)720, 1.0f, 100.0f);
     // Mat4f view = glm::lookAt(Vector3f(-1.0f, 1.0f, 1.0f), 
     //                          _target, 
     //                          Vector3f(0.0f, 1.0f, 0.0f));
 
-    float radius = 2.5f;
+    // float radius = 2.5f;
 
-    float x = sinf(Quack::Application::GetInstance().GetWindow()->GetTime()) * radius;
-    float z = cosf(Quack::Application::GetInstance().GetWindow()->GetTime()) * radius;
+    // float x = sinf(Quack::Application::GetInstance().GetWindow()->GetTime()) * radius;
+    // float z = cosf(Quack::Application::GetInstance().GetWindow()->GetTime()) * radius;
+
+    if (_pitch > 89.0f)
+        _pitch = 89.0f;
+    if (_pitch < -89.0f)
+        _pitch = -89.0f;
+
+    Vector3f forward;
+    forward.x = cosf(glm::radians(_yaw)) * cosf(glm::radians(_pitch));
+    forward.y = sinf(glm::radians(_pitch));
+    forward.z = sinf(glm::radians(_yaw)) * cosf(glm::radians(_pitch));
+    _forward = glm::normalize(forward);
+
+    _right = glm::normalize(glm::cross(_forward, {0.0f, 1.0f, 0.0f}));
+    _up = glm::normalize(glm::cross(_right, _forward));
 
     Mat4f view = glm::lookAt(
-        Vector3f(x, 0.0f, z),
-        Vector3f(0.0f, 0.0f, 0.0f),
-        Vector3f(0.0f, 1.0f, 0.0f)
+        _position,
+        _position + _forward,
+        _up
     );
 
     _viewProj = proj * view;

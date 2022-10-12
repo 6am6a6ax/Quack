@@ -11,7 +11,9 @@
 namespace Quack {
 class MouseMovedEvent final : public Event {
 public:
-    explicit MouseMovedEvent(const float & x, const float & y) : _x(x), _y(y) {}
+    explicit MouseMovedEvent(const float & x, const float & y,
+                             float lastX, float lastY) 
+        : _x(x), _y(y), _lastX(lastX), _lastY(lastY) {}
 
 public:
     const EventType GetType() const {
@@ -21,8 +23,15 @@ public:
     const float & GetX() const { return _x; }
     const float & GetY() const { return _y; }
 
+    float GetLastX() const { return _lastX; }
+    float GetLastY() const { return _lastY; }
+
+    float GetXOffset() const { return _x - _lastX; }
+    float GetYOffset() const { return _lastY - _y; }
+
 private:
     float _x, _y;
+    float _lastX, _lastY;
 };
 
 class MouseButtonPressedEvent final : public Event {
