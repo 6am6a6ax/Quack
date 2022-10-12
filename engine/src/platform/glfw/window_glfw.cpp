@@ -1,3 +1,4 @@
+#include "GLFW/glfw3.h"
 #include "quack/quack.h"
 
 Quack::WindowGLFW::WindowGLFW(const Quack::WindowDescription & desc) : Window(desc)
@@ -85,4 +86,8 @@ void Quack::WindowGLFW::OnUpdate() {
 }
 
 void Quack::WindowGLFW::OnWindowResize(Quack::WindowResizedEvent & e) {
+}
+
+float Quack::WindowGLFW::GetTime() const {
+    return glfwGetTime();
 }

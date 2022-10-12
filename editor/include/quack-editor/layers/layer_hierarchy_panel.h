@@ -6,10 +6,10 @@
 
 #include "quack/core/mouse_event.h"
 
-namespace Quack {
+namespace Quack::Editor {
 class LayerHierarchyPanel final : public Layer {
 public:
-    LayerHierarchyPanel(const std::string & name, Quack::SceneEditor * scene);
+    LayerHierarchyPanel(const std::string & name, Quack::Editor::SceneEditor * scene);
     ~LayerHierarchyPanel() override;
 
 public:

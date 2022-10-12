@@ -12,6 +12,10 @@ std::shared_ptr<Quack::GPUTexture> Quack::AssetLibrary::LoadTexture(const std::s
     return Application::GetInstance().GetDevice()->CreateTexture(desc);
 }
 
+std::shared_ptr<Quack::Model> Quack::AssetLibrary::LoadModel(const std::string &filename) const {
+    return std::make_shared<Model>(_root + "models/" + filename);
+}
+
 Quack::GPUShaderDescription Quack::AssetLibrary::ParseShaderFile(const std::string& filename) const {
     GPUShaderProgramDescription vertexShaderProgramDesc;
     GPUShaderProgramDescription fragmentShaderProgramDesc;

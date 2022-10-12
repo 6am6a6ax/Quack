@@ -75,6 +75,7 @@
 #include "render/material.h"
 #include "render/renderer.h"
 #include "render/camera.h"
+#include "render/light.h"
 
 #include "scene/components.h"
 #include "scene/entity.h"

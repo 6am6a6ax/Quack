@@ -8,6 +8,8 @@
 #include "quack/graphics/gpu_device.h"
 
 #include "quack/scene/scene.h"
+#include "quack/render/light.h"
+#include "quack/scene/model.h"
 #include "quack/scene/entity.h"
 #include "quack/render/ortographic_camera.h"
 #include "quack/scene/components.h"
@@ -15,11 +17,12 @@
 #include "quack/core/application.h"
 
 #include "quack-editor/scene_editor.h"
+#include <memory>
 
-namespace Quack {
+namespace Quack::Editor {
 class LayerQuad final : public Layer {
 public:
-    explicit LayerQuad(const std::string & name, SceneEditor * scene);
+    explicit LayerQuad(const std::string& name);
     ~LayerQuad() override;
 
 public:
@@ -27,22 +30,11 @@ public:
     void OnDetach() override;
 
     void OnUpdate() override;
-    void OnEvent(Event &) override;
+    void OnEvent(Event&) override;
 private:
-    GPUBuffer * _vbo;
-    GPUBuffer * _ebo;
-    GPUVertexArray * _vao;
-    GPUTexture * _texture;
-    GPUShader * _shader;
-    GPUFramebuffer * _framebuffer;
-
-    OrtographicCamera _camera;
-
-    Vector4f _color = {0.0, 1.0, 0.0, 1.0};
-    Entity _quad;
-    Entity _quad2;
-
-    SceneEditor * _scene;
+    std::shared_ptr<GPUFramebuffer> _framebuffer;
+    std::shared_ptr<Model> _model;
+    DirectionalLight _light;
 };
 }
 

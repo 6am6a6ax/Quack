@@ -2,21 +2,21 @@
 
 #include <quack/quack.h>
 
-Quack::LayerComponents::LayerComponents(SceneEditor * scene) : Layer("Components"), _scene(scene) {
+Quack::Editor::LayerComponents::LayerComponents(SceneEditor * scene) : Layer("Components"), _scene(scene) {
 
 }
 
-Quack::LayerComponents::~LayerComponents() {
+Quack::Editor::LayerComponents::~LayerComponents() {
 
 }
 
-void Quack::LayerComponents::OnAttach() {
+void Quack::Editor::LayerComponents::OnAttach() {
 }
 
-void Quack::LayerComponents::OnDetach() {
+void Quack::Editor::LayerComponents::OnDetach() {
 }
 
-void Quack::LayerComponents::OnUpdate() {
+void Quack::Editor::LayerComponents::OnUpdate() {
     ImGui::Begin("Components");
     auto & entity = _scene->GetActiveEntity();
     if (entity != Entity()) {
@@ -60,5 +60,5 @@ void Quack::LayerComponents::OnUpdate() {
     ImGui::End();
 }
 
-void Quack::LayerComponents::OnEvent(Quack::Event &) {
+void Quack::Editor::LayerComponents::OnEvent(Quack::Event &) {
 }

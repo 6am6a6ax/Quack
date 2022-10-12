@@ -4,7 +4,7 @@
 #include "quack/render/camera.h"
 
 namespace Quack {
-class OrtographicCamera final : public ICamera {
+class OrtographicCamera final : public Camera {
 public:
     OrtographicCamera(float left, float right, float bottom, float top);
 
@@ -12,8 +12,8 @@ public:
     void OnEvent(Event&) override {}
     void OnUpdate(Timestep) override {}
 
-    bool IsActive() const override {}
-    void SetActive(bool) override {}
+    bool IsActive() const {}
+    void SetActive(bool) {}
 
 public:
     const Vector3f & GetPosition() const;
@@ -28,7 +28,7 @@ public:
     const Mat4f & GetProjection() const;
     void SetProjection(const Mat4f &);
 
-    const Mat4f & GetViewProj() const;
+    const Mat4f& GetViewProj() const override;
     void SetViewProj(const Mat4f &);
 
 private:

@@ -1,4 +1,5 @@
 #include "quack/core/asset_library.h"
+#include "quack/core/timestep.h"
 #include "quack/quack.h"
 
 Quack::Application & Quack::Application::GetInstance() {
@@ -13,15 +14,24 @@ void Quack::Application::Init(const Quack::ApplicationDescription & desc) {
 }
 
 void Quack::Application::Run() {
+    float lastTime = 0.0f;
+    _timestep = 0.0f;
+
     while (true) {
         ImGui_ImplOpenGL3_NewFrame();
         ImGui::NewFrame();
         //ImGuizmo::BeginFrame();
 
+        _desc.Camera->OnUpdate(_timestep);
+
         OnUpdate();
 
         Quack::ApplicationUpdated e;
         OnEvent(e);
+
+        float time = GetTime();
+        _timestep = time - lastTime;
+        lastTime = time;
 
         ImGui::Render();
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
@@ -30,6 +40,7 @@ void Quack::Application::Run() {
 
 void Quack::Application::OnEvent(Quack::Event & e) {
     GetWindow()->OnEvent(e);
+    _desc.Camera->OnEvent(e);
     for (const auto & layer : GetLayerStack()) {
         layer->OnEvent(e);
     }
@@ -87,3 +98,10 @@ void Quack::Application::OnUpdate() {
     }
 }
 
+float Quack::Application::GetTime() const {
+    return _desc.Window->GetTime();
+}
+
+const Quack::Timestep& Quack::Application::GetTimestep() const {
+    return _timestep;
+}

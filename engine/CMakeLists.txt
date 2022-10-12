@@ -67,6 +67,7 @@ add_library(${PROJECT_NAME} STATIC /
         /
         ${CMAKE_CURRENT_SOURCE_DIR}/src/render/ortographic_camera.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/src/render/renderer.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/render/light.cpp
         /
         ${CMAKE_CURRENT_SOURCE_DIR}/src/scene/scene.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/src/scene/scene_serializer.cpp

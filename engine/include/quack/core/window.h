@@ -53,6 +53,9 @@ public:
     virtual void OnWindowResize(WindowResizedEvent &) = 0;
 
 public:
+    virtual float GetTime() const = 0;
+
+public:
     const WindowDescription & GetDescription();
     void SetDescription(const WindowDescription &);
 

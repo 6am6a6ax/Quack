@@ -12,11 +12,9 @@ add_subdirectory(deps/ImGuizmo)
 
 add_executable(${PROJECT_NAME} /
     ${CMAKE_CURRENT_SOURCE_DIR}/src/main.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/camera.cpp
     /
     ${CMAKE_CURRENT_SOURCE_DIR}/src/layers/layer_quad.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/layers/layer_triangle.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/layers/layer_hierarchy_panel.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/layers/layer_components.cpp
 )
 
 target_include_directories(${PROJECT_NAME} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include)

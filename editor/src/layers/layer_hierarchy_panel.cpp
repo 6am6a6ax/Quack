@@ -2,23 +2,23 @@
 
 #include <quack/quack.h>
 
-Quack::LayerHierarchyPanel::LayerHierarchyPanel(const std::string & name, Quack::SceneEditor * scene)
+Quack::Editor::LayerHierarchyPanel::LayerHierarchyPanel(const std::string & name, Quack::SceneEditor * scene)
         : Layer(name),
           _scene(scene) {} // dynamic_cast = nullptr?!
 
-Quack::LayerHierarchyPanel::~LayerHierarchyPanel() {
+Quack::Editor::LayerHierarchyPanel::~LayerHierarchyPanel() {
 
 }
 
-void Quack::LayerHierarchyPanel::OnAttach() {
+void Quack::Editor::LayerHierarchyPanel::OnAttach() {
     Layer::OnAttach();
 }
 
-void Quack::LayerHierarchyPanel::OnDetach() {
+void Quack::Editor::LayerHierarchyPanel::OnDetach() {
     Layer::OnDetach();
 }
 
-void Quack::LayerHierarchyPanel::OnUpdate() {
+void Quack::Editor::LayerHierarchyPanel::OnUpdate() {
     ImGui::Begin("Scene Hierarchy");
 
     if (ImGui::BeginPopupContextWindow()) {
@@ -59,7 +59,7 @@ void Quack::LayerHierarchyPanel::OnUpdate() {
     ImGui::End();
 }
 
-void Quack::LayerHierarchyPanel::OnEvent(Quack::Event & e) {
+void Quack::Editor::LayerHierarchyPanel::OnEvent(Quack::Event & e) {
     switch (e.GetType()) {
         case EventType::MouseButtonPressedEvent:
             OnMouseButtonPressed(dynamic_cast<Quack::MouseButtonPressedEvent &>(e));
@@ -67,15 +67,15 @@ void Quack::LayerHierarchyPanel::OnEvent(Quack::Event & e) {
     }
 }
 
-Quack::SceneEditor * Quack::LayerHierarchyPanel::GetScene() const {
+Quack::Editor::SceneEditor * Quack::Editor::LayerHierarchyPanel::GetScene() const {
     return _scene;
 }
 
-void Quack::LayerHierarchyPanel::SetScene(Quack::SceneEditor * scene) {
+void Quack::Editor::LayerHierarchyPanel::SetScene(Quack::Editor::SceneEditor * scene) {
     _scene = scene;
 }
 
-void Quack::LayerHierarchyPanel::OnMouseButtonPressed(Quack::MouseButtonPressedEvent & e) {
+void Quack::Editor::LayerHierarchyPanel::OnMouseButtonPressed(Quack::MouseButtonPressedEvent & e) {
 //    if (e.GetMouseCode() == Quack::MouseCode::ButtonRight && ImGui::BeginPopupContextWindow()) {
 //        if (ImGui::MenuItem("Create an empty entity")) {
 //            _scene->CreateEntity("Empty");

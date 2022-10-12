@@ -4,7 +4,7 @@
 #include "quack/core/layer.h"
 #include "quack-editor/scene_editor.h"
 
-namespace Quack {
+namespace Quack::Editor {
 class LayerComponents final : public Layer {
 public:
     explicit LayerComponents(SceneEditor * scene);

@@ -41,7 +41,7 @@ void Quack::OrtographicCamera::SetProjection(const Quack::Mat4f & projection) {
     _projection = projection;
 }
 
-const Quack::Mat4f & Quack::OrtographicCamera::GetViewProj() const {
+const Quack::Mat4f& Quack::OrtographicCamera::GetViewProj() const {
     return _viewProj;
 }
 

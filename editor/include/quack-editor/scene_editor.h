@@ -4,7 +4,7 @@
 #include "quack/scene/scene.h"
 #include "quack/scene/entity.h"
 
-namespace Quack {
+namespace Quack::Editor {
 class SceneEditor final : public Scene {
 public:
     SceneEditor() : Scene(), _activeEntity(Entity()) {}

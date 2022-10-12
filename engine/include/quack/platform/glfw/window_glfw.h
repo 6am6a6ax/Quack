@@ -31,6 +31,9 @@ public:
     void OnWindowResize(WindowResizedEvent &) override;
 
 public:
+    float GetTime() const override;
+
+public:
     const GLFWwindow * const GetWindow() const;
     void SetWindow(GLFWwindow &);
 

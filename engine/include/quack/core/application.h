@@ -3,6 +3,7 @@
 
 #include "quack/core/asset_library.h"
 #include "quack/core/event.h"
+#include "quack/core/timestep.h"
 #include "quack/core/window.h"
 
 #include "quack/graphics/gpu_device.h"
@@ -19,7 +20,7 @@ struct ApplicationDescription {
     Quack::LayerStack LayerStack;
     Quack::AssetLibrary AssetLibrary;
     Quack::Scene * Scene;
-    Quack::ICamera * Camera;
+    Quack::Camera * Camera;
     Quack::GPUFramebuffer * framebuffer;
 };
 
@@ -43,6 +44,9 @@ public:
     void OnEvent(Event &);
 
 public:
+    float GetTime() const;
+
+public:
     const ApplicationDescription & GetDescription();
     void SetDescription(const ApplicationDescription &);
 
@@ -61,13 +65,17 @@ public:
     AssetLibrary GetAssetLibrary() const { return _desc.AssetLibrary; }
     void SetAssetLibrary(const AssetLibrary& assetLibrary) { _desc.AssetLibrary = assetLibrary; }
 
-    ICamera * GetCamera() const { return _desc.Camera; }
+    Camera * GetCamera() const { return _desc.Camera; }
+
+    const Timestep& GetTimestep() const;
 
 private:
     void BindBaseCallbackAndLayerStack();
 
 private:
     ApplicationDescription _desc;
+
+    Timestep _timestep;
 };
 }
 

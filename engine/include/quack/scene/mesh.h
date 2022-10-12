@@ -11,7 +11,7 @@ namespace Quack {
 struct Vertex {
     Vector3f Position;
     Vector3f Normal;
-    Vector2f TexCoord;
+    //Vector2f TexCoord;
 };
 
 struct Texture {
