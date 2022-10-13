@@ -3,6 +3,7 @@
 
 #include <memory>
 #include <string>
+#include <vector>
 
 #include "quack/math/math.h"
 #include "quack/scene/mesh.h"
@@ -23,7 +24,7 @@ public:
 
     std::vector<Vertex> GetVertices() const { return _vertices; }
     std::vector<uint32_t> GetIndices() const { return _indices; }
-    std::vector<Submesh> GetSubmesher() const { return _submeshes; }
+    std::vector<Submesh> GetSubmeshes() const { return _submeshes; }
 
     std::shared_ptr<GPUBuffer> GetVBO() const { return _vbo; }
     std::shared_ptr<GPUBuffer> GetIBO() const { return _ibo; }
@@ -31,13 +32,15 @@ public:
 
     std::shared_ptr<GPUShader> GetShader() const { return _shader; }
 
+    const std::vector<std::shared_ptr<GPUTexture>>& GetTextures() const { return _textures; }
 
 private:
     std::vector<Vertex> _vertices;
-
-    // std::vector<Vector3f> _vertices;
     std::vector<uint32_t> _indices;
+
     std::vector<Submesh> _submeshes;
+
+    std::vector<std::shared_ptr<GPUTexture>> _textures;
 
     std::shared_ptr<GPUBuffer> _vbo;
     std::shared_ptr<GPUBuffer> _ibo;
