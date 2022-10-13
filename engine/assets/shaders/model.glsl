@@ -4,12 +4,13 @@
 
 layout(location = 0) in vec3 a_Position;
 layout(location = 1) in vec3 a_Normal;
-// layout(location = 2) in vec2 a_TexCoord;
+layout(location = 2) in vec2 a_TexCoord;
 
 uniform mat4 u_ViewProj;
 
 out vec3 o_Position;
 out vec3 o_Normal;
+out vec2 o_TexCoord;
 
 void main()
 {
@@ -17,6 +18,7 @@ void main()
 
     o_Position = a_Position;
     o_Normal = a_Normal;
+    o_TexCoord = a_TexCoord;
 }
 
 #type fragment
@@ -27,6 +29,7 @@ layout(location = 0) out vec4 color;
 
 in vec3 o_Position;
 in vec3 o_Normal;
+in vec2 o_TexCoord;
 
 struct DirectionalLight {
     vec3 Color;
@@ -37,6 +40,8 @@ struct DirectionalLight {
 };
 
 uniform DirectionalLight light;
+
+uniform sampler2D s_Texture;
 
 void main() {
     float factor = dot(normalize(o_Normal), -light.Direction);
@@ -49,5 +54,5 @@ void main() {
                        factor;
     }
     
-    color = result;
+    color = texture(s_Texture, o_TexCoord) + result;
 }
