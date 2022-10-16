@@ -6,6 +6,7 @@
 #include "quack/core/timestep.h"
 #include "quack/core/window.h"
 
+#include "quack/graphics/gpu_context.h"
 #include "quack/graphics/gpu_device.h"
 #include "quack/graphics/gpu_framebuffer.h"
 #include "quack/render/renderer.h"
@@ -17,6 +18,7 @@ namespace Quack {
 struct ApplicationDescription {
     Quack::Window * Window;
     Quack::GPUDevice * GPUDevice;
+    Quack::GPUContext * GPUContext;
     Quack::LayerStack LayerStack;
     Quack::AssetLibrary AssetLibrary;
     Quack::Scene * Scene;
@@ -68,6 +70,8 @@ public:
     Camera * GetCamera() const { return _desc.Camera; }
 
     const Timestep& GetTimestep() const;
+
+    GPUContext* GetContext() const;
 
 private:
     void BindBaseCallbackAndLayerStack();

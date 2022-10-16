@@ -1,18 +1,20 @@
 #ifndef QUACK_GPU_PIPELINE_H
 #define QUACK_GPU_PIPELINE_H
 
-#include "quack/graphics/gpu_buffer.h"
 #include "quack/graphics/gpu_shader.h"
 #include "quack/graphics/gpu_resource.h"
 
 namespace Quack {
 struct GPUPipelineDescription {
-    GPUShader * Shader;
+    GPUShaderProgram* Vertex;
+    GPUShaderProgram* Fragment;
+
     GPUBuffer::Layout Layout;
 };
 
 class GPUPipeline : public GPUResource {
 public:
+    GPUPipeline(const GPUPipelineDescription& desc) : _desc(desc) {}
     ~GPUPipeline() override {}
 
 public:

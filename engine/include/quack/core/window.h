@@ -1,6 +1,7 @@
 #ifndef QUACK_WINDOW_H
 #define QUACK_WINDOW_H
 
+#include <memory>
 #include <string>
 #include <functional>
 
@@ -11,9 +12,11 @@
 
 #include "layer_stack.h"
 
-#include "quack/graphics/gpu_context.h"
+#include <GLFW/glfw3.h>
 
 namespace Quack {
+class GPUContext;
+
 struct WindowDescription {
     struct Size {
         uint32_t Width;
@@ -26,7 +29,9 @@ struct WindowDescription {
     } Pos;
 
     std::string Title;
-    GPUContext * Context;
+    GPUContext* Context;
+
+    void* Handle;
 
     using EventCallbackFn = std::function<void(Event &)>;
     Quack::WindowDescription::EventCallbackFn EventCallback;
@@ -71,8 +76,7 @@ public:
     const std::string & GetTitle() const;
     void SetTitle(const std::string &);
 
-    GPUContext * GetContext();
-    void SetContext(GPUContext *);
+    virtual void* GetHandle() const = 0;
 
 protected:
     WindowDescription _desc;

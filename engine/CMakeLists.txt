@@ -56,6 +56,7 @@ add_library(${PROJECT_NAME} STATIC /
         ${CMAKE_CURRENT_SOURCE_DIR}/src/core/asset_library.cpp
         /
         ${CMAKE_CURRENT_SOURCE_DIR}/src/graphics/gpu_buffer.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/graphics/gpu_context.cpp
         /
         ${CMAKE_CURRENT_SOURCE_DIR}/src/platform/glfw/window_glfw.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/src/platform/imgui/layer_imgui.cpp
@@ -69,8 +70,11 @@ add_library(${PROJECT_NAME} STATIC /
         ${CMAKE_CURRENT_SOURCE_DIR}/src/platform/opengl/gpu_vertex_array_opengl.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/src/platform/opengl/gpu_shader_program_opengl.cpp
         /
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/platform/vulkan/gpu_context_vulkan.cpp
+        /
         ${CMAKE_CURRENT_SOURCE_DIR}/src/render/ortographic_camera.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/src/render/renderer.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/render/camera_perspective.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/src/render/light.cpp
         /
         ${CMAKE_CURRENT_SOURCE_DIR}/src/scene/scene.cpp
@@ -90,7 +94,9 @@ target_link_libraries(${PROJECT_NAME} PUBLIC EnTT)
 target_link_libraries(${PROJECT_NAME} PUBLIC imgui)
 target_link_libraries(${PROJECT_NAME} PUBLIC assimp)
 target_link_libraries(${PROJECT_NAME} PUBLIC yaml-cpp)
-target_link_libraries(${PROJECT_NAME} PUBLIC ImGuizmo)
+#target_link_libraries(${PROJECT_NAME} PUBLIC ImGuizmo)
 target_link_libraries(${PROJECT_NAME} PUBLIC spdlog)
+
+target_link_libraries(${PROJECT_NAME} PUBLIC -lvulkan)
 
 file(COPY assets DESTINATION ${CMAKE_BINARY_DIR})
