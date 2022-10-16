@@ -6,6 +6,7 @@
 #include "quack/core/timestep.h"
 #include "quack/core/window.h"
 
+#include "quack/graphics/gpu_context.h"
 #include "quack/graphics/gpu_device.h"
 #include "quack/graphics/gpu_framebuffer.h"
 #include "quack/render/renderer.h"
@@ -68,6 +69,8 @@ public:
     std::shared_ptr<Camera> GetCamera() const { return _desc.Camera; }
 
     const Timestep& GetTimestep() const;
+
+    GPUContext* GetContext() const;
 
 private:
     void BindBaseCallbackAndLayerStack();

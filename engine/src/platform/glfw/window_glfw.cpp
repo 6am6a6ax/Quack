@@ -1,17 +1,17 @@
-#include "GLFW/glfw3.h"
 #include "quack/quack.h"
 
 Quack::WindowGLFW::WindowGLFW(const Quack::WindowDescription & desc) : Window(desc)
 {
     glfwInit();
+
+    glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
+    glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
+
     _window = glfwCreateWindow(static_cast<int>(GetSize().Width),
                                static_cast<int>(GetSize().Height),
                                GetTitle().c_str(),
                                nullptr,
                                nullptr);
-
-    SetContext(std::make_shared<GPUContextOpenGL>(_window));
-    GetContext()->Init();
 
     glfwSetWindowUserPointer(_window, &_desc);
 
@@ -82,7 +82,7 @@ Quack::WindowGLFW::WindowGLFW(const Quack::WindowDescription & desc) : Window(de
                 break;
             }
         }
-    });
+   });
 }
 
 Quack::WindowGLFW::~WindowGLFW() {
@@ -111,7 +111,6 @@ void Quack::WindowGLFW::OnMouseMove(MouseMovedEvent & event) {
 
 void Quack::WindowGLFW::OnUpdate() {
     glfwPollEvents();
-    GetContext()->SwapBuffers();
 }
 
 void Quack::WindowGLFW::OnWindowResize(Quack::WindowResizedEvent & e) {
@@ -119,4 +118,8 @@ void Quack::WindowGLFW::OnWindowResize(Quack::WindowResizedEvent & e) {
 
 float Quack::WindowGLFW::GetTime() const {
     return glfwGetTime();
+}
+
+void* Quack::WindowGLFW::GetHandle() const {
+    return (void*)_window;
 }

@@ -1,6 +1,7 @@
 #ifndef QUACK_WINDOW_H
 #define QUACK_WINDOW_H
 
+#include <memory>
 #include <string>
 #include <functional>
 
@@ -11,9 +12,11 @@
 
 #include "layer_stack.h"
 
-#include "quack/graphics/gpu_context.h"
+#include <GLFW/glfw3.h>
 
 namespace Quack {
+class GPUContext;
+
 struct WindowDescription {
     struct Size {
         uint32_t Width;

@@ -1,5 +1,4 @@
-#include "quack/core/asset_library.h"
-#include "quack/core/timestep.h"
+#include "quack/graphics/gpu_buffer.h"
 #include "quack/quack.h"
 
 Quack::Application & Quack::Application::GetInstance() {
@@ -11,39 +10,42 @@ void Quack::Application::Init(const Quack::ApplicationDescription & desc) {
     SetDescription(desc);
     BindBaseCallbackAndLayerStack();
     _desc.AssetLibrary = std::make_shared<AssetLibrary>();
+    _desc.GPUContext->Init();
 }
 
 void Quack::Application::Run() {
     float lastTime = 0.0f;
     _timestep = 0.0f;
 
-    while (true) {
-        ImGui_ImplOpenGL3_NewFrame();
-        ImGui::NewFrame();
+    // while (true) {
+        // ImGui_ImplOpenGL3_NewFrame();
+        // ImGui_ImplVulkan_NewFrame();
+        // ImGui::NewFrame();
         //ImGuizmo::BeginFrame();
 
-        _desc.Camera->OnUpdate(_timestep);
+        // _desc.Camera->OnUpdate(_timestep);
 
-        OnUpdate();
+        // OnUpdate();
 
-        Quack::ApplicationUpdated e;
-        OnEvent(e);
+        // Quack::ApplicationUpdated e;
+        // OnEvent(e);
 
-        float time = GetTime();
-        _timestep = time - lastTime;
-        lastTime = time;
+        // float time = GetTime();
+        // _timestep = time - lastTime;
+        // lastTime = time;
 
-        ImGui::Render();
-        ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
-    }
+        // // ImGui::Render();
+        // ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+        // ImGui_ImplVulkan_RenderDrawData(ImGui::GetDrawData(), VkCommandBuffer());
+    // }
 }
 
 void Quack::Application::OnEvent(Quack::Event & e) {
-    GetWindow()->OnEvent(e);
-    _desc.Camera->OnEvent(e);
-    for (const auto & layer : *GetLayerStack()) {
-        layer->OnEvent(e);
-    }
+    // GetWindow()->OnEvent(e);
+    // _desc.Camera->OnEvent(e);
+    // for (const auto & layer : GetLayerStack()) {
+    //     layer->OnEvent(e);
+    // }
 }
 
 const Quack::ApplicationDescription & Quack::Application::GetDescription() {
@@ -52,7 +54,7 @@ const Quack::ApplicationDescription & Quack::Application::GetDescription() {
 
 void Quack::Application::BindBaseCallbackAndLayerStack() {
     GetWindow()->SetEventCallback(std::bind(&Quack::Application::OnEvent, this, std::placeholders::_1));
-    GetLayerStack()->Push(std::make_shared<LayerImGUI>());
+    //GetLayerStack().Push(std::make_shared<LayerImGUI>());
 }
 
 void Quack::Application::SetDescription(const Quack::ApplicationDescription & desc) {
@@ -92,10 +94,12 @@ void Quack::Application::SetScene(std::shared_ptr<Quack::Scene> scene) {
 }
 
 void Quack::Application::OnUpdate() {
-    GetWindow()->OnUpdate();
-    for (const auto & layer : *GetLayerStack()) {
-        layer->OnUpdate();
-    }
+    // GetWindow()->OnUpdate();
+    // for (const auto & layer : GetLayerStack()) {
+    //     layer->OnUpdate();
+    // }
+
+    GetContext()->SwapBuffers();
 }
 
 float Quack::Application::GetTime() const {
@@ -104,4 +108,8 @@ float Quack::Application::GetTime() const {
 
 const Quack::Timestep& Quack::Application::GetTimestep() const {
     return _timestep;
+}
+
+Quack::GPUContext* Quack::Application::GetContext() const {
+    return _desc.GPUContext;
 }

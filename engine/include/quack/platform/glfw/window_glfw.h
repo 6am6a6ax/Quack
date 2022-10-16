@@ -6,6 +6,7 @@
 #include "quack/core/window.h"
 
 #include <iostream>
+#include <memory>
 
 namespace Quack {
 class WindowGLFW final : public Window {
@@ -37,8 +38,10 @@ public:
     const GLFWwindow * const GetWindow() const;
     void SetWindow(GLFWwindow &);
 
+    void* GetHandle() const override;
+
 private:
-    GLFWwindow * _window;
+    GLFWwindow* _window;
 };
 }
 

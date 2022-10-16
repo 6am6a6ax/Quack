@@ -52,11 +52,3 @@ const std::string & Quack::Window::GetTitle() const {
 void Quack::Window::SetTitle(const std::string & title) {
     _desc.Title = title;
 }
-
-std::shared_ptr<Quack::GPUContext> Quack::Window::GetContext() {
-    return _desc.Context;
-}
-
-void Quack::Window::SetContext(std::shared_ptr<Quack::GPUContext> context) {
-    _desc.Context = context;
-}

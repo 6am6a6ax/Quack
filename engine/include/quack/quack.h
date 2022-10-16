@@ -6,12 +6,18 @@
 #include <functional>
 #include <iostream>
 #include <fstream>
+#include <optional>
+#include <stdexcept>
+
+#include <vulkan/vulkan_core.h>
 
 #include <GL/glew.h>
+
+#define GLFW_INCLUDE_VULKAN
 #include <GLFW/glfw3.h>
 
 #include <imgui.h>
-#include <backends/imgui_impl_opengl3.h>
+#include <backends/imgui_impl_vulkan.h>
 
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
@@ -30,6 +36,7 @@
 #include "math/math.h"
 
 #include "core/application.h"
+#include "core/window.h"
 #include "core/event.h"
 #include "core/event_type.h"
 #include "core/key_event.h"
@@ -37,7 +44,6 @@
 #include "core/mouse_event.h"
 #include "core/mouse_code.h"
 #include "core/window_event.h"
-#include "core/window.h"
 #include "core/layer.h"
 #include "core/layer_stack.h"
 #include "core/timestep.h"
@@ -52,6 +58,7 @@
 #include "graphics/gpu_pixel_format.h"
 #include "graphics/gpu_resource.h"
 #include "graphics/gpu_resource_usage.h"
+#include "graphics/gpu_pipeline.h"
 #include "graphics/gpu_shader.h"
 #include "graphics/gpu_shader_program.h"
 #include "graphics/gpu_shader_program_description.h"
@@ -74,10 +81,18 @@
 #include "platform/opengl/gpu_vertex_array_opengl.h"
 #include "platform/opengl/gpu_shader_uniform_opengl.h"
 
-#include "render/ortographic_camera.h"
+#include "platform/vulkan/gpu_context_vulkan.h"
+#include "platform/vulkan/gpu_buffer_vulkan.h"
+#include "platform/vulkan/gpu_pipeline_vulkan.h"
+#include "platform/vulkan/gpu_device_vulkan.h"
+#include "platform/vulkan/gpu_shader_program_vulkan.h"
+#include "platform/vulkan/gpu_texture_vulkan.h"
+
 #include "render/material.h"
 #include "render/renderer.h"
 #include "render/camera.h"
+#include "render/ortographic_camera.h"
+#include "render/camera_perspective.h"
 #include "render/light.h"
 
 #include "scene/components.h"
