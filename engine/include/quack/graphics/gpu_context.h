@@ -6,12 +6,12 @@
 namespace Quack {
 class GPUContext {
 public:
-    struct Desciption {
+    struct Description {
+        Quack::Window* Window;
     };
 
 public:
-    GPUContext() = default;
-    // GPUContext(const Desciption& desc);
+    GPUContext(const GPUContext::Description& desc) : _desc(desc) {}
     virtual ~GPUContext() = default;
 
 public:
@@ -19,11 +19,13 @@ public:
     virtual void SwapBuffers() = 0;
 
 public:
-    const Desciption& GetDescription() const;
-    void SetDescription(const Desciption& desc);
+    const Description& GetDescription() const;
+    void SetDescription(const Description& desc);
+
+    Window* GetWindow() const { return _desc.Window; }
 
 protected:
-    Desciption _desc;
+    Description _desc;
 };
 }
 

@@ -1,18 +1,26 @@
 #ifndef GPU_ADAPTER_H
 #define GPU_ADAPTER_H
 
-#include <string>
-#include <cstdint>
+#include "quack/graphics/gpu_context.h"
 
 namespace Quack {
+struct GPUAdapterDescription {
+    GPUContext* Context;
+};
+
 class GPUAdapter {
 public:
+    GPUAdapter(const GPUAdapterDescription& desc) : _desc(desc) {}
     virtual ~GPUAdapter() = default;
 
 public:
-    virtual bool IsValid() const = 0;
-    virtual const uint32_t & GetVendorId() const = 0;
-    virtual const std::string & GetDescription() const = 0;
+    const GPUAdapterDescription& GetDescription() const { return _desc; }
+
+public:
+    GPUContext* GetContext() const { return _desc.Context; }
+
+private:
+    GPUAdapterDescription _desc;
 };
 }
 
