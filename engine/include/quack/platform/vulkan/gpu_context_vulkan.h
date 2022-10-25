@@ -31,35 +31,20 @@ public:
         std::vector<VkPresentModeKHR> presentModes;
     };
 public:
-    GPUContextVulkan() : GPUContext() {}
+    GPUContextVulkan(const GPUContext::Description& desc);
 
     void Init() override;
     void SwapBuffers() override {}
 
 public:
-    VkDevice GetDevice() const { return device; }
-    VkPhysicalDevice GetPhysicalDevice() const { return physicalDevice; }
+    const VkInstance& GetInstance() const { return instance; }
+    const VkSurfaceKHR& GetSurface() const { return surface; }
+    const std::vector<const char*>& GetExtensions() const { return deviceExtensions; }
+    const std::vector<const char*>& GetValidationLayers() const { return validationLayers; }
 
-    VkExtent2D GetExtent2D() const { return swapChainExtent; }
-
+    bool IsValidationLayersEnabled() const { return enableValidationLayers; }
+    
 private:
-    VkInstance instance;
-    VkDebugUtilsMessengerEXT debugMessenger;
-    VkSurfaceKHR surface;
-
-    VkPhysicalDevice physicalDevice = VK_NULL_HANDLE;
-    VkDevice device;
-
-    VkQueue graphicsQueue;
-    VkQueue presentQueue;
-
-    VkSwapchainKHR swapChain;
-    std::vector<VkImage> swapChainImages;
-    VkFormat swapChainImageFormat;
-    VkExtent2D swapChainExtent;
-
-    std::vector<VkImageView> swapChainImageViews;
-
     const std::vector<const char*> validationLayers = {
         "VK_LAYER_KHRONOS_validation"
     };
@@ -68,13 +53,37 @@ private:
         VK_KHR_SWAPCHAIN_EXTENSION_NAME
     };
 
+public:
+    VkExtent2D GetExtent2D() const { return swapChainExtent; }
+    std::vector<VkImageView> GetSwapChainImageViews() const { return swapChainImageViews; }
+    VkSurfaceKHR GetSurface()  { return surface; }
+    QueueFamilyIndices GetQueueFamilyIndices() { return FindQueueFamilies(physicalDevice); }
+    VkSwapchainKHR GetSwapChain() const { return swapChain; }
+    VkQueue GetGraphicsQueue() const { return graphicsQueue; }
+    VkQueue GetPresentQueue() const { return presentQueue; }
+
+private:
+    VkInstance instance;
+    VkDebugUtilsMessengerEXT debugMessenger;
+    VkSurfaceKHR surface;
+
+    VkPhysicalDevice physicalDevice;
+    VkDevice device;
+
+    VkQueue graphicsQueue;
+    VkQueue presentQueue;
+
+    VkSwapchainKHR swapChain;
+    std::vector<VkImage> swapChainImages;
+    VkExtent2D swapChainExtent;
+
+    std::vector<VkImageView> swapChainImageViews;
+
     const bool enableValidationLayers = true;
 
     void CreateInstance();
     void SetupDebugMessenger();
     void CreateSurface();
-    void PickPhysicalDevice();
-    void CreateLogicalDevice();
     void CreateSwapChain();
     void CreateImageViews();
 
