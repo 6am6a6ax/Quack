@@ -7,7 +7,7 @@
 namespace Quack {
 class GPUContextOpenGL final : public GPUContext {
 public:
-    GPUContextOpenGL(const Desciption& desc);
+    GPUContextOpenGL(const Description& desc);
 
 public:
     void Init() override;
