@@ -2,6 +2,7 @@
 #define QUACK_GPU_FRAMEBUFFER_H
 
 #include "quack/graphics/gpu_resource.h"
+#include "quack/graphics/gpu_render_pass.h"
 
 namespace Quack {
 struct GPUFramebufferDescription {
@@ -13,6 +14,7 @@ struct GPUFramebufferDescription {
     bool SwapChainTarget = false;
     uint32_t ColorAttachment;
     uint32_t DepthAttachment;
+    GPURenderPass* RenderPass;
 };
 
 class GPUFramebuffer : public GPUResource {
@@ -39,6 +41,8 @@ public:
 
     const uint32_t & GetDepthAttachment() const { return _desc.DepthAttachment; }
     void SetDepthAttachment(const uint32_t & depthAttachment) { _desc.DepthAttachment = depthAttachment; }
+
+    GPURenderPass* GetRenderPass() const { return _desc.RenderPass; }
 
 protected:
     GPUFramebufferDescription _desc;
