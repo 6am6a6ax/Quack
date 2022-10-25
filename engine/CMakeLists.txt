@@ -70,7 +70,15 @@ add_library(${PROJECT_NAME} STATIC /
         ${CMAKE_CURRENT_SOURCE_DIR}/src/platform/opengl/gpu_vertex_array_opengl.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/src/platform/opengl/gpu_shader_program_opengl.cpp
         /
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/platform/vulkan/gpu_command_buffer_vulkan.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/src/platform/vulkan/gpu_context_vulkan.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/platform/vulkan/gpu_device_vulkan.cpp
+        # ${CMAKE_CURRENT_SOURCE_DIR}/src/platform/vulkan/gpu_framebuffer_vulkan.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/platform/vulkan/gpu_pipeline_vulkan.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/platform/vulkan/gpu_render_pass_vulkan.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/platform/vulkan/gpu_shader_program_vulkan.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/platform/vulkan/gpu_swap_chain_vulkan.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/platform/vulkan/gpu_adapter_vulkan.cpp
         /
         ${CMAKE_CURRENT_SOURCE_DIR}/src/render/ortographic_camera.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/src/render/renderer.cpp

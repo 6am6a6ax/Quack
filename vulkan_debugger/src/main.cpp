@@ -1,4 +1,5 @@
-#include "GLFW/glfw3.h"
+#include "quack/graphics/gpu_pipeline.h"
+#include "quack/graphics/gpu_render_pass.h"
 #include <quack/quack.h>
 
 int main() {
@@ -8,8 +9,58 @@ int main() {
 
     Quack::Window* window = new Quack::WindowGLFW(windowDesc);
 
-    Quack::GPUContext::Desciption gpuContextDesc{};
-    Quack::GPUContext* gpuContext = new Quack::GPUContextVulkan();
+    Quack::GPUContext::Description gpuContextDesc{};
+    gpuContextDesc.Window = window;
+    Quack::GPUContext* gpuContext = new Quack::GPUContextVulkan(gpuContextDesc);
+
+    Quack::GPUAdapter* gpuAdapter = new Quack::GPUAdapterVulkan({gpuContext});
+
+    Quack::GPUDeviceDescription gpuDeviceDesc{};
+    gpuDeviceDesc.Adapter = gpuAdapter;
+    gpuDeviceDesc.Context = gpuContext;
+    Quack::GPUDevice* gpuDevice = new Quack::GPUDeviceVulkan(gpuDeviceDesc);
+
+    Quack::GPUSwapChainDescription gpuSwapChainDesc{};
+    gpuSwapChainDesc.Adapter = gpuAdapter;
+    gpuSwapChainDesc.CommandBuffer = nullptr;
+    gpuSwapChainDesc.Context = gpuContext;
+    gpuSwapChainDesc.Device = gpuDevice;
+    Quack::GPUSwapChain* gpuSwapChain = new Quack::GPUSwapChainVulkan(gpuSwapChainDesc);
+
+    Quack::GPURenderPassDescription gpuRenderPassDesc{};
+    gpuRenderPassDesc.Context = gpuContext;
+    gpuRenderPassDesc.Device = gpuDevice;
+    gpuRenderPassDesc.SwapChain = gpuSwapChain;
+    Quack::GPURenderPass* gpuRenderPass = new Quack::GPURenderPassVulkan(gpuRenderPassDesc);
+
+    Quack::GPUShaderProgramDescription gpuVertexShaderProgramDesc{};
+    gpuVertexShaderProgramDesc.Name = "/home/bujhm/dev/cpp/cg/quack/vulkan_demo/shaders/vert.spv";
+    gpuVertexShaderProgramDesc.Device = gpuDevice;
+    //gpuVertexShaderProgramDesc.Source;
+    //gpuVertexShaderProgramDesc.Type;
+    Quack::GPUShaderProgram* vertexShaderProgram = new Quack::GPUShaderProgramVulkan(gpuVertexShaderProgramDesc);
+
+    Quack::GPUShaderProgramDescription gpuFragShaderProgramDesc{};
+    gpuFragShaderProgramDesc.Name = "/home/bujhm/dev/cpp/cg/quack/vulkan_demo/shaders/frag.spv";
+    gpuFragShaderProgramDesc.Device = gpuDevice;
+    //gpuFragShaderProgramDesc.Source;
+    //gpuFragShaderProgramDesc.Type;
+    Quack::GPUShaderProgram* fragShaderProgram = new Quack::GPUShaderProgramVulkan(gpuFragShaderProgramDesc);
+
+    Quack::GPUCommandBufferDescription gpuCommandBufferDesc{};
+    gpuCommandBufferDesc.Context = gpuContext;
+    gpuCommandBufferDesc.Device = gpuDevice;
+    Quack::GPUCommandBuffer* gpuCommandBuffer = new Quack::GPUCommandBuffer(gpuCommandBufferDesc);
+
+    Quack::GPUPipelineDescription gpuPipelineDesc{};
+    gpuPipelineDesc.CommandBuffer = gpuCommandBuffer;
+    gpuPipelineDesc.Vertex = vertexShaderProgram;
+    gpuPipelineDesc.Fragment = fragShaderProgram;
+    gpuPipelineDesc.RenderPass = gpuRenderPass;
+    gpuPipelineDesc.Context = gpuContext;
+    gpuPipelineDesc.Device = gpuDevice;
+    Quack::GPUPipeline* gpuPipeline = new Quack::GPUPipelineVulkan(gpuPipelineDesc);
+
 
     Quack::ApplicationDescription appDesc{};
     appDesc.Window = window;
