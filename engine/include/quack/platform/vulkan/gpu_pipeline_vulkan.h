@@ -1,18 +1,21 @@
 #ifndef QUACK_GPU_PIPELINE_VULKAN_H
 #define QUACK_GPU_PIPELINE_VULKAN_H
 
+#include <vector>
 #include <vulkan/vulkan_core.h>
 #include "quack/graphics/gpu_pipeline.h"
 
 namespace Quack {
-class GPUPipelineVulkan final : GPUPipeline {
+class GPUPipelineVulkan final : public GPUPipeline {
 public:
     explicit GPUPipelineVulkan(const GPUPipelineDescription&);
     ~GPUPipelineVulkan() override;
 
 public:
-    void Bind() const override {}
-    void Unbind() const override {} 
+    void Bind() const override;
+    void Unbind() const override {}
+
+    void BindVk();
 
 private:
     void Init();
@@ -35,15 +38,20 @@ private:
     void InitColorBlending();
 
     void InitPipelineLayout();
+    void InitPipeline();
 
 private:
     void CreatePipelineLayout();
+    void CreatePipeline();
+
+    void SetViewport();
+    void SetScissor();
 
 private:
-    VkPipeline _pipeline;
-
     VkPipelineShaderStageCreateInfo _vertexShaderStageInfo;
     VkPipelineShaderStageCreateInfo _fragmentShaderStageInfo;
+
+    std::vector<VkPipelineShaderStageCreateInfo> _shaderStages;
 
     std::vector<VkDynamicState> _dynamicStates = {
         VK_DYNAMIC_STATE_VIEWPORT,
@@ -67,6 +75,9 @@ private:
     // Shaders uniforms...
     VkPipelineLayout _pipelineLayout;
     VkPipelineLayoutCreateInfo _pipelineLayoutInfo;
+
+    VkPipeline _pipeline;
+    VkGraphicsPipelineCreateInfo _pipelineInfo;
 };
 }
 

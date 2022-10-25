@@ -1,63 +1,79 @@
+#include "quack/platform/vulkan/gpu_device_vulkan.h"
 #include "quack/quack.h"
+#include <stdexcept>
+#include <vulkan/vulkan_core.h>
 
 Quack::GPUPipelineVulkan::GPUPipelineVulkan(const Quack::GPUPipelineDescription& desc)
     : Quack::GPUPipeline(desc)
-    , _pipeline(nullptr)
     , _vertexShaderStageInfo({})
     , _fragmentShaderStageInfo({})
     , _dynamicStateInfo({})
     , _vertexInputInfo({})
     , _inputAssemblyInfo({})
     , _viewport({})
-    , _scissor({})
     , _viewportStateInfo({})
+    , _scissor({})
     , _rasterizerStateInfo({})
     , _multisamplingStateInfo({})
     , _colorBlendAttachmentState({})
     , _colorBlendStateInfo({})
-    , _pipelineLayout(nullptr)
+    , _pipelineLayout(VK_NULL_HANDLE)
     , _pipelineLayoutInfo({})
+    , _pipeline(VK_NULL_HANDLE)
+    , _pipelineInfo({})
 {
     Init();
     Create();
 }
 
 Quack::GPUPipelineVulkan::~GPUPipelineVulkan() {
-    GPUContextVulkan* context = dynamic_cast<GPUContextVulkan*>(Application::GetInstance().GetContext());
-    vkDestroyPipelineLayout(context->GetDevice(), _pipelineLayout, nullptr);
-    // vkDestroyPipeline(context->GetDevice(), _pipeline, nullptr);
+    const auto& device = dynamic_cast<GPUDeviceVulkan*>(_desc.Device);
+    vkDestroyPipeline(device->GetDevice(), _pipeline, nullptr);
+    vkDestroyPipelineLayout(device->GetDevice(), _pipelineLayout, nullptr);
 }
 
 void Quack::GPUPipelineVulkan::Init() {
     InitVertexShader();
     InitFragmentShader();
-
-    InitDynamicState();
     
     InitVertexInput();
     InitInputAssembly();
 
     InitViewport();
     InitScissor();
+
+    InitRasterizer();
+    InitMultisampling();
+    InitColorBlending();
+
+    InitDynamicState();
+
+    InitPipelineLayout();
 }
 
 void Quack::GPUPipelineVulkan::Create() {
     CreatePipelineLayout();
+
+    InitPipeline();
+    CreatePipeline();
 }
 
 void Quack::GPUPipelineVulkan::InitVertexShader() {
     _vertexShaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
     _vertexShaderStageInfo.stage = VK_SHADER_STAGE_VERTEX_BIT;
-    _vertexShaderStageInfo.module = dynamic_cast<GPUShaderProgramVulkan*>(GetDescription().Vertex)->GetModule();
+    _vertexShaderStageInfo.module = dynamic_cast<GPUShaderProgramVulkan*>(_desc.Vertex)->GetModule();
     _vertexShaderStageInfo.pName = "main";
+
+    _shaderStages.push_back(_vertexShaderStageInfo);
 }
 
 void Quack::GPUPipelineVulkan::InitFragmentShader() {
-    _vertexShaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
-    _vertexShaderStageInfo.stage = VK_SHADER_STAGE_FRAGMENT_BIT;
-    _vertexShaderStageInfo.module = dynamic_cast<GPUShaderProgramVulkan*>(GetDescription().Fragment)->GetModule();
-    _vertexShaderStageInfo.pName = "main";
+    _fragmentShaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
+    _fragmentShaderStageInfo.stage = VK_SHADER_STAGE_FRAGMENT_BIT;
+    _fragmentShaderStageInfo.module = dynamic_cast<GPUShaderProgramVulkan*>(_desc.Fragment)->GetModule();
+    _fragmentShaderStageInfo.pName = "main";
 
+    _shaderStages.push_back(_fragmentShaderStageInfo);
 }
 
 void Quack::GPUPipelineVulkan::InitDynamicState() {
@@ -84,7 +100,7 @@ void Quack::GPUPipelineVulkan::InitViewport() {
     _viewport.x = 0.0f;
     _viewport.y = 0.0f;
 
-    const auto& context = dynamic_cast<GPUContextVulkan*>(Application::GetInstance().GetContext());
+    const auto& context = dynamic_cast<GPUContextVulkan*>(_desc.Context);
     _viewport.width = static_cast<float>(context->GetExtent2D().width);
     _viewport.height = static_cast<float>(context->GetExtent2D().height);
 
@@ -100,7 +116,7 @@ void Quack::GPUPipelineVulkan::InitViewport() {
 
 void Quack::GPUPipelineVulkan::InitScissor() {
     _scissor.offset = {0, 0};
-    _scissor.extent = dynamic_cast<GPUContextVulkan*>(Application::GetInstance().GetContext())->GetExtent2D();
+    _scissor.extent = dynamic_cast<GPUContextVulkan*>(_desc.Context)->GetExtent2D();
 }
 
 void Quack::GPUPipelineVulkan::InitRasterizer() {
@@ -161,8 +177,61 @@ void Quack::GPUPipelineVulkan::InitPipelineLayout() {
 }
 
 void Quack::GPUPipelineVulkan::CreatePipelineLayout() {
-    const auto& context = dynamic_cast<GPUContextVulkan*>(Application::GetInstance().GetContext());
-    if (vkCreatePipelineLayout(context->GetDevice(), &_pipelineLayoutInfo, nullptr, &_pipelineLayout) != VK_SUCCESS) {
+    const auto& device = dynamic_cast<GPUDeviceVulkan*>(_desc.Device);
+    if (vkCreatePipelineLayout(device->GetDevice(), &_pipelineLayoutInfo, nullptr, &_pipelineLayout) != VK_SUCCESS) {
         throw std::runtime_error("Failed to create pipeline layout!");
     }
+}
+
+void Quack::GPUPipelineVulkan::InitPipeline() {
+    _pipelineInfo.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
+    _pipelineInfo.stageCount = 2;
+    _pipelineInfo.pStages = _shaderStages.data();
+    _pipelineInfo.pVertexInputState = &_vertexInputInfo;
+    _pipelineInfo.pInputAssemblyState = &_inputAssemblyInfo;
+    _pipelineInfo.pViewportState = &_viewportStateInfo;
+    _pipelineInfo.pRasterizationState = &_rasterizerStateInfo;
+    _pipelineInfo.pMultisampleState = &_multisamplingStateInfo;
+    _pipelineInfo.pColorBlendState = &_colorBlendStateInfo;
+    _pipelineInfo.pDynamicState = &_dynamicStateInfo;
+    _pipelineInfo.layout = _pipelineLayout;
+    _pipelineInfo.renderPass = dynamic_cast<GPURenderPassVulkan*>(_desc.RenderPass)->GetRenderPass();
+    _pipelineInfo.subpass = 0;
+    _pipelineInfo.basePipelineHandle = VK_NULL_HANDLE;
+}
+
+void Quack::GPUPipelineVulkan::CreatePipeline() {
+    const auto& device = dynamic_cast<GPUDeviceVulkan*>(_desc.Device);
+    if(vkCreateGraphicsPipelines(device->GetDevice(), VK_NULL_HANDLE, 1, &_pipelineInfo, nullptr, &_pipeline) != VK_SUCCESS) {
+        throw std::runtime_error("Failed to create graphics pipeline!");      
+    }
+}
+
+void Quack::GPUPipelineVulkan::BindVk() {
+    vkCmdBindPipeline(
+        dynamic_cast<GPUCommandBufferVulkan*>(_desc.CommandBuffer)->GetCommandBuffer(), 
+        VK_PIPELINE_BIND_POINT_GRAPHICS, 
+        _pipeline
+    );
+
+    SetViewport();
+    SetScissor();
+}
+
+void Quack::GPUPipelineVulkan::SetViewport() {
+    vkCmdSetViewport(
+        dynamic_cast<GPUCommandBufferVulkan*>(_desc.CommandBuffer)->GetCommandBuffer(),
+        0,
+        1,
+        &_viewport    
+    );
+}
+
+void Quack::GPUPipelineVulkan::SetScissor() {
+    vkCmdSetScissor(
+        dynamic_cast<GPUCommandBufferVulkan*>(_desc.CommandBuffer)->GetCommandBuffer(),
+        0,
+        1,
+        &_scissor
+    );
 }

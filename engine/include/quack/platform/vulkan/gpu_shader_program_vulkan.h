@@ -6,7 +6,7 @@
 #include <vulkan/vulkan_core.h>
 
 namespace Quack {
-class GPUShaderProgramVulkan final : GPUShaderProgram {
+class GPUShaderProgramVulkan final : public GPUShaderProgram {
 public:
     explicit GPUShaderProgramVulkan(const GPUShaderProgramDescription&);
     ~GPUShaderProgramVulkan() override;
@@ -16,7 +16,7 @@ public:
     void Unbind() const override {}
 
 public:
-    VkShaderModule GetModule() const { return _module; }
+    const VkShaderModule& GetModule() const { return _module; }
 
 private:
     void Init();
@@ -28,6 +28,7 @@ private:
 private:
     VkShaderModule _module;
     VkShaderModuleCreateInfo _info;
+    std::vector<char> _src;
 };
 }
 
