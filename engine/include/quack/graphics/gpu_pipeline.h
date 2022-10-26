@@ -21,6 +21,8 @@ struct GPUPipelineDescription {
     GPUContext* Context;
     GPUDevice* Device;
 
+    GPUSwapChain* SwapChain;
+
     GPUBuffer::Layout Layout;
 };
 

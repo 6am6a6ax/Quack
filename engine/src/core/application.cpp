@@ -1,4 +1,5 @@
 #include "quack/graphics/gpu_buffer.h"
+#include "quack/graphics/gpu_render_pass.h"
 #include "quack/quack.h"
 
 Quack::Application & Quack::Application::GetInstance() {
@@ -18,25 +19,31 @@ void Quack::Application::Run() {
     _timestep = 0.0f;
 
     // while (true) {
-        // ImGui_ImplOpenGL3_NewFrame();
-        // ImGui_ImplVulkan_NewFrame();
-        // ImGui::NewFrame();
-        //ImGuizmo::BeginFrame();
+    //     // _desc.SwapChain->Begin();
 
-        // _desc.Camera->OnUpdate(_timestep);
+    //     // _desc.SwapChain->End();
 
-        // OnUpdate();
 
-        // Quack::ApplicationUpdated e;
-        // OnEvent(e);
+        
+    //     // ImGui_ImplOpenGL3_NewFrame();
+    //     // ImGui_ImplVulkan_NewFrame();
+    //     // ImGui::NewFrame();
+    //     //ImGuizmo::BeginFrame();
 
-        // float time = GetTime();
-        // _timestep = time - lastTime;
-        // lastTime = time;
+    //     // _desc.Camera->OnUpdate(_timestep);
 
-        // // ImGui::Render();
-        // ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
-        // ImGui_ImplVulkan_RenderDrawData(ImGui::GetDrawData(), VkCommandBuffer());
+    //     // OnUpdate();
+
+    //     // Quack::ApplicationUpdated e;
+    //     // OnEvent(e);
+
+    //     // float time = GetTime();
+    //     // _timestep = time - lastTime;
+    //     // lastTime = time;
+
+    //     // // ImGui::Render();
+    //     // ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+    //     // ImGui_ImplVulkan_RenderDrawData(ImGui::GetDrawData(), VkCommandBuffer());
     // }
 }
 
@@ -112,4 +119,8 @@ const Quack::Timestep& Quack::Application::GetTimestep() const {
 
 Quack::GPUContext* Quack::Application::GetContext() const {
     return _desc.GPUContext;
+}
+
+Quack::GPUSwapChain* Quack::Application::GetSwapChain() const {
+    return _desc.SwapChain;
 }

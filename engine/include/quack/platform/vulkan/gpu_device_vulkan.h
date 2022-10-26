@@ -21,8 +21,8 @@ public:
 public:
     VkDevice GetDevice() const;
 
-    const VkQueue& GetGraphicsQueue() const;
-    const VkQueue& GetPresentQueue() const;
+    VkQueue GetGraphicsQueue() const;
+    VkQueue GetPresentQueue() const;
 
 private:
     VkDevice _device;

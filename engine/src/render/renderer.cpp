@@ -1,9 +1,6 @@
-#include "quack/graphics/gpu_buffer.h"
-#include "quack/graphics/gpu_texture.h"
-#include "quack/math/math.h"
+#include "quack/platform/vulkan/gpu_pipeline_vulkan.h"
 #include "quack/quack.h"
-#include <cstdint>
-#include <memory>
+#include "quack/render/renderer.h"
 
 void Quack::Renderer::Begin() {}
 void Quack::Renderer::End() {}
@@ -190,4 +187,18 @@ void Quack::Renderer::RenderModel(const std::shared_ptr<Quack::Model>& model, co
             (void*)(sizeof(uint32_t) * mesh.BaseIndex), mesh.BaseVertex);
     }
 
+}
+
+void Quack::Renderer::RenderVk(Quack::GPUCommandBufferVulkan* commandBuffer, Quack::GPURenderPassVulkan* renderPass,
+    Quack::GPUPipelineVulkan* pipeline)
+{
+    commandBuffer->Reset();
+    commandBuffer->Begin();
+    // renderPass->Begin();
+
+    pipeline->BindVk();
+    // vkCmdDraw();
+    
+    // renderPass->End();
+    commandBuffer->End();
 }

@@ -9,6 +9,7 @@
 #include "quack/graphics/gpu_context.h"
 #include "quack/graphics/gpu_device.h"
 #include "quack/graphics/gpu_framebuffer.h"
+#include "quack/graphics/gpu_render_pass.h"
 #include "quack/render/renderer.h"
 #include "quack/render/camera.h"
 
@@ -16,13 +17,15 @@
 
 namespace Quack {
 struct ApplicationDescription {
-    std::shared_ptr<Quack::Window> Window;
-    std::shared_ptr<Quack::GPUDevice> GPUDevice;
-    std::shared_ptr<Quack::LayerStack> LayerStack;
-    std::shared_ptr<Quack::AssetLibrary> AssetLibrary;
-    std::shared_ptr<Quack::Scene> Scene;
-    std::shared_ptr<Quack::Camera> Camera;
-    std::shared_ptr<Quack::GPUFramebuffer> framebuffer;
+    Quack::Window * Window;
+    Quack::GPUDevice * GPUDevice;
+    Quack::GPUContext * GPUContext;
+    Quack::GPUSwapChain* SwapChain;
+    Quack::LayerStack LayerStack;
+    Quack::AssetLibrary AssetLibrary;
+    Quack::Scene * Scene;
+    Quack::Camera * Camera;
+    Quack::GPUFramebuffer * framebuffer;
 };
 
 class Application {
@@ -50,6 +53,10 @@ public:
 public:
     const ApplicationDescription & GetDescription();
     void SetDescription(const ApplicationDescription &);
+
+    GPUSwapChain* GetSwapChain() const;
+
+    GPUSwapChain* GetSwapChain() const;
 
     std::shared_ptr<Window> GetWindow();
     void SetWindow(std::shared_ptr<Window>);

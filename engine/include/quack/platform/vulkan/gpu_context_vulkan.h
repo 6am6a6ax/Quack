@@ -16,15 +16,6 @@
 namespace Quack {
 class GPUContextVulkan final : public GPUContext {
 public:
-    struct QueueFamilyIndices {
-        std::optional<uint32_t> graphicsFamily;
-        std::optional<uint32_t> presentFamily;
-
-        bool isComplete() {
-            return graphicsFamily.has_value() && presentFamily.has_value();
-        }
-    };
-
     struct SwapChainSupportDetails {
         VkSurfaceCapabilitiesKHR capabilities;
         std::vector<VkSurfaceFormatKHR> formats;
@@ -54,49 +45,24 @@ private:
     };
 
 public:
-    VkExtent2D GetExtent2D() const { return swapChainExtent; }
-    std::vector<VkImageView> GetSwapChainImageViews() const { return swapChainImageViews; }
     VkSurfaceKHR GetSurface()  { return surface; }
-    QueueFamilyIndices GetQueueFamilyIndices() { return FindQueueFamilies(physicalDevice); }
-    VkSwapchainKHR GetSwapChain() const { return swapChain; }
-    VkQueue GetGraphicsQueue() const { return graphicsQueue; }
-    VkQueue GetPresentQueue() const { return presentQueue; }
 
 private:
-    VkInstance instance;
-    VkDebugUtilsMessengerEXT debugMessenger;
-    VkSurfaceKHR surface;
-
-    VkPhysicalDevice physicalDevice;
-    VkDevice device;
-
-    VkQueue graphicsQueue;
-    VkQueue presentQueue;
-
-    VkSwapchainKHR swapChain;
-    std::vector<VkImage> swapChainImages;
-    VkExtent2D swapChainExtent;
-
-    std::vector<VkImageView> swapChainImageViews;
-
-    const bool enableValidationLayers = true;
-
     void CreateInstance();
     void SetupDebugMessenger();
     void CreateSurface();
-    void CreateSwapChain();
-    void CreateImageViews();
+
+private:
+    VkInstance instance;
+    VkSurfaceKHR surface;
+
+    VkDebugUtilsMessengerEXT debugMessenger;
+
+    const bool enableValidationLayers = true;
 
     bool CheckValidationLayerSupport();
     std::vector<const char*> GetRequiredExtensions();
     void PopulateDebugMessengerCreateInfo(VkDebugUtilsMessengerCreateInfoEXT& createInfo);
-    bool IsDeviceSuitable(VkPhysicalDevice);
-    QueueFamilyIndices FindQueueFamilies(VkPhysicalDevice device);
-    bool CheckDeviceExtensionSupport(VkPhysicalDevice device);
-    SwapChainSupportDetails QuerySwapChainSupport(VkPhysicalDevice device);
-    VkSurfaceFormatKHR ChooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& availableFormats);
-    VkPresentModeKHR ChooseSwapChainPresentMode(const std::vector<VkPresentModeKHR> & avaliablePresentModes);
-    VkExtent2D ChooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities);
 };
 }
 

@@ -20,18 +20,18 @@ int main() {
     gpuDeviceDesc.Context = gpuContext;
     Quack::GPUDevice* gpuDevice = new Quack::GPUDeviceVulkan(gpuDeviceDesc);
 
+    // Quack::GPURenderPassDescription gpuRenderPassDesc{};
+    // gpuRenderPassDesc.Context = gpuContext;
+    // gpuRenderPassDesc.Device = gpuDevice;
+    // Quack::GPURenderPass* gpuRenderPass = new Quack::GPURenderPassVulkan(gpuRenderPassDesc);
+
     Quack::GPUSwapChainDescription gpuSwapChainDesc{};
     gpuSwapChainDesc.Adapter = gpuAdapter;
     gpuSwapChainDesc.CommandBuffer = nullptr;
     gpuSwapChainDesc.Context = gpuContext;
     gpuSwapChainDesc.Device = gpuDevice;
+    // gpuSwapChainDesc.RenderPass = gpuRenderPass;
     Quack::GPUSwapChain* gpuSwapChain = new Quack::GPUSwapChainVulkan(gpuSwapChainDesc);
-
-    Quack::GPURenderPassDescription gpuRenderPassDesc{};
-    gpuRenderPassDesc.Context = gpuContext;
-    gpuRenderPassDesc.Device = gpuDevice;
-    gpuRenderPassDesc.SwapChain = gpuSwapChain;
-    Quack::GPURenderPass* gpuRenderPass = new Quack::GPURenderPassVulkan(gpuRenderPassDesc);
 
     Quack::GPUShaderProgramDescription gpuVertexShaderProgramDesc{};
     gpuVertexShaderProgramDesc.Name = "/home/bujhm/dev/cpp/cg/quack/vulkan_demo/shaders/vert.spv";
@@ -50,28 +50,39 @@ int main() {
     Quack::GPUCommandBufferDescription gpuCommandBufferDesc{};
     gpuCommandBufferDesc.Context = gpuContext;
     gpuCommandBufferDesc.Device = gpuDevice;
+    gpuCommandBufferDesc.Adapter = gpuAdapter;
     Quack::GPUCommandBuffer* gpuCommandBuffer = new Quack::GPUCommandBuffer(gpuCommandBufferDesc);
 
     Quack::GPUPipelineDescription gpuPipelineDesc{};
     gpuPipelineDesc.CommandBuffer = gpuCommandBuffer;
     gpuPipelineDesc.Vertex = vertexShaderProgram;
     gpuPipelineDesc.Fragment = fragShaderProgram;
-    gpuPipelineDesc.RenderPass = gpuRenderPass;
+    // gpuPipelineDesc.RenderPass = gpuRenderPass;
+    gpuPipelineDesc.SwapChain = gpuSwapChain;
     gpuPipelineDesc.Context = gpuContext;
     gpuPipelineDesc.Device = gpuDevice;
     Quack::GPUPipeline* gpuPipeline = new Quack::GPUPipelineVulkan(gpuPipelineDesc);
 
-
     Quack::ApplicationDescription appDesc{};
     appDesc.Window = window;
     appDesc.GPUContext = gpuContext;
+    appDesc.SwapChain = gpuSwapChain;
+    appDesc.GPUDevice = gpuDevice;
     // // appDesc.GPUDevice = new Quack::GPUDeviceVulkan();
     // // appDesc.Camera = new Quack::CameraPerspective();
 
     Quack::Application::GetInstance().Init(appDesc);
 
     try {
-        Quack::Application::GetInstance().Run();
+        while(true) {
+            gpuSwapChain->Begin();
+
+            // Quack::Renderer::RenderVk(dynamic_cast<Quack::GPUCommandBufferVulkan*>(gpuCommandBuffer), 
+            //                           dynamic_cast<Quack::GPURenderPassVulkan*>(gpuRenderPass), 
+            //                           dynamic_cast<Quack::GPUPipelineVulkan*>(gpuPipeline));
+
+            gpuSwapChain->End();
+        }
     } catch (const std::exception& e) {
         std::cerr << e.what() << std::endl;
         return EXIT_FAILURE;

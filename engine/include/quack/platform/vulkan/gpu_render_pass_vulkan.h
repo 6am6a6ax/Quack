@@ -1,45 +1,47 @@
-#ifndef QUACK_GPU_RENDER_PASS_VULKAN_H
-#define QUACK_GPU_RENDER_PASS_VULKAN_H
+// #ifndef QUACK_GPU_RENDER_PASS_VULKAN_H
+// #define QUACK_GPU_RENDER_PASS_VULKAN_H
 
-#include <vulkan/vulkan_core.h>
+// #include <vulkan/vulkan_core.h>
 
-namespace Quack {
-class GPURenderPassVulkan final : public GPURenderPass {
-public:
-    explicit GPURenderPassVulkan(const GPURenderPassDescription&);
-    ~GPURenderPassVulkan() override;
+// namespace Quack {
+// class GPUSwapChainVulkan;
 
-public:
-    void Begin(uint32_t index);
-    void End();
+// class GPURenderPassVulkan final : public GPURenderPass {
+// public:
+//     explicit GPURenderPassVulkan(const GPURenderPassDescription&);
+//     ~GPURenderPassVulkan() override;
 
-public:
-    const VkRenderPass& GetRenderPass() const;
+// public:
+//     void Begin(GPUSwapChainVulkan* swapChain, uint32_t index);
+//     void End();
 
-private:
-    void Init();
-    void Create();
+// public:
+//     const VkRenderPass& GetRenderPass() const;
 
-private:
-    void InitColorAttachmentDescription();
-    void InitColorAttachmentReference();
+// private:
+//     void Init();
+//     void Create();
+
+// private:
+//     void InitColorAttachmentDescription();
+//     void InitColorAttachmentReference();
     
-    void InitSubpassDescription();
-    void InitSubpassDependency();
+//     void InitSubpassDescription();
+//     void InitSubpassDependency();
 
-    void InitRenderPass();
-    void CreateRenderPass();
+//     void InitRenderPass();
+//     void CreateRenderPass();
 
-private:
-    VkAttachmentDescription _colorAttachmentDescription;
-    VkAttachmentReference _colorAttachmentReference;
+// private:
+//     VkAttachmentDescription _colorAttachmentDescription;
+//     VkAttachmentReference _colorAttachmentReference;
 
-    VkSubpassDescription _subpassDescription;
-    VkSubpassDependency _subpassDependency;
+//     VkSubpassDescription _subpassDescription;
+//     VkSubpassDependency _subpassDependency;
 
-    VkRenderPass _renderPass;
-    VkRenderPassCreateInfo _renderPassInfo;
-};
-}
+//     VkRenderPass _renderPass;
+//     VkRenderPassCreateInfo _renderPassInfo;
+// };
+// }
 
-#endif
+// #endif

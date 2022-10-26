@@ -76,11 +76,11 @@ VkDevice Quack::GPUDeviceVulkan::GetDevice() const {
     return _device;
 }
 
-const VkQueue& Quack::GPUDeviceVulkan::GetGraphicsQueue() const {
+VkQueue Quack::GPUDeviceVulkan::GetGraphicsQueue() const {
     return _graphicsQueue;
 }
 
-const VkQueue& Quack::GPUDeviceVulkan::GetPresentQueue() const {
+VkQueue Quack::GPUDeviceVulkan::GetPresentQueue() const {
     return _presentQueue;
 }
 

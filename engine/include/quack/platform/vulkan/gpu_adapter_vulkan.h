@@ -7,13 +7,14 @@
 #include <vulkan/vulkan_core.h>
 
 #include "quack/graphics/gpu_adapter.h"
+#include "quack/graphics/gpu_context.h"
 
 namespace Quack {
 struct QueueFamilyIndices {
     std::optional<uint32_t> GraphicsFamily;
     std::optional<uint32_t> PresentFamily;
 
-    bool IsComplete() const {
+    bool IsComplete() {
         return GraphicsFamily.has_value() && PresentFamily.has_value();
     }
 };

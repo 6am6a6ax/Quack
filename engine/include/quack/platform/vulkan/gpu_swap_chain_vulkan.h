@@ -8,6 +8,7 @@
 #include "quack/platform/vulkan/gpu_device_vulkan.h"
 #include "quack/platform/vulkan/gpu_context_vulkan.h"
 
+#include <cstdint>
 #include <vulkan/vulkan.h>
 
 #include <memory>
@@ -32,13 +33,13 @@ class GPUSwapChainVulkan final : public GPUSwapChain {
   GPUSwapChainVulkan &operator=(const GPUSwapChainVulkan &) = delete;
 
   VkFramebuffer getFrameBuffer(int index) { return swapChainFramebuffers[index]; }
-  VkRenderPass getRenderPass() { return renderPass; }
   VkImageView getImageView(int index) { return swapChainImageViews[index]; }
   size_t imageCount() { return swapChainImages.size(); }
   VkFormat getSwapChainImageFormat() { return swapChainImageFormat; }
   VkExtent2D getSwapChainExtent() { return swapChainExtent; }
   uint32_t width() { return swapChainExtent.width; }
   uint32_t height() { return swapChainExtent.height; }
+  uint32_t GetImageIndex() const { return imageIndex; }
 
   float extentAspectRatio() {
     return static_cast<float>(swapChainExtent.width) / static_cast<float>(swapChainExtent.height);
@@ -48,12 +49,10 @@ class GPUSwapChainVulkan final : public GPUSwapChain {
   VkResult acquireNextImage(uint32_t *imageIndex);
   VkResult submitCommandBuffers(const VkCommandBuffer *buffers, uint32_t *imageIndex);
 
-  bool compareSwapFormats(const GPUSwapChainVulkan &swapChain) const {
-    return swapChain.swapChainDepthFormat == swapChainDepthFormat &&
-           swapChain.swapChainImageFormat == swapChainImageFormat;
-  }
-
   void Draw();
+
+  void Begin() override;
+  void End() override;
 
  private:
   void init();
@@ -64,6 +63,8 @@ class GPUSwapChainVulkan final : public GPUSwapChain {
   void createFramebuffers();
   void createSyncObjects();
 
+  uint32_t imageIndex;
+
   // Helper functions
   VkSurfaceFormatKHR chooseSwapSurfaceFormat(
       const std::vector<VkSurfaceFormatKHR> &availableFormats);
@@ -72,18 +73,15 @@ class GPUSwapChainVulkan final : public GPUSwapChain {
   VkExtent2D chooseSwapExtent(const VkSurfaceCapabilitiesKHR &capabilities);
 
   VkFormat swapChainImageFormat;
-  VkFormat swapChainDepthFormat;
   VkExtent2D swapChainExtent;
 
-  std::vector<VkFramebuffer> swapChainFramebuffers;
-  VkRenderPass renderPass;
-
-  std::vector<VkImage> depthImages;
-  std::vector<VkImageView> depthImageViews;
-  std::vector<VkDeviceMemory> depthImageMemorys;
+  // std::vector<VkImage> depthImages;
+  // std::vector<VkImageView> depthImageViews;
+  // std::vector<VkDeviceMemory> depthImageMemorys;
 
   std::vector<VkImage> swapChainImages;
   std::vector<VkImageView> swapChainImageViews;
+  std::vector<VkFramebuffer> swapChainFramebuffers;
 
 //   GPUDeviceVulkan &device;
 //   VkExtent2D windowExtent;
@@ -95,14 +93,38 @@ class GPUSwapChainVulkan final : public GPUSwapChain {
   VkSemaphore imageAvailableSemaphore;
   VkSemaphore renderFinishedSemaphore;
   VkFence inFlightFence;
-  VkFence imagesInFlight;
-  size_t currentFrame = 0;
-
-  VkSurfaceKHR surface = VK_NULL_HANDLE;
 
   GPUDeviceVulkan* device;
   GPUContextVulkan* context;
   GPUAdapterVulkan* adapter;
+
+
+public:
+  void BeginRenderPass();
+  void EndRenderPass();
+
+    const VkRenderPass& GetRenderPass() const;
+
+  private:
+    void InitColorAttachmentDescription();
+    void InitColorAttachmentReference();
+    
+    void InitSubpassDescription();
+    void InitSubpassDependency();
+
+    void InitRenderPass();
+    void InitRenderPassMain();
+    void CreateRenderPass();
+
+private:
+    VkAttachmentDescription _colorAttachmentDescription;
+    VkAttachmentReference _colorAttachmentReference;
+
+    VkSubpassDescription _subpassDescription;
+    VkSubpassDependency _subpassDependency;
+
+    VkRenderPass _renderPass;
+    VkRenderPassCreateInfo _renderPassInfo;
 };}
 
 #endif
