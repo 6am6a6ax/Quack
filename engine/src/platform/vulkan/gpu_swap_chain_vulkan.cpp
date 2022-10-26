@@ -1,4 +1,6 @@
 #include "quack/quack.h"
+#include <cstdint>
+#include <vulkan/vulkan_core.h>
 
 // Quack::GPUSwapChainVulkan::GPUSwapChainVulkan(Quack::GPUDeviceVulkan &deviceRef, VkExtent2D extent)
 //     : device{deviceRef}, windowExtent{extent} {
@@ -7,9 +9,23 @@
 
 Quack::GPUSwapChainVulkan::GPUSwapChainVulkan(const Quack::GPUSwapChainDescription& desc) 
     : Quack::GPUSwapChain(desc)
+    , imageIndex(0)
+    , swapChainImages({})
+    , swapChainImageViews({})
+    , swapChainFramebuffers({})
+    , swapChain(VK_NULL_HANDLE)
+    , imageAvailableSemaphore(VK_NULL_HANDLE)
+    , renderFinishedSemaphore(VK_NULL_HANDLE)
+    , inFlightFence(VK_NULL_HANDLE)
     , device(nullptr)
     , context(nullptr)
-    , adapter(nullptr)     
+    , adapter(nullptr)
+    , _colorAttachmentDescription({})
+    , _colorAttachmentReference({})
+    , _subpassDescription({})
+    , _subpassDependency({})
+    , _renderPass(VK_NULL_HANDLE)
+    , _renderPassInfo({})     
 {
     init();
 }
@@ -29,7 +45,8 @@ void Quack::GPUSwapChainVulkan::init() {
 
   createSwapChain();
   createImageViews();
-  createRenderPass();
+  InitRenderPassMain();
+  CreateRenderPass();
   // createDepthResources();
   createFramebuffers();
   createSyncObjects();
@@ -211,48 +228,6 @@ void Quack::GPUSwapChainVulkan::createImageViews() {
     }
 }
 
-void Quack::GPUSwapChainVulkan::createRenderPass() {
-    VkAttachmentDescription colorAttachment{};
-    colorAttachment.format = swapChainImageFormat;
-    colorAttachment.samples = VK_SAMPLE_COUNT_1_BIT;
-    colorAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
-    colorAttachment.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
-    colorAttachment.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
-    colorAttachment.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
-    colorAttachment.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-    colorAttachment.finalLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
-
-    VkAttachmentReference colorAttachmentRef{};
-    colorAttachmentRef.attachment = 0;
-    colorAttachmentRef.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
-
-    VkSubpassDescription subpass{};
-    subpass.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;
-    subpass.colorAttachmentCount = 1;
-    subpass.pColorAttachments = &colorAttachmentRef;
-
-    VkSubpassDependency dependency{};
-    dependency.srcSubpass = VK_SUBPASS_EXTERNAL;
-    dependency.dstSubpass = 0;
-    dependency.srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
-    dependency.srcAccessMask = 0;
-    dependency.dstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
-    dependency.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
-
-    VkRenderPassCreateInfo renderPassInfo{};
-    renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
-    renderPassInfo.attachmentCount = 1;
-    renderPassInfo.pAttachments = &colorAttachment;
-    renderPassInfo.subpassCount = 1;
-    renderPassInfo.pSubpasses = &subpass;
-    renderPassInfo.dependencyCount = 1;
-    renderPassInfo.pDependencies = &dependency;
-
-    if (vkCreateRenderPass(device->GetDevice(), &renderPassInfo, nullptr, &renderPass) != VK_SUCCESS) {
-        throw std::runtime_error("failed to create render pass!");
-    }
-}
-
 void Quack::GPUSwapChainVulkan::createFramebuffers() {
     swapChainFramebuffers.resize(swapChainImageViews.size());
 
@@ -263,7 +238,7 @@ void Quack::GPUSwapChainVulkan::createFramebuffers() {
 
         VkFramebufferCreateInfo framebufferInfo{};
         framebufferInfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
-        framebufferInfo.renderPass = renderPass;
+        framebufferInfo.renderPass = _renderPass;
         framebufferInfo.attachmentCount = 1;
         framebufferInfo.pAttachments = attachments;
         framebufferInfo.width = swapChainExtent.width;
@@ -276,55 +251,6 @@ void Quack::GPUSwapChainVulkan::createFramebuffers() {
     }
 }
 
-void Quack::GPUSwapChainVulkan::createDepthResources() {
-  VkFormat depthFormat = findDepthFormat();
-  swapChainDepthFormat = depthFormat;
-  VkExtent2D swapChainExtent = getSwapChainExtent();
-
-  depthImages.resize(imageCount());
-  depthImageMemorys.resize(imageCount());
-  depthImageViews.resize(imageCount());
-
-  for (int i = 0; i < depthImages.size(); i++) {
-    VkImageCreateInfo imageInfo{};
-    imageInfo.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
-    imageInfo.imageType = VK_IMAGE_TYPE_2D;
-    imageInfo.extent.width = swapChainExtent.width;
-    imageInfo.extent.height = swapChainExtent.height;
-    imageInfo.extent.depth = 1;
-    imageInfo.mipLevels = 1;
-    imageInfo.arrayLayers = 1;
-    imageInfo.format = depthFormat;
-    imageInfo.tiling = VK_IMAGE_TILING_OPTIMAL;
-    imageInfo.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-    imageInfo.usage = VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT;
-    imageInfo.samples = VK_SAMPLE_COUNT_1_BIT;
-    imageInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
-    imageInfo.flags = 0;
-
-    // device->CreateImageWithInfo(
-    //     imageInfo,
-    //     VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
-    //     depthImages[i],
-    //     depthImageMemorys[i]);
-
-    VkImageViewCreateInfo viewInfo{};
-    viewInfo.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
-    viewInfo.image = depthImages[i];
-    viewInfo.viewType = VK_IMAGE_VIEW_TYPE_2D;
-    viewInfo.format = depthFormat;
-    viewInfo.subresourceRange.aspectMask = VK_IMAGE_ASPECT_DEPTH_BIT;
-    viewInfo.subresourceRange.baseMipLevel = 0;
-    viewInfo.subresourceRange.levelCount = 1;
-    viewInfo.subresourceRange.baseArrayLayer = 0;
-    viewInfo.subresourceRange.layerCount = 1;
-
-    if (vkCreateImageView(device->GetDevice(), &viewInfo, nullptr, &depthImageViews[i]) != VK_SUCCESS) {
-      throw std::runtime_error("failed to create texture image view!");
-    }
-  }
-}
-
 void Quack::GPUSwapChainVulkan::createSyncObjects() {
     VkSemaphoreCreateInfo semaphoreInfo{};
     semaphoreInfo.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
@@ -332,8 +258,6 @@ void Quack::GPUSwapChainVulkan::createSyncObjects() {
     VkFenceCreateInfo fenceInfo{};
     fenceInfo.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
     fenceInfo.flags = VK_FENCE_CREATE_SIGNALED_BIT;
-
-  const auto& device = dynamic_cast<GPUDeviceVulkan*>(_desc.Device);
 
     if (vkCreateSemaphore(device->GetDevice(), &semaphoreInfo, nullptr, &imageAvailableSemaphore) != VK_SUCCESS ||
         vkCreateSemaphore(device->GetDevice(), &semaphoreInfo, nullptr, &renderFinishedSemaphore) != VK_SUCCESS ||
@@ -398,24 +322,19 @@ VkFormat Quack::GPUSwapChainVulkan::findDepthFormat() {
 }
 
 void Quack::GPUSwapChainVulkan::Draw() {
-  const auto& device = dynamic_cast<GPUDeviceVulkan*>(_desc.Device);
 
+}
+
+
+void Quack::GPUSwapChainVulkan::Begin() {
     vkWaitForFences(device->GetDevice(), 1, &inFlightFence, VK_TRUE, UINT64_MAX);
     vkResetFences(device->GetDevice(), 1, &inFlightFence);
 
-    uint32_t imageIndex;
+    imageIndex = 0;
     vkAcquireNextImageKHR(device->GetDevice(), swapChain, UINT64_MAX, imageAvailableSemaphore, VK_NULL_HANDLE, &imageIndex);
+}
 
-    const auto& commandBuffer = dynamic_cast<GPUCommandBufferVulkan*>(_desc.CommandBuffer);
-
-    vkResetCommandBuffer(commandBuffer->GetCommandBuffer(), /*VkCommandBufferResetFlagBits*/ 0);
-
-
-  // record CommandBUffer
-
-  
-
-
+void Quack::GPUSwapChainVulkan::End() {
     VkSubmitInfo submitInfo{};
     submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
 
@@ -425,14 +344,13 @@ void Quack::GPUSwapChainVulkan::Draw() {
     submitInfo.pWaitSemaphores = waitSemaphores;
     submitInfo.pWaitDstStageMask = waitStages;
 
+    const auto& commandBuffer = dynamic_cast<GPUCommandBufferVulkan*>(_desc.CommandBuffer);
     submitInfo.commandBufferCount = 1;
     submitInfo.pCommandBuffers = &commandBuffer->GetCommandBuffer();
 
     VkSemaphore signalSemaphores[] = {renderFinishedSemaphore};
     submitInfo.signalSemaphoreCount = 1;
     submitInfo.pSignalSemaphores = signalSemaphores;
-
-  // const auto& device = dynamic_cast<GPUDeviceVulkan*>(_desc.Device);
 
     if (vkQueueSubmit(device->GetGraphicsQueue(), 1, &submitInfo, inFlightFence) != VK_SUCCESS) {
         throw std::runtime_error("failed to submit draw command buffer!");
@@ -451,4 +369,102 @@ void Quack::GPUSwapChainVulkan::Draw() {
     presentInfo.pImageIndices = &imageIndex;
 
     vkQueuePresentKHR(device->GetPresentQueue(), &presentInfo);
+}
+
+
+
+
+
+
+
+
+void Quack::GPUSwapChainVulkan::InitRenderPassMain() {
+    InitColorAttachmentDescription();
+    InitColorAttachmentReference();
+    InitSubpassDescription();
+    InitSubpassDependency();
+    InitRenderPass();
+}
+
+void Quack::GPUSwapChainVulkan::InitColorAttachmentDescription() {
+    _colorAttachmentDescription.format = getSwapChainImageFormat();
+
+    _colorAttachmentDescription.samples = VK_SAMPLE_COUNT_1_BIT;
+
+    _colorAttachmentDescription.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
+    _colorAttachmentDescription.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
+
+    _colorAttachmentDescription.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+    _colorAttachmentDescription.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
+
+    _colorAttachmentDescription.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+    _colorAttachmentDescription.finalLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
+}
+
+void Quack::GPUSwapChainVulkan::InitColorAttachmentReference() {
+    _colorAttachmentReference.attachment = 0;
+    _colorAttachmentReference.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+}
+
+void Quack::GPUSwapChainVulkan::InitSubpassDescription() {
+    _subpassDescription.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;
+
+    _subpassDescription.colorAttachmentCount = 1;
+    _subpassDescription.pColorAttachments = &_colorAttachmentReference;
+}
+
+void Quack::GPUSwapChainVulkan::InitSubpassDependency() {
+    _subpassDependency.srcSubpass = VK_SUBPASS_EXTERNAL;
+    _subpassDependency.dstSubpass = 0;
+
+    _subpassDependency.srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+    _subpassDependency.srcAccessMask = 0;
+
+    _subpassDependency.dstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+    _subpassDependency.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
+}
+
+void Quack::GPUSwapChainVulkan::InitRenderPass() {
+    _renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
+
+    _renderPassInfo.attachmentCount = 1;
+    _renderPassInfo.pAttachments = &_colorAttachmentDescription;
+
+    _renderPassInfo.subpassCount = 1;
+    _renderPassInfo.pSubpasses = &_subpassDescription;
+    _renderPassInfo.dependencyCount = 1;
+    _renderPassInfo.pDependencies = &_subpassDependency;
+}
+
+void Quack::GPUSwapChainVulkan::CreateRenderPass() {
+    if (vkCreateRenderPass(device->GetDevice(), &_renderPassInfo, nullptr, &_renderPass) != VK_SUCCESS) {
+        throw std::runtime_error("Failed to create render pass!");
+    }
+}
+
+const VkRenderPass& Quack::GPUSwapChainVulkan::GetRenderPass() const {
+    return _renderPass;
+}
+
+void Quack::GPUSwapChainVulkan::BeginRenderPass() {
+
+    VkRenderPassBeginInfo info{};
+    info.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
+    info.renderPass = _renderPass;
+
+    info.framebuffer = getFrameBuffer(GetImageIndex());
+    info.renderArea.offset = {0, 0};
+    info.renderArea.extent = getSwapChainExtent();
+
+    VkClearValue clearColor = {{{0.0f, 0.0f, 0.0f, 1.0f}}};
+    info.clearValueCount = 1;
+    info.pClearValues = &clearColor;
+
+    const auto& commandBuffer = dynamic_cast<GPUCommandBufferVulkan*>(_desc.CommandBuffer);
+    vkCmdBeginRenderPass(commandBuffer->GetCommandBuffer(), &info, VK_SUBPASS_CONTENTS_INLINE);
+}
+
+void Quack::GPUSwapChainVulkan::EndRenderPass() {
+    const auto& commandBuffer = dynamic_cast<GPUCommandBufferVulkan*>(_desc.CommandBuffer);
+    vkCmdEndRenderPass(commandBuffer->GetCommandBuffer());
 }

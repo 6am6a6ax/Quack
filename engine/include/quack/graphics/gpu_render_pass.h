@@ -22,8 +22,6 @@ struct GPURenderPassDescription {
     GPUContext* Context;
     GPUDevice* Device;
 
-    GPUSwapChain* SwapChain;
-
     GPUCommandBuffer* CommandBuffer;
 };
 

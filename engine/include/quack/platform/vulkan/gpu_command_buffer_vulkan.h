@@ -14,6 +14,8 @@ public:
     void Begin();
     void End();
 
+    void Reset();
+
 public:
     const VkCommandPool& GetCommandPool() const;
     const VkCommandBuffer& GetCommandBuffer() const;

@@ -9,6 +9,7 @@
 #include "quack/graphics/gpu_context.h"
 #include "quack/graphics/gpu_device.h"
 #include "quack/graphics/gpu_framebuffer.h"
+#include "quack/graphics/gpu_render_pass.h"
 #include "quack/render/renderer.h"
 #include "quack/render/camera.h"
 
@@ -19,6 +20,7 @@ struct ApplicationDescription {
     Quack::Window * Window;
     Quack::GPUDevice * GPUDevice;
     Quack::GPUContext * GPUContext;
+    Quack::GPUSwapChain* SwapChain;
     Quack::LayerStack LayerStack;
     Quack::AssetLibrary AssetLibrary;
     Quack::Scene * Scene;
@@ -51,6 +53,8 @@ public:
 public:
     const ApplicationDescription & GetDescription();
     void SetDescription(const ApplicationDescription &);
+
+    GPUSwapChain* GetSwapChain() const;
 
     Window * GetWindow();
     void SetWindow(Window *);

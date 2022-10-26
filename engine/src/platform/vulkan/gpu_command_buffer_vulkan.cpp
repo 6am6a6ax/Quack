@@ -31,8 +31,10 @@ void Quack::GPUCommandBufferVulkan::InitCommandPool() {
     _commandPoolCreateInfo.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
     _commandPoolCreateInfo.flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
 
+    const auto& adapter = dynamic_cast<GPUAdapterVulkan*>(_desc.Adapter);
+    const auto& device = dynamic_cast<GPUDeviceVulkan*>(_desc.Device);
     const auto& context = dynamic_cast<GPUContextVulkan*>(_desc.Context);
-    _commandPoolCreateInfo.queueFamilyIndex = context->GetQueueFamilyIndices().graphicsFamily.value();
+    _commandPoolCreateInfo.queueFamilyIndex = adapter->FindQueueFamiliesIndices(adapter->GetAdapter(), context->GetSurface()).GraphicsFamily.value();
 }
 
 void Quack::GPUCommandBufferVulkan::CreateCommandPool() {
@@ -77,4 +79,8 @@ void Quack::GPUCommandBufferVulkan::End() {
     if (vkEndCommandBuffer(_commandBuffer) != VK_SUCCESS) {
         throw std::runtime_error("Failed to record command buffer!");
     }
+}
+
+void Quack::GPUCommandBufferVulkan::Reset() {
+    vkResetCommandBuffer(_commandBuffer, 0);
 }

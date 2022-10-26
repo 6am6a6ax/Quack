@@ -10,6 +10,7 @@ class GPUDevice;
 struct GPUCommandBufferDescription {
     GPUContext* Context;
     GPUDevice* Device;
+    GPUAdapter* Adapter;
 };
 
 class GPUCommandBuffer {

@@ -101,8 +101,9 @@ void Quack::GPUPipelineVulkan::InitViewport() {
     _viewport.y = 0.0f;
 
     const auto& context = dynamic_cast<GPUContextVulkan*>(_desc.Context);
-    _viewport.width = static_cast<float>(context->GetExtent2D().width);
-    _viewport.height = static_cast<float>(context->GetExtent2D().height);
+    const auto& swapChain = dynamic_cast<GPUSwapChainVulkan*>(_desc.SwapChain);
+    _viewport.width = static_cast<float>(swapChain->getSwapChainExtent().width);
+    _viewport.height = static_cast<float>(swapChain->getSwapChainExtent().height);
 
     _viewport.minDepth = 0.0f;
     _viewport.maxDepth = 1.0f;
@@ -116,7 +117,8 @@ void Quack::GPUPipelineVulkan::InitViewport() {
 
 void Quack::GPUPipelineVulkan::InitScissor() {
     _scissor.offset = {0, 0};
-    _scissor.extent = dynamic_cast<GPUContextVulkan*>(_desc.Context)->GetExtent2D();
+    const auto& swapChain = dynamic_cast<GPUSwapChainVulkan*>(_desc.SwapChain);
+    _scissor.extent = swapChain->getSwapChainExtent();
 }
 
 void Quack::GPUPipelineVulkan::InitRasterizer() {
@@ -195,7 +197,7 @@ void Quack::GPUPipelineVulkan::InitPipeline() {
     _pipelineInfo.pColorBlendState = &_colorBlendStateInfo;
     _pipelineInfo.pDynamicState = &_dynamicStateInfo;
     _pipelineInfo.layout = _pipelineLayout;
-    _pipelineInfo.renderPass = dynamic_cast<GPURenderPassVulkan*>(_desc.RenderPass)->GetRenderPass();
+    _pipelineInfo.renderPass = dynamic_cast<GPUSwapChainVulkan*>(_desc.SwapChain)->GetRenderPass();
     _pipelineInfo.subpass = 0;
     _pipelineInfo.basePipelineHandle = VK_NULL_HANDLE;
 }

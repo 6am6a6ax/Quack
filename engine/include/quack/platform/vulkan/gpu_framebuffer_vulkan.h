@@ -15,23 +15,25 @@
 //     ~GPUFramebufferVulkan() override;
 
 // public:
-//     void Resize(float, float) override;
-//     void Invalidate() override;
+//     void Resize(float, float) override {}
+//     void Invalidate() override {}
 
-//     void Bind() const override;
-//     void Unbind() const override;
+//     void Bind() const override {}
+//     void Unbind() const override {}
 
 // public:
-//     SwapChain GetSwapChain() const { return _swapChain; }
+//     const std::vector<VkImage>& GetImages() const;
+//     const std::vector<VkImageView>& GetViews() const;
+//     const std::vector<VkFramebuffer>& GetFramebuffers() const;
 
 // private:
-//     void InitAndCreate();
-
-//     VkFramebufferCreateInfo InitSingleFramebuffer(VkRenderPass, VkImageView, VkExtent2D);
-//     void CreateSingleFramebuffer(VkDevice, VkFramebufferCreateInfo, VkFramebuffer&);
+//     void CreateImageViews();
+//     void CreateFramebuffers();
 
 // private:
-//     SwapChain _swapChain;
+//     std::vector<VkImage> _swapChainImages;
+//     std::vector<VkImageView> _swapChainImageViews;
+//     std::vector<VkFramebuffer> _swapChainFramebuffers;
 // };
 // }
 

@@ -4,6 +4,7 @@
 #include "quack/graphics/gpu_adapter.h"
 #include "quack/graphics/gpu_context.h"
 #include "quack/graphics/gpu_device.h"
+#include "quack/graphics/gpu_render_pass.h"
 #include <vulkan/vulkan_core.h>
 
 namespace Quack {
@@ -16,12 +17,17 @@ struct GPUSwapChainDescription {
     GPUContext* Context;
     GPUAdapter* Adapter;
     GPUDevice* Device;
+    // GPUSwapChain* SwapChain;
 };
 
 class GPUSwapChain {
 public:
     GPUSwapChain(const GPUSwapChainDescription& desc) : _desc(desc) {}
     virtual ~GPUSwapChain() = default;
+
+public:
+    virtual void Begin() = 0;
+    virtual void End() = 0;
 
 public:
     const GPUSwapChainDescription& GetDescription() const { return _desc; }

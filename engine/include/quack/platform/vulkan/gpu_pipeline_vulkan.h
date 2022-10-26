@@ -12,7 +12,7 @@ public:
     ~GPUPipelineVulkan() override;
 
 public:
-    void Bind() const override;
+    void Bind() const override { std::cout << "BInd pipeline\n"; }
     void Unbind() const override {}
 
     void BindVk();

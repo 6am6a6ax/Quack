@@ -17,7 +17,6 @@ void Quack::GPUAdapterVulkan::PickSuitableAdapter(const VkInstance& instance, co
     uint32_t count = 0;
     vkEnumeratePhysicalDevices(instance, &count, nullptr);
     if (count == 0) {
-
         throw std::runtime_error("Failed to find GPUs with Vulkan support!");
     }
 
