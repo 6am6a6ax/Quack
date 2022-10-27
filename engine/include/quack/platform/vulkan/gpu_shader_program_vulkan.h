@@ -16,7 +16,7 @@ public:
     void Unbind() const override {}
 
 public:
-    const VkShaderModule& GetModule() const { return _module; }
+    VkShaderModule GetModuleHandle() const { return _module; }
 
 private:
     void Init();

@@ -1,19 +1,14 @@
 #include "quack/quack.h"
-#include <stdexcept>
-#include <vector>
-#include <vulkan/vulkan_core.h>
 
 Quack::GPUAdapterVulkan::GPUAdapterVulkan(const GPUAdapterDescription& desc) 
     : Quack::GPUAdapter(desc)
-    , _adapter(nullptr)
+    , _adapter(VK_NULL_HANDLE)
 {
-    const auto& context = dynamic_cast<GPUContextVulkan*>(GetContext());
-    PickSuitableAdapter(context->GetInstance(), context->GetSurface());;
+    const auto& context = std::dynamic_pointer_cast<GPUContextVulkan>(GetContext());
+    PickSuitableAdapter(context->GetInstanceHandle(), context->GetSurfaceHandle());;
 }
 
-Quack::GPUAdapterVulkan::~GPUAdapterVulkan() {}
-
-void Quack::GPUAdapterVulkan::PickSuitableAdapter(const VkInstance& instance, const VkSurfaceKHR& surface) {
+void Quack::GPUAdapterVulkan::PickSuitableAdapter(VkInstance instance, VkSurfaceKHR surface) {
     uint32_t count = 0;
     vkEnumeratePhysicalDevices(instance, &count, nullptr);
     if (count == 0) {
@@ -35,7 +30,7 @@ void Quack::GPUAdapterVulkan::PickSuitableAdapter(const VkInstance& instance, co
     }
 }
 
-bool Quack::GPUAdapterVulkan::IsAdapterSuitable(const VkPhysicalDevice& adapter, const VkSurfaceKHR& surface) const {
+bool Quack::GPUAdapterVulkan::IsAdapterSuitable(VkPhysicalDevice adapter, VkSurfaceKHR surface) const {
     QueueFamilyIndices indices = FindQueueFamiliesIndices(adapter, surface);
     bool isExtensionsSupported = IsAdapterExtensionsSupported(adapter);
 
@@ -48,8 +43,8 @@ bool Quack::GPUAdapterVulkan::IsAdapterSuitable(const VkPhysicalDevice& adapter,
     return indices.IsComplete() && isExtensionsSupported && isSwapChainAdequate;
 }
 
-Quack::QueueFamilyIndices Quack::GPUAdapterVulkan::FindQueueFamiliesIndices(const VkPhysicalDevice& adapter, 
-    const VkSurfaceKHR& surface)
+Quack::QueueFamilyIndices Quack::GPUAdapterVulkan::FindQueueFamiliesIndices(VkPhysicalDevice adapter, 
+    VkSurfaceKHR surface)
 {
     QueueFamilyIndices indices;
 
@@ -82,16 +77,15 @@ Quack::QueueFamilyIndices Quack::GPUAdapterVulkan::FindQueueFamiliesIndices(cons
     return indices;
 }
 
-bool Quack::GPUAdapterVulkan::IsAdapterExtensionsSupported(const VkPhysicalDevice& adapter) const {
+bool Quack::GPUAdapterVulkan::IsAdapterExtensionsSupported(VkPhysicalDevice adapter) const {
     uint32_t extensionCount;
     vkEnumerateDeviceExtensionProperties(adapter, nullptr, &extensionCount, nullptr);
 
     std::vector<VkExtensionProperties> availableExtensions(extensionCount);
     vkEnumerateDeviceExtensionProperties(adapter, nullptr, &extensionCount, availableExtensions.data());
 
-    const auto& extensions = dynamic_cast<GPUContextVulkan*>(GetContext())->GetExtensions();
+    const auto& extensions = std::dynamic_pointer_cast<GPUContextVulkan>(GetContext())->GetExtensions();
     std::set<std::string> requiredExtensions(extensions.begin(), extensions.end());
-
     for (const auto& extension : availableExtensions) {
         requiredExtensions.erase(extension.extensionName);
     }
@@ -99,8 +93,8 @@ bool Quack::GPUAdapterVulkan::IsAdapterExtensionsSupported(const VkPhysicalDevic
     return requiredExtensions.empty();
 }
 
-Quack::SwapChainSupportDetails Quack::GPUAdapterVulkan::FindQuerySwapChainSupport(const VkPhysicalDevice& adapter,
-    const VkSurfaceKHR& surface)
+Quack::SwapChainSupportDetails Quack::GPUAdapterVulkan::FindQuerySwapChainSupport(VkPhysicalDevice adapter,
+    VkSurfaceKHR surface)
 {
     SwapChainSupportDetails details;
     vkGetPhysicalDeviceSurfaceCapabilitiesKHR(adapter, surface, &details.SurfaceCapabilities);
@@ -142,6 +136,6 @@ const VkFormat& Quack::GPUAdapterVulkan::FindSupportedFormat(const std::vector<V
     throw std::runtime_error("Failed to find supported format!");
 }
 
-const VkPhysicalDevice& Quack::GPUAdapterVulkan::GetAdapter() const {
+VkPhysicalDevice Quack::GPUAdapterVulkan::GetAdapterHandle() const {
     return _adapter;
 }

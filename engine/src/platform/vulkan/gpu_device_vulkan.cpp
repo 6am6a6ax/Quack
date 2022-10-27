@@ -1,17 +1,15 @@
-#include "quack/core/window.h"
 #include "quack/quack.h"
-#include <vulkan/vulkan_core.h>
 
 Quack::GPUDeviceVulkan::GPUDeviceVulkan(const GPUDeviceDescription& desc) 
     : Quack::GPUDevice(desc) 
-    // , _device(nullptr)
-    // , _graphicsQueue(nullptr)
-    // , _presentQueue(nullptr)
+    , _device(VK_NULL_HANDLE)
+    , _graphicsQueue(VK_NULL_HANDLE)
+    , _presentQueue(VK_NULL_HANDLE)
 {
-    const auto& adapter = dynamic_cast<GPUAdapterVulkan*>(GetAdapter())->GetAdapter();
-    const auto& context = dynamic_cast<GPUContextVulkan*>(GetContext());
+    const auto& adapter = std::dynamic_pointer_cast<GPUAdapterVulkan>(GetAdapter());
+    const auto& context = std::dynamic_pointer_cast<GPUContextVulkan>(GetContext());
 
-    QueueFamilyIndices indices = GPUAdapterVulkan::FindQueueFamiliesIndices(adapter, context->GetSurface());
+    QueueFamilyIndices indices = GPUAdapterVulkan::FindQueueFamiliesIndices(adapter->GetAdapterHandle(), context->GetSurfaceHandle());
 
     std::vector<VkDeviceQueueCreateInfo> queueCreateInfos;
     std::set<uint32_t> uniqueQueueFamilies = {indices.GraphicsFamily.value(), indices.PresentFamily.value()};
@@ -46,7 +44,7 @@ Quack::GPUDeviceVulkan::GPUDeviceVulkan(const GPUDeviceDescription& desc)
         createInfo.enabledLayerCount = 0;
     }
 
-    if (vkCreateDevice(adapter, &createInfo, nullptr, &_device) != VK_SUCCESS) {
+    if (vkCreateDevice(adapter->GetAdapterHandle(), &createInfo, nullptr, &_device) != VK_SUCCESS) {
         throw std::runtime_error("failed to create logical device!");
     }
 
@@ -54,11 +52,15 @@ Quack::GPUDeviceVulkan::GPUDeviceVulkan(const GPUDeviceDescription& desc)
     vkGetDeviceQueue(_device, indices.PresentFamily.value(), 0, &_presentQueue);
 }
 
-std::shared_ptr<Quack::GPUFramebuffer> Quack::GPUDeviceVulkan::CreateFramebuffer(
-    const GPUFramebufferDescription& desc) const 
-{
-    // return std::make_shared<GPUFramebufferVulkan>(desc);
+Quack::GPUDeviceVulkan::~GPUDeviceVulkan() {
+    vkDestroyDevice(_device, nullptr);
 }
+
+// std::shared_ptr<Quack::GPUFramebuffer> Quack::GPUDeviceVulkan::CreateFramebuffer(
+//     const GPUFramebufferDescription& desc) const 
+// {
+//     // return std::make_shared<GPUFramebufferVulkan>(desc);
+// }
 
 std::shared_ptr<Quack::GPUSwapChain> Quack::GPUDeviceVulkan::CreateSwapChain(
     const GPUSwapChainDescription& desc) const 
@@ -72,7 +74,7 @@ std::shared_ptr<Quack::GPUShaderProgram> Quack::GPUDeviceVulkan::CreateShaderPro
     // return std::make_shared<GPUShaderProgramVulkan>(desc);
 }
 
-VkDevice Quack::GPUDeviceVulkan::GetDevice() const {
+VkDevice Quack::GPUDeviceVulkan::GetDeviceHandle() const {
     return _device;
 }
 

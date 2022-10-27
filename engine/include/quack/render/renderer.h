@@ -27,7 +27,7 @@ public:
     static void RenderCube();
     static void RenderModel(const std::shared_ptr<Model>& model, const DirectionalLight& light, const Mat4f& transform);
 
-    static void RenderVk(GPUCommandBufferVulkan* commandBuffer, GPURenderPassVulkan* renderPass, GPUPipelineVulkan* pipeline);
+    // static void RenderVk(GPUCommandBufferVulkan* commandBuffer, GPURenderPassVulkan* renderPass, GPUPipelineVulkan* pipeline);
 };
 }
 

@@ -35,7 +35,7 @@ public:
     float GetTime() const override;
 
 public:
-    const GLFWwindow * const GetWindow() const;
+    GLFWwindow * const GetWindow();
     void SetWindow(GLFWwindow &);
 
     void* GetHandle() const override;

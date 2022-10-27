@@ -5,19 +5,19 @@
 
 namespace Quack {
 struct GPUAdapterDescription {
-    GPUContext* Context;
+    std::shared_ptr<GPUContext> Context;
 };
 
 class GPUAdapter {
 public:
-    GPUAdapter(const GPUAdapterDescription& desc) : _desc(desc) {}
+    GPUAdapter(const GPUAdapterDescription& desc);
     virtual ~GPUAdapter() = default;
 
 public:
-    const GPUAdapterDescription& GetDescription() const { return _desc; }
+    const GPUAdapterDescription& GetDescription() const;
 
 public:
-    GPUContext* GetContext() const { return _desc.Context; }
+    const std::shared_ptr<GPUContext>& GetContext() const;
 
 private:
     GPUAdapterDescription _desc;

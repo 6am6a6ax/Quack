@@ -23,8 +23,8 @@ class GPUShaderProgram;
 class GPUShaderProgramDescription;
 
 struct GPUDeviceDescription {
-    GPUContext* Context;
-    GPUAdapter* Adapter;
+    std::shared_ptr<GPUContext> Context;
+    std::shared_ptr<GPUAdapter> Adapter;
 };
 
 class GPUDevice {
@@ -42,7 +42,7 @@ public:
     };
 
 public:
-    GPUDevice(const GPUDeviceDescription& desc) : _desc(desc) {}
+    GPUDevice(const GPUDeviceDescription& desc);
     virtual ~GPUDevice() = default;
 
 public:
@@ -75,8 +75,8 @@ public:
     // virtual const GPUAdapter * GetAdapter() const = 0;
 
 public:
-    GPUAdapter* GetAdapter() { return _desc.Adapter; }
-    GPUContext* GetContext() { return _desc.Context; }
+    const std::shared_ptr<GPUAdapter>& GetAdapter() const;
+    const std::shared_ptr<GPUContext>& GetContext() const;
 
 private:
     GPUDeviceDescription _desc;

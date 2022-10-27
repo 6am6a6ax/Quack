@@ -1,19 +1,20 @@
-#ifndef _GPU_SHADER_PROGRAM_
-#define _GPU_SHADER_PROGRAM_
+#ifndef QUACK_GPU_SHADER_PROGRAM_H
+#define QUACK_GPU_SHADER_PROGRAM_H
 
 #include <string>
 
-#include "gpu_shader_program_description.h"
 #include "gpu_resource.h"
+#include "gpu_shader_program_description.h"
 
 namespace Quack {
 class GPUShaderProgram : public GPUResource  {
 public:
-    GPUShaderProgram(const GPUShaderProgramDescription & desc) : _desc(desc) {}
+    GPUShaderProgram(const GPUShaderProgramDescription & desc);
     virtual ~GPUShaderProgram() = default;
 
 public:
-    const GPUShaderProgramDescription & GetDescription() const { return _desc;}
+    const GPUShaderProgramDescription & GetDescription() const;
+    const std::shared_ptr<GPUDevice>& GetDevice() const;
 
 protected:
     GPUShaderProgramDescription _desc;

@@ -10,8 +10,8 @@ Quack::Application & Quack::Application::GetInstance() {
 void Quack::Application::Init(const Quack::ApplicationDescription & desc) {
     SetDescription(desc);
     BindBaseCallbackAndLayerStack();
-    _desc.AssetLibrary = std::make_shared<AssetLibrary>();
     _desc.GPUContext->Init();
+    _desc.AssetLibrary = AssetLibrary();
 }
 
 void Quack::Application::Run() {
@@ -68,11 +68,11 @@ void Quack::Application::SetDescription(const Quack::ApplicationDescription & de
     _desc = desc;
 }
 
-std::shared_ptr<Quack::Window> Quack::Application::GetWindow() {
+Quack::Window * Quack::Application::GetWindow() {
     return _desc.Window;
 }
 
-void Quack::Application::SetWindow(std::shared_ptr<Quack::Window> window) {
+void Quack::Application::SetWindow(Quack::Window * window) {
     _desc.Window = window;
 }
 

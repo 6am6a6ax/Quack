@@ -189,16 +189,16 @@ void Quack::Renderer::RenderModel(const std::shared_ptr<Quack::Model>& model, co
 
 }
 
-void Quack::Renderer::RenderVk(Quack::GPUCommandBufferVulkan* commandBuffer, Quack::GPURenderPassVulkan* renderPass,
-    Quack::GPUPipelineVulkan* pipeline)
-{
-    commandBuffer->Reset();
-    commandBuffer->Begin();
-    // renderPass->Begin();
+// void Quack::Renderer::RenderVk(Quack::GPUCommandBufferVulkan* commandBuffer, Quack::GPURenderPassVulkan* renderPass,
+//     Quack::GPUPipelineVulkan* pipeline)
+// {
+//     commandBuffer->Reset();
+//     commandBuffer->Begin();
+//     // renderPass->Begin();
 
-    pipeline->BindVk();
-    // vkCmdDraw();
+//     pipeline->BindVk();
+//     // vkCmdDraw();
     
-    // renderPass->End();
-    commandBuffer->End();
-}
+//     // renderPass->End();
+//     commandBuffer->End();
+// }

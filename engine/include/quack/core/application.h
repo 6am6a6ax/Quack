@@ -17,7 +17,9 @@
 
 namespace Quack {
 struct ApplicationDescription {
-    Quack::Window * Window;
+    // Quack::Window * Window;
+    std::shared_ptr<Quack::Window> Window;
+
     Quack::GPUDevice * GPUDevice;
     Quack::GPUContext * GPUContext;
     Quack::GPUSwapChain* SwapChain;

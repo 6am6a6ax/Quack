@@ -4,6 +4,7 @@
 #include <string>
 
 #include "quack/graphics/gpu_device.h"
+#include "quack/graphics/gpu_shader_program.h"
 
 namespace Quack {
 enum class ShaderProgramType {
@@ -15,7 +16,7 @@ struct GPUShaderProgramDescription {
     std::string Source;
     ShaderProgramType Type;
 
-    GPUDevice* Device;
+    std::shared_ptr<GPUDevice> Device;
 };
 }
 
