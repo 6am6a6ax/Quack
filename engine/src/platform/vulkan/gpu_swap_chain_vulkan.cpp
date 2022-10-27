@@ -1,161 +1,66 @@
 #include "quack/quack.h"
-#include <cstdint>
-#include <vulkan/vulkan_core.h>
 
-// Quack::GPUSwapChainVulkan::GPUSwapChainVulkan(Quack::GPUDeviceVulkan &deviceRef, VkExtent2D extent)
-//     : device{deviceRef}, windowExtent{extent} {
-//   init();
-// }
-
-Quack::GPUSwapChainVulkan::GPUSwapChainVulkan(const Quack::GPUSwapChainDescription& desc) 
+Quack::GPUSwapChainVulkan::GPUSwapChainVulkan(const Quack::GPUSwapChainDescription& desc)
     : Quack::GPUSwapChain(desc)
-    , imageIndex(0)
-    , swapChainImages({})
-    , swapChainImageViews({})
-    , swapChainFramebuffers({})
-    , swapChain(VK_NULL_HANDLE)
-    , imageAvailableSemaphore(VK_NULL_HANDLE)
-    , renderFinishedSemaphore(VK_NULL_HANDLE)
-    , inFlightFence(VK_NULL_HANDLE)
-    , device(nullptr)
-    , context(nullptr)
-    , adapter(nullptr)
-    , _colorAttachmentDescription({})
-    , _colorAttachmentReference({})
-    , _subpassDescription({})
-    , _subpassDependency({})
+    , _swapChain(VK_NULL_HANDLE)
+    , _swapChainImageFormat(VK_FORMAT_UNDEFINED)
+    , _swapChainExtent({})
+    , _swapChainImages({})
+    , _swapChainImageViews({})
     , _renderPass(VK_NULL_HANDLE)
-    , _renderPassInfo({})     
+    , _pipelineLayout(VK_NULL_HANDLE)
+    , _graphicsPipeline(VK_NULL_HANDLE)
+    , _commandPool(VK_NULL_HANDLE)
+    , _commandBuffer(VK_NULL_HANDLE)
+    , _imageAvailableSemaphore(VK_NULL_HANDLE)
+    , _renderFinishedSemaphore(VK_NULL_HANDLE)
+    , _inFlightFence(VK_NULL_HANDLE)
 {
-    init();
-}
-
-// GPUSwapChainVulkan::GPUSwapChainVulkan(
-//     LveDevice &deviceRef, VkExtent2D extent, std::shared_ptr<GPUSwapChainVulkan> previous)
-//     : device{deviceRef}, windowExtent{extent}, oldSwapChain{previous} {
-//   init();
-//   oldSwapChain = nullptr;
-// }
-
-void Quack::GPUSwapChainVulkan::init() {
-  device = reinterpret_cast<GPUDeviceVulkan*>(_desc.Device);
-  context = reinterpret_cast<GPUContextVulkan*>(_desc.Context);
-  adapter = reinterpret_cast<GPUAdapterVulkan*>(_desc.Adapter);
-
-
-  createSwapChain();
-  createImageViews();
-  InitRenderPassMain();
-  CreateRenderPass();
-  // createDepthResources();
-  createFramebuffers();
-  createSyncObjects();
+    CreateSwapChain();
+    CreateImageViews();
+    CreateRenderPass();
+    CreateGraphicsPipeline();
+    CreateFramebuffers();
+    CreateCommandPool();
+    CreateCommandBuffer();
+    CreateSyncObjects();
 }
 
 Quack::GPUSwapChainVulkan::~GPUSwapChainVulkan() {
-  // for (auto imageView : swapChainImageViews) {
-  //   vkDestroyImageView(device->GetDevice(), imageView, nullptr);
-  // }
-  // swapChainImageViews.clear();
+    const auto& device = std::dynamic_pointer_cast<GPUDeviceVulkan>(GetDevice());
 
-  // if (swapChain != nullptr) {
-  //   vkDestroySwapchainKHR(device->GetDevice(), swapChain, nullptr);
-  //   swapChain = nullptr;
-  // }
+    vkDestroySemaphore(device->GetDeviceHandle(), _renderFinishedSemaphore, nullptr);
+    vkDestroySemaphore(device->GetDeviceHandle(), _imageAvailableSemaphore, nullptr);
+    vkDestroyFence(device->GetDeviceHandle(), _inFlightFence, nullptr);
 
-  // for (int i = 0; i < depthImages.size(); i++) {
-  //   vkDestroyImageView(device->GetDevice(), depthImageViews[i], nullptr);
-  //   vkDestroyImage(device->GetDevice(), depthImages[i], nullptr);
-  //   vkFreeMemory(device->GetDevice(), depthImageMemorys[i], nullptr);
-  // }
+    vkDestroyCommandPool(device->GetDeviceHandle(), _commandPool, nullptr);
 
-  // for (auto framebuffer : swapChainFramebuffers) {
-  //   vkDestroyFramebuffer(device->GetDevice(), framebuffer, nullptr);
-  // }
+    for (auto framebuffer : _swapChainFramebuffers) {
+        vkDestroyFramebuffer(device->GetDeviceHandle(), framebuffer, nullptr);
+    }
 
-  // vkDestroyRenderPass(device->GetDevice(), renderPass, nullptr);
+    vkDestroyPipeline(device->GetDeviceHandle(), _graphicsPipeline, nullptr);
+    vkDestroyPipelineLayout(device->GetDeviceHandle(), _pipelineLayout, nullptr);
 
-  // // cleanup synchronization objects
-  // for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {
-  //   vkDestroySemaphore(device->GetDevice(), renderFinishedSemaphores[i], nullptr);
-  //   vkDestroySemaphore(device->GetDevice(), imageAvailableSemaphores[i], nullptr);
-  //   vkDestroyFence(device->GetDevice(), inFlightFences[i], nullptr);
-  // }
+    vkDestroyRenderPass(device->GetDeviceHandle(), _renderPass, nullptr);
+
+    for (auto imageView : _swapChainImageViews) {
+        vkDestroyImageView(device->GetDeviceHandle(), imageView, nullptr);
+    }
+
+    vkDestroySwapchainKHR(device->GetDeviceHandle(), _swapChain, nullptr);
 }
 
-// VkResult Quack::GPUSwapChainVulkan::acquireNextImage(uint32_t *imageIndex) {
-//   vkWaitForFences(
-//       device->GetDevice(),
-//       1,
-//       &inFlightFences[currentFrame],
-//       VK_TRUE,
-//       std::numeric_limits<uint64_t>::max());
+void Quack::GPUSwapChainVulkan::CreateSwapChain() {
+    const auto& adapter = std::dynamic_pointer_cast<GPUAdapterVulkan>(GetAdapter());
+    const auto& context = std::dynamic_pointer_cast<GPUContextVulkan>(GetContext());
 
-//   VkResult result = vkAcquireNextImageKHR(
-//       device->GetDevice(),
-//       swapChain,
-//       std::numeric_limits<uint64_t>::max(),
-//       imageAvailableSemaphores[currentFrame],  // must be a not signaled semaphore
-//       VK_NULL_HANDLE,
-//       imageIndex);
+    SwapChainSupportDetails swapChainSupport = adapter->FindQuerySwapChainSupport(adapter->GetAdapterHandle(),
+        context->GetSurfaceHandle());
 
-//   return result;
-// }
-
-// VkResult Quack::GPUSwapChainVulkan::submitCommandBuffers(const VkCommandBuffer *buffers, uint32_t *imageIndex) {
-//   if (imagesInFlight[*imageIndex] != VK_NULL_HANDLE) {
-//     vkWaitForFences(device->GetDevice(), 1, &imagesInFlight[*imageIndex], VK_TRUE, UINT64_MAX);
-//   }
-//   imagesInFlight[*imageIndex] = inFlightFences[currentFrame];
-
-//   VkSubmitInfo submitInfo = {};
-//   submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
-
-//   VkSemaphore waitSemaphores[] = {imageAvailableSemaphores[currentFrame]};
-//   VkPipelineStageFlags waitStages[] = {VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT};
-//   submitInfo.waitSemaphoreCount = 1;
-//   submitInfo.pWaitSemaphores = waitSemaphores;
-//   submitInfo.pWaitDstStageMask = waitStages;
-
-//   submitInfo.commandBufferCount = 1;
-//   submitInfo.pCommandBuffers = buffers;
-
-//   VkSemaphore signalSemaphores[] = {renderFinishedSemaphores[currentFrame]};
-//   submitInfo.signalSemaphoreCount = 1;
-//   submitInfo.pSignalSemaphores = signalSemaphores;
-
-//   vkResetFences(device->GetDevice(), 1, &inFlightFences[currentFrame]);
-//   if (vkQueueSubmit(device->GetGraphicsQueue(), 1, &submitInfo, inFlightFences[currentFrame]) !=
-//       VK_SUCCESS) {
-//     throw std::runtime_error("failed to submit draw command buffer!");
-//   }
-
-//   VkPresentInfoKHR presentInfo = {};
-//   presentInfo.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
-
-//   presentInfo.waitSemaphoreCount = 1;
-//   presentInfo.pWaitSemaphores = signalSemaphores;
-
-//   VkSwapchainKHR swapChains[] = {swapChain};
-//   presentInfo.swapchainCount = 1;
-//   presentInfo.pSwapchains = swapChains;
-
-//   presentInfo.pImageIndices = imageIndex;
-
-//   auto result = vkQueuePresentKHR(device->GetPresentQueue(), &presentInfo);
-
-//   currentFrame = (currentFrame + 1) % MAX_FRAMES_IN_FLIGHT;
-
-//   return result;
-// }
-
-void Quack::GPUSwapChainVulkan::createSwapChain() {
-    SwapChainSupportDetails swapChainSupport = 
-      GPUAdapterVulkan::FindQuerySwapChainSupport(adapter->GetAdapter(), context->GetSurface());
-
-    VkSurfaceFormatKHR surfaceFormat = chooseSwapSurfaceFormat(swapChainSupport.SurfaceForamts);
-    VkPresentModeKHR presentMode = chooseSwapPresentMode(swapChainSupport.PresentModes);
-    VkExtent2D extent = chooseSwapExtent(swapChainSupport.SurfaceCapabilities);
+    VkSurfaceFormatKHR surfaceFormat = ChooseSwapSurfaceFormat(swapChainSupport.SurfaceForamts);
+    VkPresentModeKHR presentMode = ChooseSwapPresentMode(swapChainSupport.PresentModes);
+    VkExtent2D extent = ChooseSwapExtent(swapChainSupport.SurfaceCapabilities);
 
     uint32_t imageCount = swapChainSupport.SurfaceCapabilities.minImageCount + 1;
     if (swapChainSupport.SurfaceCapabilities.maxImageCount > 0 && imageCount > swapChainSupport.SurfaceCapabilities.maxImageCount) {
@@ -164,7 +69,7 @@ void Quack::GPUSwapChainVulkan::createSwapChain() {
 
     VkSwapchainCreateInfoKHR createInfo{};
     createInfo.sType = VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR;
-    createInfo.surface = context->GetSurface();
+    createInfo.surface = context->GetSurfaceHandle();
 
     createInfo.minImageCount = imageCount;
     createInfo.imageFormat = surfaceFormat.format;
@@ -173,8 +78,7 @@ void Quack::GPUSwapChainVulkan::createSwapChain() {
     createInfo.imageArrayLayers = 1;
     createInfo.imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
 
-    QueueFamilyIndices indices = GPUAdapterVulkan::FindQueueFamiliesIndices(adapter->GetAdapter(), context->GetSurface());
-
+    QueueFamilyIndices indices = adapter->FindQueueFamiliesIndices(adapter->GetAdapterHandle(), context->GetSurfaceHandle());
     uint32_t queueFamilyIndices[] = {indices.GraphicsFamily.value(), indices.PresentFamily.value()};
 
     if (indices.GraphicsFamily != indices.PresentFamily) {
@@ -192,26 +96,29 @@ void Quack::GPUSwapChainVulkan::createSwapChain() {
 
     createInfo.oldSwapchain = VK_NULL_HANDLE;
 
-    if (vkCreateSwapchainKHR(device->GetDevice(), &createInfo, nullptr, &swapChain) != VK_SUCCESS) {
-        throw std::runtime_error("failed to create swap chain!");
+    const auto& device = std::dynamic_pointer_cast<GPUDeviceVulkan>(GetDevice());
+    if (vkCreateSwapchainKHR(device->GetDeviceHandle(), &createInfo, nullptr, &_swapChain) != VK_SUCCESS) {
+        throw std::runtime_error("Failed to create swap chain!");
     }
 
-    vkGetSwapchainImagesKHR(device->GetDevice(), swapChain, &imageCount, nullptr);
-    swapChainImages.resize(imageCount);
-    vkGetSwapchainImagesKHR(device->GetDevice(), swapChain, &imageCount, swapChainImages.data());
+    vkGetSwapchainImagesKHR(device->GetDeviceHandle(), _swapChain, &imageCount, nullptr);
+    _swapChainImages.resize(imageCount);
+    vkGetSwapchainImagesKHR(device->GetDeviceHandle(), _swapChain, &imageCount, _swapChainImages.data());
 
-    swapChainImageFormat = surfaceFormat.format;
-    swapChainExtent = extent;
+    _swapChainImageFormat = surfaceFormat.format;
+    _swapChainExtent = extent;
 }
 
-void Quack::GPUSwapChainVulkan::createImageViews() {
-    swapChainImageViews.resize(swapChainImages.size());
-    for (size_t i = 0; i < swapChainImages.size(); i++) {
+void Quack::GPUSwapChainVulkan::CreateImageViews() {
+    _swapChainImageViews.resize(_swapChainImages.size());
+
+    const auto& device = std::dynamic_pointer_cast<GPUDeviceVulkan>(GetDevice());
+    for (size_t i = 0; i < _swapChainImages.size(); i++) {
         VkImageViewCreateInfo createInfo{};
         createInfo.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
-        createInfo.image = swapChainImages[i];
+        createInfo.image = _swapChainImages[i];
         createInfo.viewType = VK_IMAGE_VIEW_TYPE_2D;
-        createInfo.format = swapChainImageFormat;
+        createInfo.format = _swapChainImageFormat;
         createInfo.components.r = VK_COMPONENT_SWIZZLE_IDENTITY;
         createInfo.components.g = VK_COMPONENT_SWIZZLE_IDENTITY;
         createInfo.components.b = VK_COMPONENT_SWIZZLE_IDENTITY;
@@ -222,18 +129,168 @@ void Quack::GPUSwapChainVulkan::createImageViews() {
         createInfo.subresourceRange.baseArrayLayer = 0;
         createInfo.subresourceRange.layerCount = 1;
 
-        if (vkCreateImageView(device->GetDevice(), &createInfo, nullptr, &swapChainImageViews[i]) != VK_SUCCESS) {
-            throw std::runtime_error("failed to create image views!");
+        if (vkCreateImageView(device->GetDeviceHandle(), &createInfo, nullptr, &_swapChainImageViews[i]) != VK_SUCCESS) {
+            throw std::runtime_error("Failed to create image views!");
         }
     }
 }
 
-void Quack::GPUSwapChainVulkan::createFramebuffers() {
-    swapChainFramebuffers.resize(swapChainImageViews.size());
+void Quack::GPUSwapChainVulkan::CreateRenderPass() {
+    VkAttachmentDescription colorAttachment{};
+    colorAttachment.format = _swapChainImageFormat;
+    colorAttachment.samples = VK_SAMPLE_COUNT_1_BIT;
+    colorAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
+    colorAttachment.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
+    colorAttachment.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+    colorAttachment.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
+    colorAttachment.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+    colorAttachment.finalLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
 
-    for (size_t i = 0; i < swapChainImageViews.size(); i++) {
+    VkAttachmentReference colorAttachmentRef{};
+    colorAttachmentRef.attachment = 0;
+    colorAttachmentRef.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+
+    VkSubpassDescription subpass{};
+    subpass.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;
+    subpass.colorAttachmentCount = 1;
+    subpass.pColorAttachments = &colorAttachmentRef;
+
+    VkSubpassDependency dependency{};
+    dependency.srcSubpass = VK_SUBPASS_EXTERNAL;
+    dependency.dstSubpass = 0;
+    dependency.srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+    dependency.srcAccessMask = 0;
+    dependency.dstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+    dependency.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
+
+    VkRenderPassCreateInfo renderPassInfo{};
+    renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
+    renderPassInfo.attachmentCount = 1;
+    renderPassInfo.pAttachments = &colorAttachment;
+    renderPassInfo.subpassCount = 1;
+    renderPassInfo.pSubpasses = &subpass;
+    renderPassInfo.dependencyCount = 1;
+    renderPassInfo.pDependencies = &dependency;
+
+    const auto& device = std::dynamic_pointer_cast<GPUDeviceVulkan>(GetDevice());
+    if (vkCreateRenderPass(device->GetDeviceHandle(), &renderPassInfo, nullptr, &_renderPass) != VK_SUCCESS) {
+        throw std::runtime_error("Failed to create render pass!");
+    }
+}
+
+void Quack::GPUSwapChainVulkan::CreateGraphicsPipeline() {
+    VkShaderModule vertShaderModule = std::dynamic_pointer_cast<GPUShaderProgramVulkan>(GetVertex())->GetModuleHandle();
+    VkShaderModule fragShaderModule = std::dynamic_pointer_cast<GPUShaderProgramVulkan>(GetFragment())->GetModuleHandle();
+
+    VkPipelineShaderStageCreateInfo vertShaderStageInfo{};
+    vertShaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
+    vertShaderStageInfo.stage = VK_SHADER_STAGE_VERTEX_BIT;
+    vertShaderStageInfo.module = vertShaderModule;
+    vertShaderStageInfo.pName = "main";
+
+    VkPipelineShaderStageCreateInfo fragShaderStageInfo{};
+    fragShaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
+    fragShaderStageInfo.stage = VK_SHADER_STAGE_FRAGMENT_BIT;
+    fragShaderStageInfo.module = fragShaderModule;
+    fragShaderStageInfo.pName = "main";
+
+    VkPipelineShaderStageCreateInfo shaderStages[] = {vertShaderStageInfo, fragShaderStageInfo};
+
+    VkPipelineVertexInputStateCreateInfo vertexInputInfo{};
+    vertexInputInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
+    vertexInputInfo.vertexBindingDescriptionCount = 0;
+    vertexInputInfo.vertexAttributeDescriptionCount = 0;
+
+    VkPipelineInputAssemblyStateCreateInfo inputAssembly{};
+    inputAssembly.sType = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;
+    inputAssembly.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
+    inputAssembly.primitiveRestartEnable = VK_FALSE;
+
+    VkPipelineViewportStateCreateInfo viewportState{};
+    viewportState.sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO;
+    viewportState.viewportCount = 1;
+    viewportState.scissorCount = 1;
+
+    VkPipelineRasterizationStateCreateInfo rasterizer{};
+    rasterizer.sType = VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO;
+    rasterizer.depthClampEnable = VK_FALSE;
+    rasterizer.rasterizerDiscardEnable = VK_FALSE;
+    rasterizer.polygonMode = VK_POLYGON_MODE_FILL;
+    rasterizer.lineWidth = 1.0f;
+    rasterizer.cullMode = VK_CULL_MODE_BACK_BIT;
+    rasterizer.frontFace = VK_FRONT_FACE_CLOCKWISE;
+    rasterizer.depthBiasEnable = VK_FALSE;
+
+    VkPipelineMultisampleStateCreateInfo multisampling{};
+    multisampling.sType = VK_STRUCTURE_TYPE_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO;
+    multisampling.sampleShadingEnable = VK_FALSE;
+    multisampling.rasterizationSamples = VK_SAMPLE_COUNT_1_BIT;
+
+    VkPipelineColorBlendAttachmentState colorBlendAttachment{};
+    colorBlendAttachment.colorWriteMask = VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT;
+    colorBlendAttachment.blendEnable = VK_FALSE;
+
+    VkPipelineColorBlendStateCreateInfo colorBlending{};
+    colorBlending.sType = VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO;
+    colorBlending.logicOpEnable = VK_FALSE;
+    colorBlending.logicOp = VK_LOGIC_OP_COPY;
+    colorBlending.attachmentCount = 1;
+    colorBlending.pAttachments = &colorBlendAttachment;
+    colorBlending.blendConstants[0] = 0.0f;
+    colorBlending.blendConstants[1] = 0.0f;
+    colorBlending.blendConstants[2] = 0.0f;
+    colorBlending.blendConstants[3] = 0.0f;
+
+    std::vector<VkDynamicState> dynamicStates = {
+        VK_DYNAMIC_STATE_VIEWPORT,
+        VK_DYNAMIC_STATE_SCISSOR
+    };
+    VkPipelineDynamicStateCreateInfo dynamicState{};
+    dynamicState.sType = VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO;
+    dynamicState.dynamicStateCount = static_cast<uint32_t>(dynamicStates.size());
+    dynamicState.pDynamicStates = dynamicStates.data();
+
+    VkPipelineLayoutCreateInfo pipelineLayoutInfo{};
+    pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
+    pipelineLayoutInfo.setLayoutCount = 0;
+    pipelineLayoutInfo.pushConstantRangeCount = 0;
+
+    const auto& device = std::dynamic_pointer_cast<GPUDeviceVulkan>(GetDevice());
+    if (vkCreatePipelineLayout(device->GetDeviceHandle(), &pipelineLayoutInfo, nullptr, &_pipelineLayout) != VK_SUCCESS) {
+        throw std::runtime_error("Failed to create pipeline layout!");
+    }
+
+    VkGraphicsPipelineCreateInfo pipelineInfo{};
+    pipelineInfo.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
+    pipelineInfo.stageCount = 2;
+    pipelineInfo.pStages = shaderStages;
+    pipelineInfo.pVertexInputState = &vertexInputInfo;
+    pipelineInfo.pInputAssemblyState = &inputAssembly;
+    pipelineInfo.pViewportState = &viewportState;
+    pipelineInfo.pRasterizationState = &rasterizer;
+    pipelineInfo.pMultisampleState = &multisampling;
+    pipelineInfo.pColorBlendState = &colorBlending;
+    pipelineInfo.pDynamicState = &dynamicState;
+    pipelineInfo.layout = _pipelineLayout;
+    pipelineInfo.renderPass = _renderPass;
+    pipelineInfo.subpass = 0;
+    pipelineInfo.basePipelineHandle = VK_NULL_HANDLE;
+
+    if (vkCreateGraphicsPipelines(device->GetDeviceHandle(), VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &_graphicsPipeline) != VK_SUCCESS) {
+        throw std::runtime_error("Failed to create graphics pipeline!");
+    }
+
+    // vkDestroyShaderModule(device->GetDeviceHandle(), fragShaderModule, nullptr);
+    // vkDestroyShaderModule(device->GetDeviceHandle(), vertShaderModule, nullptr);
+}
+
+void Quack::GPUSwapChainVulkan::CreateFramebuffers() {
+    _swapChainFramebuffers.resize(_swapChainImageViews.size());
+
+    const auto& device = std::dynamic_pointer_cast<GPUDeviceVulkan>(GetDevice());
+    for (size_t i = 0; i < _swapChainImageViews.size(); i++) {
         VkImageView attachments[] = {
-            swapChainImageViews[i]
+            _swapChainImageViews[i]
         };
 
         VkFramebufferCreateInfo framebufferInfo{};
@@ -241,17 +298,47 @@ void Quack::GPUSwapChainVulkan::createFramebuffers() {
         framebufferInfo.renderPass = _renderPass;
         framebufferInfo.attachmentCount = 1;
         framebufferInfo.pAttachments = attachments;
-        framebufferInfo.width = swapChainExtent.width;
-        framebufferInfo.height = swapChainExtent.height;
+        framebufferInfo.width = _swapChainExtent.width;
+        framebufferInfo.height = _swapChainExtent.height;
         framebufferInfo.layers = 1;
 
-        if (vkCreateFramebuffer(device->GetDevice(), &framebufferInfo, nullptr, &swapChainFramebuffers[i]) != VK_SUCCESS) {
-            throw std::runtime_error("failed to create framebuffer!");
+        if (vkCreateFramebuffer(device->GetDeviceHandle(), &framebufferInfo, nullptr, &_swapChainFramebuffers[i]) != VK_SUCCESS) {
+            throw std::runtime_error("Failed to create framebuffer!");
         }
     }
 }
 
-void Quack::GPUSwapChainVulkan::createSyncObjects() {
+void Quack::GPUSwapChainVulkan::CreateCommandPool() {
+    const auto& adapter = std::dynamic_pointer_cast<GPUAdapterVulkan>(GetAdapter());
+    const auto& context = std::dynamic_pointer_cast<GPUContextVulkan>(GetContext());
+    QueueFamilyIndices queueFamilyIndices = adapter->FindQueueFamiliesIndices(adapter->GetAdapterHandle(),
+        context->GetSurfaceHandle());
+
+    VkCommandPoolCreateInfo poolInfo{};
+    poolInfo.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
+    poolInfo.flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
+    poolInfo.queueFamilyIndex = queueFamilyIndices.GraphicsFamily.value();
+
+    const auto& device = std::dynamic_pointer_cast<GPUDeviceVulkan>(GetDevice());
+    if (vkCreateCommandPool(device->GetDeviceHandle(), &poolInfo, nullptr, &_commandPool) != VK_SUCCESS) {
+        throw std::runtime_error("Failed to create command pool!");
+    }
+}
+
+void Quack::GPUSwapChainVulkan::CreateCommandBuffer() {
+    VkCommandBufferAllocateInfo allocInfo{};
+    allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
+    allocInfo.commandPool = _commandPool;
+    allocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
+    allocInfo.commandBufferCount = 1;
+
+    const auto& device = std::dynamic_pointer_cast<GPUDeviceVulkan>(GetDevice());
+    if (vkAllocateCommandBuffers(device->GetDeviceHandle(), &allocInfo, &_commandBuffer) != VK_SUCCESS) {
+        throw std::runtime_error("failed to allocate command buffers!");
+    }
+}
+
+void Quack::GPUSwapChainVulkan::CreateSyncObjects() {
     VkSemaphoreCreateInfo semaphoreInfo{};
     semaphoreInfo.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
 
@@ -259,100 +346,89 @@ void Quack::GPUSwapChainVulkan::createSyncObjects() {
     fenceInfo.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
     fenceInfo.flags = VK_FENCE_CREATE_SIGNALED_BIT;
 
-    if (vkCreateSemaphore(device->GetDevice(), &semaphoreInfo, nullptr, &imageAvailableSemaphore) != VK_SUCCESS ||
-        vkCreateSemaphore(device->GetDevice(), &semaphoreInfo, nullptr, &renderFinishedSemaphore) != VK_SUCCESS ||
-        vkCreateFence(device->GetDevice(), &fenceInfo, nullptr, &inFlightFence) != VK_SUCCESS) {
-        throw std::runtime_error("failed to create synchronization objects for a frame!");
+    const auto& device = std::dynamic_pointer_cast<GPUDeviceVulkan>(GetDevice());
+    if (vkCreateSemaphore(device->GetDeviceHandle(), &semaphoreInfo, nullptr, &_imageAvailableSemaphore) != VK_SUCCESS ||
+        vkCreateSemaphore(device->GetDeviceHandle(), &semaphoreInfo, nullptr, &_renderFinishedSemaphore) != VK_SUCCESS ||
+        vkCreateFence(device->GetDeviceHandle(), &fenceInfo, nullptr, &_inFlightFence) != VK_SUCCESS) {
+        throw std::runtime_error("Failed to create synchronization objects for a frame!");
     }
 }
 
-VkSurfaceFormatKHR Quack::GPUSwapChainVulkan::chooseSwapSurfaceFormat(
-    const std::vector<VkSurfaceFormatKHR> &availableFormats) {
-  for (const auto &availableFormat : availableFormats) {
-    if (availableFormat.format == VK_FORMAT_B8G8R8A8_SRGB &&
-        availableFormat.colorSpace == VK_COLOR_SPACE_SRGB_NONLINEAR_KHR) {
-      return availableFormat;
+void Quack::GPUSwapChainVulkan::RecordCommandBuffer(uint32_t imageIndex) {
+    VkCommandBufferBeginInfo beginInfo{};
+    beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
+
+    if (vkBeginCommandBuffer(_commandBuffer, &beginInfo) != VK_SUCCESS) {
+        throw std::runtime_error("Failed to begin recording command buffer!");
     }
-  }
 
-  return availableFormats[0];
-}
+    VkRenderPassBeginInfo renderPassInfo{};
+    renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
+    renderPassInfo.renderPass = _renderPass;
+    renderPassInfo.framebuffer = _swapChainFramebuffers[imageIndex];
+    renderPassInfo.renderArea.offset = {0, 0};
+    renderPassInfo.renderArea.extent = _swapChainExtent;
 
-VkPresentModeKHR Quack::GPUSwapChainVulkan::chooseSwapPresentMode(
-    const std::vector<VkPresentModeKHR> &availablePresentModes) {
-  for (const auto &availablePresentMode : availablePresentModes) {
-    if (availablePresentMode == VK_PRESENT_MODE_MAILBOX_KHR) {
-      std::cout << "Present mode: Mailbox" << std::endl;
-      return availablePresentMode;
+    VkClearValue clearColor = {{{0.0f, 0.0f, 0.0f, 1.0f}}};
+    renderPassInfo.clearValueCount = 1;
+    renderPassInfo.pClearValues = &clearColor;
+
+    vkCmdBeginRenderPass(_commandBuffer, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
+
+        vkCmdBindPipeline(_commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _graphicsPipeline);
+
+        VkViewport viewport{};
+        viewport.x = 0.0f;
+        viewport.y = 0.0f;
+        viewport.width = (float) _swapChainExtent.width;
+        viewport.height = (float) _swapChainExtent.height;
+        viewport.minDepth = 0.0f;
+        viewport.maxDepth = 1.0f;
+        vkCmdSetViewport(_commandBuffer, 0, 1, &viewport);
+
+        VkRect2D scissor{};
+        scissor.offset = {0, 0};
+        scissor.extent = _swapChainExtent;
+        vkCmdSetScissor(_commandBuffer, 0, 1, &scissor);
+
+        vkCmdDraw(_commandBuffer, 3, 1, 0, 0);
+
+    vkCmdEndRenderPass(_commandBuffer);
+
+    if (vkEndCommandBuffer(_commandBuffer) != VK_SUCCESS) {
+        throw std::runtime_error("Failed to record command buffer!");
     }
-  }
-
-  // for (const auto &availablePresentMode : availablePresentModes) {
-  //   if (availablePresentMode == VK_PRESENT_MODE_IMMEDIATE_KHR) {
-  //     std::cout << "Present mode: Immediate" << std::endl;
-  //     return availablePresentMode;
-  //   }
-  // }
-
-  std::cout << "Present mode: V-Sync" << std::endl;
-  return VK_PRESENT_MODE_FIFO_KHR;
 }
 
-VkExtent2D Quack::GPUSwapChainVulkan::chooseSwapExtent(const VkSurfaceCapabilitiesKHR &capabilities) {
-  if (capabilities.currentExtent.width != std::numeric_limits<uint32_t>::max()) {
-    return capabilities.currentExtent;
-  } else {
-    // VkExtent2D actualExtent = windowExtent;
-    // actualExtent.width = std::max(
-    //     capabilities.minImageExtent.width,
-    //     std::min(capabilities.maxImageExtent.width, actualExtent.width));
-    // actualExtent.height = std::max(
-    //     capabilities.minImageExtent.height,
-    //     std::min(capabilities.maxImageExtent.height, actualExtent.height));
+void Quack::GPUSwapChainVulkan::DrawFrame() {
+    const auto& device = std::dynamic_pointer_cast<GPUDeviceVulkan>(GetDevice());
 
-    // return actualExtent;
-  }
-}
+    vkWaitForFences(device->GetDeviceHandle(), 1, &_inFlightFence, VK_TRUE, UINT64_MAX);
+    vkResetFences(device->GetDeviceHandle(), 1, &_inFlightFence);
 
-VkFormat Quack::GPUSwapChainVulkan::findDepthFormat() {
-  return adapter->FindSupportedFormat(
-      {VK_FORMAT_D32_SFLOAT, VK_FORMAT_D32_SFLOAT_S8_UINT, VK_FORMAT_D24_UNORM_S8_UINT},
-      VK_IMAGE_TILING_OPTIMAL,
-      VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT);
-}
+    uint32_t imageIndex;
+    vkAcquireNextImageKHR(device->GetDeviceHandle(), _swapChain, UINT64_MAX, _imageAvailableSemaphore, VK_NULL_HANDLE, &imageIndex);
 
-void Quack::GPUSwapChainVulkan::Draw() {
+    vkResetCommandBuffer(_commandBuffer, /*VkCommandBufferResetFlagBits*/ 0);
+    RecordCommandBuffer(imageIndex);
 
-}
-
-
-void Quack::GPUSwapChainVulkan::Begin() {
-    vkWaitForFences(device->GetDevice(), 1, &inFlightFence, VK_TRUE, UINT64_MAX);
-    vkResetFences(device->GetDevice(), 1, &inFlightFence);
-
-    imageIndex = 0;
-    vkAcquireNextImageKHR(device->GetDevice(), swapChain, UINT64_MAX, imageAvailableSemaphore, VK_NULL_HANDLE, &imageIndex);
-}
-
-void Quack::GPUSwapChainVulkan::End() {
     VkSubmitInfo submitInfo{};
     submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
 
-    VkSemaphore waitSemaphores[] = {imageAvailableSemaphore};
+    VkSemaphore waitSemaphores[] = {_imageAvailableSemaphore};
     VkPipelineStageFlags waitStages[] = {VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT};
     submitInfo.waitSemaphoreCount = 1;
     submitInfo.pWaitSemaphores = waitSemaphores;
     submitInfo.pWaitDstStageMask = waitStages;
 
-    const auto& commandBuffer = dynamic_cast<GPUCommandBufferVulkan*>(_desc.CommandBuffer);
     submitInfo.commandBufferCount = 1;
-    submitInfo.pCommandBuffers = &commandBuffer->GetCommandBuffer();
+    submitInfo.pCommandBuffers = &_commandBuffer;
 
-    VkSemaphore signalSemaphores[] = {renderFinishedSemaphore};
+    VkSemaphore signalSemaphores[] = {_renderFinishedSemaphore};
     submitInfo.signalSemaphoreCount = 1;
     submitInfo.pSignalSemaphores = signalSemaphores;
 
-    if (vkQueueSubmit(device->GetGraphicsQueue(), 1, &submitInfo, inFlightFence) != VK_SUCCESS) {
+    if (vkQueueSubmit(device->GetGraphicsQueue(), 1, &submitInfo, _inFlightFence) != VK_SUCCESS) {
         throw std::runtime_error("failed to submit draw command buffer!");
     }
 
@@ -362,7 +438,7 @@ void Quack::GPUSwapChainVulkan::End() {
     presentInfo.waitSemaphoreCount = 1;
     presentInfo.pWaitSemaphores = signalSemaphores;
 
-    VkSwapchainKHR swapChains[] = {swapChain};
+    VkSwapchainKHR swapChains[] = {_swapChain};
     presentInfo.swapchainCount = 1;
     presentInfo.pSwapchains = swapChains;
 
@@ -371,100 +447,58 @@ void Quack::GPUSwapChainVulkan::End() {
     vkQueuePresentKHR(device->GetPresentQueue(), &presentInfo);
 }
 
+VkSurfaceFormatKHR Quack::GPUSwapChainVulkan::ChooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& availableFormats) {
+    for (const auto& availableFormat : availableFormats) {
+        if (availableFormat.format == VK_FORMAT_B8G8R8A8_SRGB && availableFormat.colorSpace == VK_COLOR_SPACE_SRGB_NONLINEAR_KHR) {
+            return availableFormat;
+        }
+    }
 
-
-
-
-
-
-
-void Quack::GPUSwapChainVulkan::InitRenderPassMain() {
-    InitColorAttachmentDescription();
-    InitColorAttachmentReference();
-    InitSubpassDescription();
-    InitSubpassDependency();
-    InitRenderPass();
+    return availableFormats[0];
 }
 
-void Quack::GPUSwapChainVulkan::InitColorAttachmentDescription() {
-    _colorAttachmentDescription.format = getSwapChainImageFormat();
+VkPresentModeKHR Quack::GPUSwapChainVulkan::ChooseSwapPresentMode(const std::vector<VkPresentModeKHR>& availablePresentModes) {
+    for (const auto& availablePresentMode : availablePresentModes) {
+        if (availablePresentMode == VK_PRESENT_MODE_MAILBOX_KHR) {
+            return availablePresentMode;
+        }
+    }
 
-    _colorAttachmentDescription.samples = VK_SAMPLE_COUNT_1_BIT;
-
-    _colorAttachmentDescription.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
-    _colorAttachmentDescription.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
-
-    _colorAttachmentDescription.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
-    _colorAttachmentDescription.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
-
-    _colorAttachmentDescription.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-    _colorAttachmentDescription.finalLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
+    return VK_PRESENT_MODE_FIFO_KHR;
 }
 
-void Quack::GPUSwapChainVulkan::InitColorAttachmentReference() {
-    _colorAttachmentReference.attachment = 0;
-    _colorAttachmentReference.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
-}
+VkExtent2D Quack::GPUSwapChainVulkan::ChooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities) {
+    if (capabilities.currentExtent.width != std::numeric_limits<uint32_t>::max()) {
+        return capabilities.currentExtent;
+    } else {
+        int width, height;
+        const auto& window = std::dynamic_pointer_cast<WindowGLFW>(GetWindow());
+        glfwGetFramebufferSize(window->GetWindow(), &width, &height);
 
-void Quack::GPUSwapChainVulkan::InitSubpassDescription() {
-    _subpassDescription.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;
+        VkExtent2D actualExtent = {
+            static_cast<uint32_t>(width),
+            static_cast<uint32_t>(height)
+        };
 
-    _subpassDescription.colorAttachmentCount = 1;
-    _subpassDescription.pColorAttachments = &_colorAttachmentReference;
-}
+        actualExtent.width = std::clamp(actualExtent.width, capabilities.minImageExtent.width, capabilities.maxImageExtent.width);
+        actualExtent.height = std::clamp(actualExtent.height, capabilities.minImageExtent.height, capabilities.maxImageExtent.height);
 
-void Quack::GPUSwapChainVulkan::InitSubpassDependency() {
-    _subpassDependency.srcSubpass = VK_SUBPASS_EXTERNAL;
-    _subpassDependency.dstSubpass = 0;
-
-    _subpassDependency.srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
-    _subpassDependency.srcAccessMask = 0;
-
-    _subpassDependency.dstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
-    _subpassDependency.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
-}
-
-void Quack::GPUSwapChainVulkan::InitRenderPass() {
-    _renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
-
-    _renderPassInfo.attachmentCount = 1;
-    _renderPassInfo.pAttachments = &_colorAttachmentDescription;
-
-    _renderPassInfo.subpassCount = 1;
-    _renderPassInfo.pSubpasses = &_subpassDescription;
-    _renderPassInfo.dependencyCount = 1;
-    _renderPassInfo.pDependencies = &_subpassDependency;
-}
-
-void Quack::GPUSwapChainVulkan::CreateRenderPass() {
-    if (vkCreateRenderPass(device->GetDevice(), &_renderPassInfo, nullptr, &_renderPass) != VK_SUCCESS) {
-        throw std::runtime_error("Failed to create render pass!");
+        return actualExtent;
     }
 }
 
-const VkRenderPass& Quack::GPUSwapChainVulkan::GetRenderPass() const {
-    return _renderPass;
+VkSwapchainKHR Quack::GPUSwapChainVulkan::GetSwapChain() const {
+    return _swapChain;
 }
 
-void Quack::GPUSwapChainVulkan::BeginRenderPass() {
-
-    VkRenderPassBeginInfo info{};
-    info.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
-    info.renderPass = _renderPass;
-
-    info.framebuffer = getFrameBuffer(GetImageIndex());
-    info.renderArea.offset = {0, 0};
-    info.renderArea.extent = getSwapChainExtent();
-
-    VkClearValue clearColor = {{{0.0f, 0.0f, 0.0f, 1.0f}}};
-    info.clearValueCount = 1;
-    info.pClearValues = &clearColor;
-
-    const auto& commandBuffer = dynamic_cast<GPUCommandBufferVulkan*>(_desc.CommandBuffer);
-    vkCmdBeginRenderPass(commandBuffer->GetCommandBuffer(), &info, VK_SUBPASS_CONTENTS_INLINE);
+VkFormat Quack::GPUSwapChainVulkan::GetSwapChainImageFormat() const {
+    return _swapChainImageFormat;
 }
 
-void Quack::GPUSwapChainVulkan::EndRenderPass() {
-    const auto& commandBuffer = dynamic_cast<GPUCommandBufferVulkan*>(_desc.CommandBuffer);
-    vkCmdEndRenderPass(commandBuffer->GetCommandBuffer());
+const VkExtent2D& Quack::GPUSwapChainVulkan::GetSwapChainExtent() const {
+    return _swapChainExtent;
+}
+
+const std::vector<VkImage>& Quack::GPUSwapChainVulkan::GetSwapChainImages() const {
+    return _swapChainImages;
 }

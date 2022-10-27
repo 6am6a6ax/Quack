@@ -7,24 +7,23 @@ namespace Quack {
 class GPUContext {
 public:
     struct Description {
-        Quack::Window* Window;
+        std::shared_ptr<Quack::Window> Window;
+        bool isValidationLayersEnabled = false;
     };
 
 public:
-    GPUContext(const GPUContext::Description& desc) : _desc(desc) {}
+    GPUContext(const GPUContext::Description& desc);
     virtual ~GPUContext() = default;
 
 public:
-    virtual void Init() = 0;
-    virtual void SwapBuffers() = 0;
+    virtual void Init() {};
+    virtual void SwapBuffers() {};
 
 public:
     const Description& GetDescription() const;
-    void SetDescription(const Description& desc);
+    const std::shared_ptr<Window>& GetWindow() const;
 
-    Window* GetWindow() const { return _desc.Window; }
-
-protected:
+private:
     Description _desc;
 };
 }

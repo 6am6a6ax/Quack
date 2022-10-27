@@ -123,3 +123,7 @@ float Quack::WindowGLFW::GetTime() const {
 void* Quack::WindowGLFW::GetHandle() const {
     return (void*)_window;
 }
+
+GLFWwindow* const Quack::WindowGLFW::GetWindow() {
+    return _window;
+}

@@ -1,41 +1,49 @@
-#ifndef QUAKC_GPU_SWAP_CHAIN_H
-#define QUAKC_GPU_SWAP_CHAIN_H
+#ifndef QUACK_GPU_SWAP_CHAIN_H
+#define QUACK_GPU_SWAP_CHAIN_H
 
+#include <memory>
+
+#include "quack/core/window.h"
+
+#include "quack/graphics/gpu_device.h"
 #include "quack/graphics/gpu_adapter.h"
 #include "quack/graphics/gpu_context.h"
-#include "quack/graphics/gpu_device.h"
-#include "quack/graphics/gpu_render_pass.h"
-#include <vulkan/vulkan_core.h>
+#include "quack/graphics/gpu_shader_program.h"
 
 namespace Quack {
-class GPUDevice;
-class GPUAdapter;
-class GPUContext;
+
+class GPUShaderProgram;
 
 struct GPUSwapChainDescription {
-    GPUCommandBuffer* CommandBuffer;
-    GPUContext* Context;
-    GPUAdapter* Adapter;
-    GPUDevice* Device;
-    // GPUSwapChain* SwapChain;
+    std::shared_ptr<Quack::Window> Window;
+
+    std::shared_ptr<GPUContext> Context;
+    std::shared_ptr<GPUAdapter> Adapter;
+    std::shared_ptr<GPUDevice> Device;
+
+    std::shared_ptr<GPUShaderProgram> Vertex;
+    std::shared_ptr<GPUShaderProgram> Fragment;
 };
 
 class GPUSwapChain {
 public:
-    GPUSwapChain(const GPUSwapChainDescription& desc) : _desc(desc) {}
+    GPUSwapChain(const GPUSwapChainDescription& desc);
     virtual ~GPUSwapChain() = default;
 
 public:
-    virtual void Begin() = 0;
-    virtual void End() = 0;
+    virtual void Begin() {};
+    virtual void End() {};
 
 public:
     const GPUSwapChainDescription& GetDescription() const { return _desc; }
-    GPUCommandBuffer* GetCommandBuffer() const { return _desc.CommandBuffer; }
 
-    GPUContext* GetContext() const { _desc.Context; }
-    GPUAdapter* GetAdapter() const { _desc.Adapter; }
-    GPUDevice* GetDevice() const { _desc.Device; }
+    const std::shared_ptr<GPUContext>& GetContext() const;
+    const std::shared_ptr<GPUAdapter>& GetAdapter() const;
+    const std::shared_ptr<GPUDevice>& GetDevice() const;
+    const std::shared_ptr<Window>& GetWindow() const;
+
+    const std::shared_ptr<GPUShaderProgram>& GetVertex() const;
+    const std::shared_ptr<GPUShaderProgram>& GetFragment() const;
 
 protected:
     GPUSwapChainDescription _desc;

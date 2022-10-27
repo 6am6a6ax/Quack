@@ -14,8 +14,8 @@ Quack::GPUShaderProgramVulkan::GPUShaderProgramVulkan(const GPUShaderProgramDesc
 }
 
 Quack::GPUShaderProgramVulkan::~GPUShaderProgramVulkan() {
-    const auto& device = dynamic_cast<GPUDeviceVulkan*>(_desc.Device);
-    vkDestroyShaderModule(device->GetDevice(), _module, nullptr);
+    const auto& device = std::dynamic_pointer_cast<GPUDeviceVulkan>(GetDevice());
+    vkDestroyShaderModule(device->GetDeviceHandle(), _module, nullptr);
 }
 
 void Quack::GPUShaderProgramVulkan::Init() {
@@ -27,19 +27,19 @@ void Quack::GPUShaderProgramVulkan::Init() {
 }
 
 void Quack::GPUShaderProgramVulkan::Create() {
-    const auto& device = dynamic_cast<GPUDeviceVulkan*>(_desc.Device);
-    if (vkCreateShaderModule(device->GetDevice(), &_info, nullptr, &_module) != VK_SUCCESS) {
+    const auto& device = std::dynamic_pointer_cast<GPUDeviceVulkan>(GetDevice());
+    if (vkCreateShaderModule(device->GetDeviceHandle(), &_info, nullptr, &_module) != VK_SUCCESS) {
         throw std::runtime_error("Failed to create shader module!");
     }
 
-    auto bp =  1;
+    int bp = 1;
 }
 
 std::vector<char> Quack::GPUShaderProgramVulkan::Read(const std::string& filename) {
     std::ifstream file(filename, std::ios::ate | std::ios::binary);
 
     if (!file.is_open()) {
-        throw std::runtime_error("failed to open file!");
+        throw std::runtime_error("Failed to open shader file!");
     }
 
     size_t fileSize = static_cast<size_t>(file.tellg());

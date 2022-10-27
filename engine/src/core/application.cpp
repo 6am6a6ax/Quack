@@ -11,7 +11,6 @@ void Quack::Application::Init(const Quack::ApplicationDescription & desc) {
     SetDescription(desc);
     BindBaseCallbackAndLayerStack();
     _desc.AssetLibrary = AssetLibrary();
-    _desc.GPUContext->Init();
 }
 
 void Quack::Application::Run() {
@@ -68,12 +67,16 @@ void Quack::Application::SetDescription(const Quack::ApplicationDescription & de
     _desc = desc;
 }
 
-Quack::Window * Quack::Application::GetWindow() {
-    return _desc.Window;
-}
+// Quack::Window * Quack::Application::GetWindow() {
+//     return _desc.Window;
+// }
 
-void Quack::Application::SetWindow(Quack::Window * window) {
-    _desc.Window = window;
+// void Quack::Application::SetWindow(Quack::Window * window) {
+//     _desc.Window = window;
+// }
+
+const std::shared_ptr<Quack::Window>& Quack::Application::GetWindow() const {
+    return _desc.Window;
 }
 
 Quack::GPUDevice * Quack::Application::GetDevice() {

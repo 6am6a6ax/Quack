@@ -12,8 +12,8 @@ class GPUContext;
 class GPUDevice;
 
 struct GPUPipelineDescription {
-    GPUShaderProgram* Vertex;
-    GPUShaderProgram* Fragment;
+    std::shared_ptr<GPUShaderProgram> Vertex;
+    std::shared_ptr<GPUShaderProgram> Fragment;
 
     GPURenderPass* RenderPass;
     GPUCommandBuffer* CommandBuffer;
