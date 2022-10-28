@@ -15,6 +15,7 @@ Quack::GPUSwapChainVulkan::GPUSwapChainVulkan(const Quack::GPUSwapChainDescripti
     , _imageAvailableSemaphore(VK_NULL_HANDLE)
     , _renderFinishedSemaphore(VK_NULL_HANDLE)
     , _inFlightFence(VK_NULL_HANDLE)
+    , _currentImageIndex(0)
 {
     CreateSwapChain();
     CreateImageViews();
@@ -354,7 +355,7 @@ void Quack::GPUSwapChainVulkan::CreateSyncObjects() {
     }
 }
 
-void Quack::GPUSwapChainVulkan::RecordCommandBuffer(uint32_t imageIndex) {
+void Quack::GPUSwapChainVulkan::RecordCommandBuffer() {
     VkCommandBufferBeginInfo beginInfo{};
     beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
 
@@ -365,7 +366,7 @@ void Quack::GPUSwapChainVulkan::RecordCommandBuffer(uint32_t imageIndex) {
     VkRenderPassBeginInfo renderPassInfo{};
     renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
     renderPassInfo.renderPass = _renderPass;
-    renderPassInfo.framebuffer = _swapChainFramebuffers[imageIndex];
+    renderPassInfo.framebuffer = _swapChainFramebuffers[_currentImageIndex];
     renderPassInfo.renderArea.offset = {0, 0};
     renderPassInfo.renderArea.extent = _swapChainExtent;
 
@@ -401,50 +402,50 @@ void Quack::GPUSwapChainVulkan::RecordCommandBuffer(uint32_t imageIndex) {
 }
 
 void Quack::GPUSwapChainVulkan::DrawFrame() {
-    const auto& device = std::dynamic_pointer_cast<GPUDeviceVulkan>(GetDevice());
+    // const auto& device = std::dynamic_pointer_cast<GPUDeviceVulkan>(GetDevice());
 
-    vkWaitForFences(device->GetDeviceHandle(), 1, &_inFlightFence, VK_TRUE, UINT64_MAX);
-    vkResetFences(device->GetDeviceHandle(), 1, &_inFlightFence);
+    // vkWaitForFences(device->GetDeviceHandle(), 1, &_inFlightFence, VK_TRUE, UINT64_MAX);
+    // vkResetFences(device->GetDeviceHandle(), 1, &_inFlightFence);
 
-    uint32_t imageIndex;
-    vkAcquireNextImageKHR(device->GetDeviceHandle(), _swapChain, UINT64_MAX, _imageAvailableSemaphore, VK_NULL_HANDLE, &imageIndex);
+    // uint32_t imageIndex;
+    // vkAcquireNextImageKHR(device->GetDeviceHandle(), _swapChain, UINT64_MAX, _imageAvailableSemaphore, VK_NULL_HANDLE, &imageIndex);
 
-    vkResetCommandBuffer(_commandBuffer, /*VkCommandBufferResetFlagBits*/ 0);
-    RecordCommandBuffer(imageIndex);
+    // vkResetCommandBuffer(_commandBuffer, /*VkCommandBufferResetFlagBits*/ 0);
+    RecordCommandBuffer();
 
-    VkSubmitInfo submitInfo{};
-    submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
+    // VkSubmitInfo submitInfo{};
+    // submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
 
-    VkSemaphore waitSemaphores[] = {_imageAvailableSemaphore};
-    VkPipelineStageFlags waitStages[] = {VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT};
-    submitInfo.waitSemaphoreCount = 1;
-    submitInfo.pWaitSemaphores = waitSemaphores;
-    submitInfo.pWaitDstStageMask = waitStages;
+    // VkSemaphore waitSemaphores[] = {_imageAvailableSemaphore};
+    // VkPipelineStageFlags waitStages[] = {VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT};
+    // submitInfo.waitSemaphoreCount = 1;
+    // submitInfo.pWaitSemaphores = waitSemaphores;
+    // submitInfo.pWaitDstStageMask = waitStages;
 
-    submitInfo.commandBufferCount = 1;
-    submitInfo.pCommandBuffers = &_commandBuffer;
+    // submitInfo.commandBufferCount = 1;
+    // submitInfo.pCommandBuffers = &_commandBuffer;
 
-    VkSemaphore signalSemaphores[] = {_renderFinishedSemaphore};
-    submitInfo.signalSemaphoreCount = 1;
-    submitInfo.pSignalSemaphores = signalSemaphores;
+    // VkSemaphore signalSemaphores[] = {_renderFinishedSemaphore};
+    // submitInfo.signalSemaphoreCount = 1;
+    // submitInfo.pSignalSemaphores = signalSemaphores;
 
-    if (vkQueueSubmit(device->GetGraphicsQueue(), 1, &submitInfo, _inFlightFence) != VK_SUCCESS) {
-        throw std::runtime_error("failed to submit draw command buffer!");
-    }
+    // if (vkQueueSubmit(device->GetGraphicsQueue(), 1, &submitInfo, _inFlightFence) != VK_SUCCESS) {
+    //     throw std::runtime_error("failed to submit draw command buffer!");
+    // }
 
-    VkPresentInfoKHR presentInfo{};
-    presentInfo.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
+    // VkPresentInfoKHR presentInfo{};
+    // presentInfo.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
 
-    presentInfo.waitSemaphoreCount = 1;
-    presentInfo.pWaitSemaphores = signalSemaphores;
+    // presentInfo.waitSemaphoreCount = 1;
+    // presentInfo.pWaitSemaphores = signalSemaphores;
 
-    VkSwapchainKHR swapChains[] = {_swapChain};
-    presentInfo.swapchainCount = 1;
-    presentInfo.pSwapchains = swapChains;
+    // VkSwapchainKHR swapChains[] = {_swapChain};
+    // presentInfo.swapchainCount = 1;
+    // presentInfo.pSwapchains = swapChains;
 
-    presentInfo.pImageIndices = &imageIndex;
+    // presentInfo.pImageIndices = &imageIndex;
 
-    vkQueuePresentKHR(device->GetPresentQueue(), &presentInfo);
+    // vkQueuePresentKHR(device->GetPresentQueue(), &presentInfo);
 }
 
 VkSurfaceFormatKHR Quack::GPUSwapChainVulkan::ChooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& availableFormats) {
@@ -501,4 +502,52 @@ const VkExtent2D& Quack::GPUSwapChainVulkan::GetSwapChainExtent() const {
 
 const std::vector<VkImage>& Quack::GPUSwapChainVulkan::GetSwapChainImages() const {
     return _swapChainImages;
+}
+
+void Quack::GPUSwapChainVulkan::BeginFrame() {
+    const auto& device = std::dynamic_pointer_cast<GPUDeviceVulkan>(GetDevice());
+
+    vkWaitForFences(device->GetDeviceHandle(), 1, &_inFlightFence, VK_TRUE, UINT64_MAX);
+    vkResetFences(device->GetDeviceHandle(), 1, &_inFlightFence);
+
+    vkAcquireNextImageKHR(device->GetDeviceHandle(), _swapChain, UINT64_MAX, _imageAvailableSemaphore, VK_NULL_HANDLE, &_currentImageIndex);
+
+    vkResetCommandBuffer(_commandBuffer, /*VkCommandBufferResetFlagBits*/ 0);
+}
+
+void Quack::GPUSwapChainVulkan::EndFrame() {
+    VkSubmitInfo submitInfo{};
+    submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
+
+    VkSemaphore waitSemaphores[] = {_imageAvailableSemaphore};
+    VkPipelineStageFlags waitStages[] = {VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT};
+    submitInfo.waitSemaphoreCount = 1;
+    submitInfo.pWaitSemaphores = waitSemaphores;
+    submitInfo.pWaitDstStageMask = waitStages;
+
+    submitInfo.commandBufferCount = 1;
+    submitInfo.pCommandBuffers = &_commandBuffer;
+
+    VkSemaphore signalSemaphores[] = {_renderFinishedSemaphore};
+    submitInfo.signalSemaphoreCount = 1;
+    submitInfo.pSignalSemaphores = signalSemaphores;
+
+    const auto& device = std::dynamic_pointer_cast<GPUDeviceVulkan>(GetDevice());
+    if (vkQueueSubmit(device->GetGraphicsQueue(), 1, &submitInfo, _inFlightFence) != VK_SUCCESS) {
+        throw std::runtime_error("failed to submit draw command buffer!");
+    }
+
+    VkPresentInfoKHR presentInfo{};
+    presentInfo.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
+
+    presentInfo.waitSemaphoreCount = 1;
+    presentInfo.pWaitSemaphores = signalSemaphores;
+
+    VkSwapchainKHR swapChains[] = {_swapChain};
+    presentInfo.swapchainCount = 1;
+    presentInfo.pSwapchains = swapChains;
+
+    presentInfo.pImageIndices = &_currentImageIndex;
+
+    vkQueuePresentKHR(device->GetPresentQueue(), &presentInfo);
 }

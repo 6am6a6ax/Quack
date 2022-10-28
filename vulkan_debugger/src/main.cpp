@@ -85,15 +85,9 @@ int main() {
     try {
         while(true) {
             glfwPollEvents();
+            std::dynamic_pointer_cast<Quack::GPUSwapChainVulkan>(gpuSwapChain)->BeginFrame();
             std::dynamic_pointer_cast<Quack::GPUSwapChainVulkan>(gpuSwapChain)->DrawFrame();
-
-        //     gpuSwapChain->Begin();
-
-        //     // Quack::Renderer::RenderVk(dynamic_cast<Quack::GPUCommandBufferVulkan*>(gpuCommandBuffer), 
-        //     //                           dynamic_cast<Quack::GPURenderPassVulkan*>(gpuRenderPass), 
-        //     //                           dynamic_cast<Quack::GPUPipelineVulkan*>(gpuPipeline));
-
-        //     gpuSwapChain->End();
+            std::dynamic_pointer_cast<Quack::GPUSwapChainVulkan>(gpuSwapChain)->EndFrame();
         }
     } catch (const std::exception& e) {
         std::cerr << e.what() << std::endl;
