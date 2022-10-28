@@ -13,6 +13,9 @@ public:
 
 public:
     void DrawFrame();
+
+    void BeginFrame();
+    void EndFrame();
     
 public:
     VkSwapchainKHR GetSwapChain() const;
@@ -30,7 +33,7 @@ private:
     void CreateCommandBuffer();
     void CreateSyncObjects();
 
-    void RecordCommandBuffer(uint32_t imageIndex);
+    void RecordCommandBuffer();
 
 private:
     VkSurfaceFormatKHR ChooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& availableFormats);
@@ -58,6 +61,8 @@ private:
     VkSemaphore _imageAvailableSemaphore;
     VkSemaphore _renderFinishedSemaphore;
     VkFence _inFlightFence;
+
+    uint32_t _currentImageIndex;
 };
 }
 
