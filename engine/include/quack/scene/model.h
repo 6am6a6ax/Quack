@@ -16,6 +16,7 @@
 namespace Quack {
 class Model {
 public:
+    Model() {}
     Model(const std::string& filepath) {
         Load(filepath);
     }
