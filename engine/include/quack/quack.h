@@ -25,7 +25,7 @@
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
 
-#include <spdlog/spdlog.h>
+// #include <spdlog/spdlog.h>
 
 #include "math/math.h"
 
