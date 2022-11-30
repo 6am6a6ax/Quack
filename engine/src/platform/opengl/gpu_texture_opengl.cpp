@@ -8,7 +8,7 @@ Quack::GPUTextureOpenGL::GPUTextureOpenGL(const Quack::GPUTextureDescription & d
     stbi_uc * data = stbi_load(desc.Path.c_str(), &width, &height, &channels, 0);
 
     if (!data) {
-        data = stbi_load("assets/textures/no_texture.png", &width, &height, &channels, 0);
+        data = stbi_load("/home/bujhm/dev/cpp/cg/quack/engine/assets/textures/no_texture.png", &width, &height, &channels, 0);
     }
     
     _desc.Width = width;

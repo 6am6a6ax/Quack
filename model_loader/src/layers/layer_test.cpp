@@ -5,7 +5,7 @@ using namespace Quack;
 ModelLoader::LayerTest::LayerTest(const std::string & name) : Quack::Layer(name), _model(Quack::Model()) {}
 
 void ModelLoader::LayerTest::OnAttach() {
-    _model.Load("./building.fbx");
+    _model.Load("/home/bujhm/dev/cpp/cg/quack/engine/assets/models/building/building.fbx");
 }
 
 void ModelLoader::LayerTest::OnDetach() {}
