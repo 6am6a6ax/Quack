@@ -43,9 +43,9 @@ if (NOT TARGET assimp)
         add_subdirectory(deps/assimp)
 endif()
 
-if (NOT TARGET spdlog)
-        add_subdirectory(deps/spdlog)
-endif()
+# if (NOT TARGET spdlog)
+#         add_subdirectory(deps/spdlog)
+# endif()
 
 
 #add_compile_definitions(STB_IMAGE_IMPLEMENTATION)
@@ -90,7 +90,7 @@ target_link_libraries(${PROJECT_NAME} PUBLIC EnTT)
 target_link_libraries(${PROJECT_NAME} PUBLIC imgui)
 target_link_libraries(${PROJECT_NAME} PUBLIC assimp)
 target_link_libraries(${PROJECT_NAME} PUBLIC yaml-cpp)
-target_link_libraries(${PROJECT_NAME} PUBLIC ImGuizmo)
-target_link_libraries(${PROJECT_NAME} PUBLIC spdlog)
+# target_link_libraries(${PROJECT_NAME} PUBLIC ImGuizmo)
+# target_link_libraries(${PROJECT_NAME} PUBLIC spdlog)
 
 file(COPY assets DESTINATION ${CMAKE_BINARY_DIR})

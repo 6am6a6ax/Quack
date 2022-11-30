@@ -5,10 +5,12 @@ project(editor)
 set(CMAKE_CXX_STANDARD 14)
 
 if (NOT TARGET engine)
-        add_subdirectory(deps/engine)
+    add_subdirectory(deps/engine)
 endif()
 
-add_subdirectory(deps/ImGuizmo)
+if (NOT TARGET ImGuizmo)
+    add_subdirectory(deps/ImGuizmo)
+endif()
 
 add_executable(${PROJECT_NAME} /
     ${CMAKE_CURRENT_SOURCE_DIR}/src/main.cpp

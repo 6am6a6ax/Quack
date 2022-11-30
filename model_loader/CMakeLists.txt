@@ -8,7 +8,7 @@ if (NOT TARGET engine)
     add_subdirectory(deps/engine)
 endif()
 
-add_executable(${PROJECT_NAME} /
+add_executable(${PROJECT_NAME} 
     ${CMAKE_CURRENT_SOURCE_DIR}/src/main.cpp
     /
     ${CMAKE_CURRENT_SOURCE_DIR}/src/layers/layer_test.cpp
