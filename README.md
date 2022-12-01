@@ -16,4 +16,4 @@ Engine dependencies are not provided by the repo. You must clone them to the CMa
 - Yaml
 - ImGuizmo
 
-The engine was built under 'ubuntu 22.04' using 'gcc 12.2.0'. You also might need to set up your workspace to compile Vulkan and deps code. All necessary packages will be provided here later.
+The engine was built under `ubuntu 22.04` using `gcc 12.2.0`. You also might need to set up your workspace to compile Vulkan and deps code. All necessary packages will be provided here later.
