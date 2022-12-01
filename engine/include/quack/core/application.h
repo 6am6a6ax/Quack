@@ -15,13 +15,13 @@
 
 namespace Quack {
 struct ApplicationDescription {
-    Quack::Window * Window;
-    Quack::GPUDevice * GPUDevice;
-    Quack::LayerStack LayerStack;
-    Quack::AssetLibrary AssetLibrary;
-    Quack::Scene * Scene;
-    Quack::Camera * Camera;
-    Quack::GPUFramebuffer * framebuffer;
+    std::shared_ptr<Quack::Window> Window;
+    std::shared_ptr<Quack::GPUDevice> GPUDevice;
+    std::shared_ptr<Quack::LayerStack> yerStack;
+    std::shared_ptr<Quack::AssetLibrary> setLibrary;
+    std::shared_ptr<Quack::Scene> Scene;
+    std::shared_ptr<Quack::Camera> Camera;
+    std::shared_ptr<Quack::GPUFramebuffer> framebuffer;
 };
 
 class Application {
