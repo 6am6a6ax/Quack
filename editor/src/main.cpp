@@ -9,13 +9,14 @@ int main() {
     windowDesc.Title = "Quack Editor";
 
     Quack::ApplicationDescription appDesc;
-    appDesc.Window = new Quack::WindowGLFW(windowDesc);
-    appDesc.GPUDevice = new Quack::GPUDeviceOpenGL();
+    appDesc.Window = std::make_shared<Quack::WindowGLFW>(windowDesc);
+    appDesc.GPUDevice = std::make_shared<Quack::GPUDeviceOpenGL>();
     //appDesc.Camera = new Quack::OrtographicCamera(-10.0f, 10.0f, -10.0f, 10.0f);
-    appDesc.Camera = new Quack::Editor::CameraEditor();
+    appDesc.Camera = std::make_shared<Quack::Editor::CameraEditor>();
+    appDesc.LayerStack = std::make_shared<Quack::LayerStack>();
 
     Quack::Application::GetInstance().Init(appDesc);
-    Quack::Application::GetInstance().GetLayerStack().Push(std::make_shared<Quack::Editor::LayerQuad>("View 1"));
+    Quack::Application::GetInstance().GetLayerStack()->Push(std::make_shared<Quack::Editor::LayerQuad>("View 1"));
     Quack::Application::GetInstance().Run();
 
     return 0;

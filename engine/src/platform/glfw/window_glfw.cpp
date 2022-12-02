@@ -10,7 +10,7 @@ Quack::WindowGLFW::WindowGLFW(const Quack::WindowDescription & desc) : Window(de
                                nullptr,
                                nullptr);
 
-    SetContext(new GPUContextOpenGL(_window));
+    SetContext(std::make_shared<GPUContextOpenGL>(_window));
     GetContext()->Init();
 
     glfwSetWindowUserPointer(_window, &_desc);

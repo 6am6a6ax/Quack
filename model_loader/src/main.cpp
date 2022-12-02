@@ -8,12 +8,12 @@ int main() {
     wndDesc.Title = "Quack Model Loader";
 
     Quack::ApplicationDescription appDesc;
-    appDesc.GPUDevice = new Quack::GPUDeviceOpenGL;
-    appDesc.Scene = new Quack::Scene;
-    appDesc.Window = new Quack::WindowGLFW(wndDesc);
+    appDesc.GPUDevice = std::make_shared<Quack::GPUDeviceOpenGL>();
+    appDesc.Scene = std::make_shared<Quack::Scene>();
+    appDesc.Window = std::make_shared<Quack::WindowGLFW>(wndDesc);
 
     Quack::Application::GetInstance().Init(appDesc);
-    Quack::Application::GetInstance().GetLayerStack().Push(std::make_shared<ModelLoader::LayerTest>("test"));
+    Quack::Application::GetInstance().GetLayerStack()->Push(std::make_shared<ModelLoader::LayerTest>("test"));
     Quack::Application::GetInstance().Run();
 
     return 0;

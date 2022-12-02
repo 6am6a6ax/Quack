@@ -57,12 +57,12 @@ public:
     entt::entity GetHandle() const { return _handle; }
     void SetHandle(entt::entity handle) { _handle = handle; }
 
-    Scene * GetScene() const { return _scene; }
-    void SetScene(Scene * scene) { _scene = scene; }
+    std::shared_ptr<Scene> GetScene() const { return _scene; }
+    void SetScene(std::shared_ptr<Scene> scene) { _scene = scene; }
 
 private:
     entt::entity _handle;
-    Scene * _scene;
+    std::shared_ptr<Scene> _scene;
 };
 }
 

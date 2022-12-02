@@ -26,7 +26,7 @@ struct WindowDescription {
     } Pos;
 
     std::string Title;
-    GPUContext * Context;
+    std::shared_ptr<GPUContext> Context;
 
     using EventCallbackFn = std::function<void(Event &)>;
     Quack::WindowDescription::EventCallbackFn EventCallback;
@@ -71,8 +71,8 @@ public:
     const std::string & GetTitle() const;
     void SetTitle(const std::string &);
 
-    GPUContext * GetContext();
-    void SetContext(GPUContext *);
+    std::shared_ptr<GPUContext> GetContext();
+    void SetContext(std::shared_ptr<GPUContext>);
 
 protected:
     WindowDescription _desc;

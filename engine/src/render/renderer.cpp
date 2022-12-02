@@ -41,9 +41,9 @@ void Quack::Renderer::RenderQuad() {
     std::shared_ptr<Quack::GPUBuffer> ibo  = Quack::Application::GetInstance().GetDevice()->CreateBuffer(iboDesc);
     ibo->Bind();
 
-    std::shared_ptr<Quack::GPUShader> shader = Quack::Application::GetInstance().GetAssetLibrary().LoadShader("quad_camera.glsl");
+    std::shared_ptr<Quack::GPUShader> shader = Quack::Application::GetInstance().GetAssetLibrary()->LoadShader("quad_camera.glsl");
 
-    std::shared_ptr<Quack::GPUTexture> texture = Quack::Application::GetInstance().GetAssetLibrary().LoadTexture("western_red_cedar.jpg");
+    std::shared_ptr<Quack::GPUTexture> texture = Quack::Application::GetInstance().GetAssetLibrary()->LoadTexture("western_red_cedar.jpg");
 
     vao->Bind();
     shader->Bind();
@@ -85,7 +85,7 @@ void Quack::Renderer::RenderGrid() {
     std::shared_ptr<Quack::GPUBuffer> ibo  = Quack::Application::GetInstance().GetDevice()->CreateBuffer(iboDesc);
     ibo->Bind();
 
-    std::shared_ptr<Quack::GPUShader> shader = Quack::Application::GetInstance().GetAssetLibrary().LoadShader("grid.glsl");
+    std::shared_ptr<Quack::GPUShader> shader = Quack::Application::GetInstance().GetAssetLibrary()->LoadShader("grid.glsl");
 
     vao->Bind();
     shader->Bind();
@@ -158,7 +158,7 @@ void Quack::Renderer::RenderCube() {
     std::shared_ptr<Quack::GPUBuffer> ibo  = Quack::Application::GetInstance().GetDevice()->CreateBuffer(iboDesc);
     ibo->Bind();
 
-    std::shared_ptr<Quack::GPUShader> shader = Quack::Application::GetInstance().GetAssetLibrary().LoadShader("cube.glsl");
+    std::shared_ptr<Quack::GPUShader> shader = Quack::Application::GetInstance().GetAssetLibrary()->LoadShader("cube.glsl");
 
     vao->Bind();
     

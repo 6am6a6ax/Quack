@@ -10,7 +10,7 @@ Quack::Application & Quack::Application::GetInstance() {
 void Quack::Application::Init(const Quack::ApplicationDescription & desc) {
     SetDescription(desc);
     BindBaseCallbackAndLayerStack();
-    _desc.AssetLibrary = AssetLibrary();
+    _desc.AssetLibrary = std::make_shared<AssetLibrary>();
 }
 
 void Quack::Application::Run() {
@@ -41,7 +41,7 @@ void Quack::Application::Run() {
 void Quack::Application::OnEvent(Quack::Event & e) {
     GetWindow()->OnEvent(e);
     _desc.Camera->OnEvent(e);
-    for (const auto & layer : GetLayerStack()) {
+    for (const auto & layer : *GetLayerStack()) {
         layer->OnEvent(e);
     }
 }
@@ -52,48 +52,48 @@ const Quack::ApplicationDescription & Quack::Application::GetDescription() {
 
 void Quack::Application::BindBaseCallbackAndLayerStack() {
     GetWindow()->SetEventCallback(std::bind(&Quack::Application::OnEvent, this, std::placeholders::_1));
-    GetLayerStack().Push(std::make_shared<LayerImGUI>());
+    GetLayerStack()->Push(std::make_shared<LayerImGUI>());
 }
 
 void Quack::Application::SetDescription(const Quack::ApplicationDescription & desc) {
     _desc = desc;
 }
 
-Quack::Window * Quack::Application::GetWindow() {
+std::shared_ptr<Quack::Window> Quack::Application::GetWindow() {
     return _desc.Window;
 }
 
-void Quack::Application::SetWindow(Quack::Window * window) {
+void Quack::Application::SetWindow(std::shared_ptr<Quack::Window> window) {
     _desc.Window = window;
 }
 
-Quack::GPUDevice * Quack::Application::GetDevice() {
+std::shared_ptr<Quack::GPUDevice> Quack::Application::GetDevice() {
     return _desc.GPUDevice;
 }
 
-void Quack::Application::SetDevice(Quack::GPUDevice * device) {
+void Quack::Application::SetDevice(std::shared_ptr<Quack::GPUDevice> device) {
     _desc.GPUDevice = device;
 }
 
-Quack::LayerStack & Quack::Application::GetLayerStack() {
+std::shared_ptr<Quack::LayerStack> Quack::Application::GetLayerStack() {
     return _desc.LayerStack;
 }
 
-void Quack::Application::SetLayerStack(const Quack::LayerStack & layerStack) {
+void Quack::Application::SetLayerStack(std::shared_ptr<Quack::LayerStack> layerStack) {
     _desc.LayerStack = layerStack;
 }
 
-Quack::Scene * Quack::Application::GetScene() {
+std::shared_ptr<Quack::Scene> Quack::Application::GetScene() {
     return _desc.Scene;
 }
 
-void Quack::Application::SetScene(Quack::Scene * scene) {
+void Quack::Application::SetScene(std::shared_ptr<Quack::Scene> scene) {
     _desc.Scene = scene;
 }
 
 void Quack::Application::OnUpdate() {
     GetWindow()->OnUpdate();
-    for (const auto & layer : GetLayerStack()) {
+    for (const auto & layer : *GetLayerStack()) {
         layer->OnUpdate();
     }
 }

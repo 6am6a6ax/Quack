@@ -6,17 +6,17 @@
 namespace Quack {
 class SceneSerializer {
 public:
-    explicit SceneSerializer(Scene * scene);
+    explicit SceneSerializer(std::shared_ptr<Scene>);
 
 public:
-    void Serialize(Scene * scene, const std::string & filepath);
+    void Serialize(std::shared_ptr<Scene> scene, const std::string & filepath);
     void SerializeRuntime(const std::string & filepath);
 
     void Deserialize(const std::string & filepath);
     void DeserializeRuntime(const std::string & filepath);
 
 private:
-    Scene * _scene;
+    std::shared_ptr<Scene> _scene;
 };
 }
 

@@ -17,8 +17,8 @@ namespace Quack {
 struct ApplicationDescription {
     std::shared_ptr<Quack::Window> Window;
     std::shared_ptr<Quack::GPUDevice> GPUDevice;
-    std::shared_ptr<Quack::LayerStack> yerStack;
-    std::shared_ptr<Quack::AssetLibrary> setLibrary;
+    std::shared_ptr<Quack::LayerStack> LayerStack;
+    std::shared_ptr<Quack::AssetLibrary> AssetLibrary;
     std::shared_ptr<Quack::Scene> Scene;
     std::shared_ptr<Quack::Camera> Camera;
     std::shared_ptr<Quack::GPUFramebuffer> framebuffer;
@@ -50,22 +50,22 @@ public:
     const ApplicationDescription & GetDescription();
     void SetDescription(const ApplicationDescription &);
 
-    Window * GetWindow();
-    void SetWindow(Window *);
+    std::shared_ptr<Window> GetWindow();
+    void SetWindow(std::shared_ptr<Window>);
 
-    GPUDevice * GetDevice();
-    void SetDevice(GPUDevice *);
+    std::shared_ptr<GPUDevice> GetDevice();
+    void SetDevice(std::shared_ptr<GPUDevice>);
 
-    LayerStack & GetLayerStack();
-    void SetLayerStack(const LayerStack &);
+    std::shared_ptr<LayerStack> GetLayerStack();
+    void SetLayerStack(std::shared_ptr<LayerStack>);
 
-    Scene * GetScene();
-    void SetScene(Scene *);
+    std::shared_ptr<Scene> GetScene();
+    void SetScene(std::shared_ptr<Scene>);
 
-    AssetLibrary GetAssetLibrary() const { return _desc.AssetLibrary; }
-    void SetAssetLibrary(const AssetLibrary& assetLibrary) { _desc.AssetLibrary = assetLibrary; }
+    std::shared_ptr<AssetLibrary> GetAssetLibrary() const { return _desc.AssetLibrary; }
+    void SetAssetLibrary(std::shared_ptr<AssetLibrary> assetLibrary) { _desc.AssetLibrary = assetLibrary; }
 
-    Camera * GetCamera() const { return _desc.Camera; }
+    std::shared_ptr<Camera> GetCamera() const { return _desc.Camera; }
 
     const Timestep& GetTimestep() const;
 

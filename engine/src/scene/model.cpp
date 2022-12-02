@@ -126,5 +126,5 @@ void Quack::Model::Load(const std::string & filepath) {
     iboDesc.Type = BufferType::Index;
     _ibo  = Quack::Application::GetInstance().GetDevice()->CreateBuffer(iboDesc);
 
-    _shader = Quack::Application::GetInstance().GetAssetLibrary().LoadShader("model.glsl");
+    _shader = Quack::Application::GetInstance().GetAssetLibrary()->LoadShader("model.glsl");
 }

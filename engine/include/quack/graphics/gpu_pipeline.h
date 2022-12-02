@@ -7,7 +7,7 @@
 
 namespace Quack {
 struct GPUPipelineDescription {
-    GPUShader * Shader;
+    std::shared_ptr<GPUShader> Shader;
     GPUBuffer::Layout Layout;
 };
 

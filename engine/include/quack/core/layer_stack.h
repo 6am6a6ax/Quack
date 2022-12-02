@@ -127,7 +127,7 @@ public:
 public:
     void Push(std::shared_ptr<Layer> layer) {
         layer->OnAttach();
-        _elements.push_back(std::forward<std::shared_ptr<Layer>>(layer));
+        _elements.push_back(layer);
     }
 
     void Pop(std::shared_ptr<Layer> layer) {
