@@ -7,7 +7,7 @@
 namespace Quack::Editor {
 class LayerComponents final : public Layer {
 public:
-    explicit LayerComponents(SceneEditor * scene);
+    explicit LayerComponents(std::shared_ptr<SceneEditor> scene);
     ~LayerComponents() override;
 
 public:
@@ -18,7 +18,7 @@ public:
     void OnEvent(Event &) override;
 
 private:
-    SceneEditor * _scene;
+    std::shared_ptr<SceneEditor> _scene;
 };
 }
 

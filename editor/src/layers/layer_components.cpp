@@ -2,7 +2,7 @@
 
 #include <quack/quack.h>
 
-Quack::Editor::LayerComponents::LayerComponents(SceneEditor * scene) : Layer("Components"), _scene(scene) {
+Quack::Editor::LayerComponents::LayerComponents(std::shared_ptr<SceneEditor> scene) : Layer("Components"), _scene(scene) {
 
 }
 

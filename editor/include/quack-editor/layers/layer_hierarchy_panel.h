@@ -9,7 +9,7 @@
 namespace Quack::Editor {
 class LayerHierarchyPanel final : public Layer {
 public:
-    LayerHierarchyPanel(const std::string & name, Quack::Editor::SceneEditor * scene);
+    LayerHierarchyPanel(const std::string & name, std::shared_ptr<Quack::Editor::SceneEditor> scene);
     ~LayerHierarchyPanel() override;
 
 public:
@@ -23,11 +23,11 @@ public:
     void OnMouseButtonPressed(MouseButtonPressedEvent &);
 
 public:
-    SceneEditor * GetScene() const;
-    void SetScene(SceneEditor *);
+    std::shared_ptr<SceneEditor> GetScene() const;
+    void SetScene(std::shared_ptr<SceneEditor>);
 
 public:
-    SceneEditor * _scene;
+    std::shared_ptr<SceneEditor> _scene;
 };
 }
 

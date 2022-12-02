@@ -2,7 +2,7 @@
 
 #include <quack/quack.h>
 
-Quack::Editor::LayerHierarchyPanel::LayerHierarchyPanel(const std::string & name, Quack::SceneEditor * scene)
+Quack::Editor::LayerHierarchyPanel::LayerHierarchyPanel(const std::string & name, std::shared_ptr<Quack::SceneEditor> scene)
         : Layer(name),
           _scene(scene) {} // dynamic_cast = nullptr?!
 
@@ -67,11 +67,11 @@ void Quack::Editor::LayerHierarchyPanel::OnEvent(Quack::Event & e) {
     }
 }
 
-Quack::Editor::SceneEditor * Quack::Editor::LayerHierarchyPanel::GetScene() const {
+std::shared_ptr<Quack::Editor::SceneEditor> Quack::Editor::LayerHierarchyPanel::GetScene() const {
     return _scene;
 }
 
-void Quack::Editor::LayerHierarchyPanel::SetScene(Quack::Editor::SceneEditor * scene) {
+void Quack::Editor::LayerHierarchyPanel::SetScene(std::shared_ptr<Quack::Editor::SceneEditor> scene) {
     _scene = scene;
 }
 
