@@ -8,11 +8,13 @@
 #include "quack/graphics/gpu_texture.h"
 #include "quack/scene/model.h"
 
+#include "unistd.h"
+
 
 namespace Quack {
 class AssetLibrary {
 public:
-    AssetLibrary(const std::string& root = "assets/") : _root(root) {}
+    AssetLibrary();
     ~AssetLibrary() = default;
 
     std::shared_ptr<GPUShader> LoadShader(const std::string& filename) const;
@@ -23,7 +25,10 @@ private:
     GPUShaderDescription ParseShaderFile(const std::string & filename) const;
 
 private:
-    std::string _root;
+    void SetupCurrentPath();
+
+private:
+    std::filesystem::path m_Root;
 };
 }
 

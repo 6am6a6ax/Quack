@@ -6,6 +6,7 @@
 #include <functional>
 #include <iostream>
 #include <fstream>
+#include <filesystem>
 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
@@ -87,3 +88,5 @@
 #include "scene/model.h"
 //#include "render/scene_camera.h"
 //#include "render/scene_serializer.h"
+
+#include <unistd.h>

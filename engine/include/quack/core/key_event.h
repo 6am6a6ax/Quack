@@ -2,39 +2,34 @@
 #define QUACK_KEY_EVENT_H
 
 #include "quack/core/event.h"
-#include "quack/core/event_type.h"
-
 #include "quack/core/key_code.h"
 
 namespace Quack {
-class KeyPressedEvent final : public Event {
+class KeyEvent : public Event {
 public:
-    explicit KeyPressedEvent(const KeyCode& keyCode) : _keyCode(keyCode) {}
+    explicit KeyEvent(const KeyCode&);
 
 public:
-    const EventType GetType() const {
-        return EventType::KeyPressedEvent;
-    }
-
-    const KeyCode& GetKeyCode() const { return _keyCode; }
+    const KeyCode& GetKeyCode() const; 
 
 private:
-    KeyCode _keyCode;
+    KeyCode m_KeyCode;
 };
 
-class KeyReleasedEvent final : public Event {
+class KeyPressedEvent final : public KeyEvent {
 public:
-    explicit KeyReleasedEvent(const KeyCode& keyCode) : _keyCode(keyCode) {}
+    explicit KeyPressedEvent(const KeyCode&);
 
 public:
-    const EventType GetType() const {
-        return EventType::KeyReleasedEvent;
-    }
+    EventType GetType() const;
+};
 
-    const KeyCode& GetKeyCode() const { return _keyCode; }
+class KeyReleasedEvent final : public KeyEvent {
+public:
+    explicit KeyReleasedEvent(const KeyCode&);
 
-private:
-    KeyCode _keyCode;
+public:
+    EventType GetType() const;
 };
 }
 

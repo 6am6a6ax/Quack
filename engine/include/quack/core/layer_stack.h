@@ -12,26 +12,6 @@ class LayerStack {
 public:
     LayerStack() : _size(0), _space(0),  _elements(nullptr) {}
 
-    explicit LayerStack(size_t size) :
-        _size(size),
-        _space(size),
-        _elements(new std::shared_ptr<Layer>[size])
-    {
-        for (int i = 0; i < _size; ++i) {
-            _elements[i] = std::make_shared<Layer>();
-        }
-    }
-
-    explicit LayerStack(const std::shared_ptr<Layer> & layer, size_t size) :
-        _size(size),
-        _space(size),
-        _elements(new std::shared_ptr<Layer>[size])
-    {
-        for (int i = 0; i < _size; ++i) {
-            _elements[i] = layer;
-        }
-    }
-
     LayerStack(const LayerStack &) = default;
     LayerStack(LayerStack &) = default;
 
@@ -60,7 +40,6 @@ public:
     size_t GetMaxSize() const {}
 
     void Reserve(int size) {}
-    void Resize(int size, const std::shared_ptr<Layer> & = std::move(std::shared_ptr<Layer>())) {}
 
     void ShrinkToFit() {}
 

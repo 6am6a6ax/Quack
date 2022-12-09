@@ -21,7 +21,7 @@ struct ApplicationDescription {
     std::shared_ptr<Quack::AssetLibrary> AssetLibrary;
     std::shared_ptr<Quack::Scene> Scene;
     std::shared_ptr<Quack::Camera> Camera;
-    std::shared_ptr<Quack::GPUFramebuffer> framebuffer;
+    std::shared_ptr<Quack::GPUFramebuffer> GPUFramebuffer;
 };
 
 class Application {
@@ -44,38 +44,26 @@ public:
     void OnEvent(Event &);
 
 public:
-    float GetTime() const;
+    const ApplicationDescription & GetDescription() const;
 
 public:
-    const ApplicationDescription & GetDescription();
-    void SetDescription(const ApplicationDescription &);
-
-    std::shared_ptr<Window> GetWindow();
-    void SetWindow(std::shared_ptr<Window>);
-
-    std::shared_ptr<GPUDevice> GetDevice();
-    void SetDevice(std::shared_ptr<GPUDevice>);
-
-    std::shared_ptr<LayerStack> GetLayerStack();
-    void SetLayerStack(std::shared_ptr<LayerStack>);
-
-    std::shared_ptr<Scene> GetScene();
-    void SetScene(std::shared_ptr<Scene>);
-
-    std::shared_ptr<AssetLibrary> GetAssetLibrary() const { return _desc.AssetLibrary; }
-    void SetAssetLibrary(std::shared_ptr<AssetLibrary> assetLibrary) { _desc.AssetLibrary = assetLibrary; }
-
-    std::shared_ptr<Camera> GetCamera() const { return _desc.Camera; }
-
+    float GetTime() const;
     const Timestep& GetTimestep() const;
+
+public:
+    std::shared_ptr<Scene> GetScene() const;
+    std::shared_ptr<Window> GetWindow() const;
+    std::shared_ptr<Camera> GetCamera() const;
+    std::shared_ptr<GPUDevice> GetDevice() const;
+    std::shared_ptr<LayerStack> GetLayerStack() const;
+    std::shared_ptr<AssetLibrary> GetAssetLibrary() const;
 
 private:
     void BindBaseCallbackAndLayerStack();
 
 private:
-    ApplicationDescription _desc;
-
-    Timestep _timestep;
+    ApplicationDescription m_Description;
+    Timestep m_Timestep;
 };
 }
 
