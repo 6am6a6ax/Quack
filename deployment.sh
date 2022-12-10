@@ -1,22 +1,33 @@
 #!/bin/bash
 
-echo "Cloning & setting up engine dependencies..."
-mkdir -p engine/deps
+rm -rf engine/deps
+rm -rf editor/deps
+rm -rf model_loader/deps
 
-git --work-tree=engine/deps clone https://github.com/skypjack/entt.git
-git --work-tree=engine/deps clone https://github.com/ocornut/imgui.git
+path=$(pwd)
+
+echo "Cloning & setting up engine dependencies..."
+mkdir -p $path/engine/deps
+
+git clone https://github.com/skypjack/entt.git $path/engine/deps/entt
+git clone https://github.com/ocornut/imgui.git $path/engine/deps/imgui
 
 echo "Setting up ImGui..."
-git --work-tree=engine/deps/imgui checkout docking
+cd $path/engine/deps/imgui
+git checkout docking
 
 echo "Cloning & setting up editor dependencies..."
-mkdir -p editor/deps
-ln -s engine editor/deps/engine
+mkdir -p $path/editor/deps
 
-git --work-tree=editor/deps clone https://github.com/CedricGuillemet/ImGuizmo.git
+cd $path/editor/deps
+ln -s $path/engine engine
+
+git clone https://github.com/CedricGuillemet/ImGuizmo.git $path/editor/deps/imguizmo
 
 echo "Setting up model loader dependencies..."
-ln -s engine editor/deps/engine
+mkdir -p $path/model_loader/deps
+cd $path/model_loader/deps
+ln -s $path/engine engine
 
 echo "Installing dependencies libraries..."
 sudo apt install libglew-dev libglfw3-dev libglm-dev libyaml-dev libassimp-dev libspdlog-dev libstb-dev

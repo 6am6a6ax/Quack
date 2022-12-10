@@ -9,7 +9,7 @@ if (NOT TARGET engine)
 endif()
 
 if (NOT TARGET ImGuizmo)
-    add_subdirectory(deps/ImGuizmo)
+    add_subdirectory(deps/imguizmo)
 endif()
 
 add_executable(${PROJECT_NAME} /
