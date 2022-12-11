@@ -1,5 +1,7 @@
 #include "quack/graphics/gpu_buffer.h"
 #include "quack/graphics/gpu_render_pass.h"
+#include "quack/graphics/gpu_buffer.h"
+#include "quack/graphics/gpu_render_pass.h"
 #include "quack/quack.h"
 
 Quack::Application & Quack::Application::GetInstance() {
@@ -30,12 +32,31 @@ void Quack::Application::Run() {
     //     //ImGuizmo::BeginFrame();
 
     //     // _desc.Camera->OnUpdate(_timestep);
+    // while (true) {
+    //     // _desc.SwapChain->Begin();
 
+    //     // _desc.SwapChain->End();
+
+
+        
+    //     // ImGui_ImplOpenGL3_NewFrame();
+    //     // ImGui_ImplVulkan_NewFrame();
+    //     // ImGui::NewFrame();
+    //     //ImGuizmo::BeginFrame();
+
+    //     // _desc.Camera->OnUpdate(_timestep);
+
+    //     // OnUpdate();
     //     // OnUpdate();
 
     //     // Quack::ApplicationUpdated e;
     //     // OnEvent(e);
+    //     // Quack::ApplicationUpdated e;
+    //     // OnEvent(e);
 
+    //     // float time = GetTime();
+    //     // _timestep = time - lastTime;
+    //     // lastTime = time;
     //     // float time = GetTime();
     //     // _timestep = time - lastTime;
     //     // lastTime = time;
@@ -52,6 +73,11 @@ void Quack::Application::OnEvent(Quack::Event & e) {
     // for (const auto & layer : GetLayerStack()) {
     //     layer->OnEvent(e);
     // }
+    // GetWindow()->OnEvent(e);
+    // _desc.Camera->OnEvent(e);
+    // for (const auto & layer : GetLayerStack()) {
+    //     layer->OnEvent(e);
+    // }
 }
 
 const Quack::ApplicationDescription & Quack::Application::GetDescription() {
@@ -60,6 +86,7 @@ const Quack::ApplicationDescription & Quack::Application::GetDescription() {
 
 void Quack::Application::BindBaseCallbackAndLayerStack() {
     GetWindow()->SetEventCallback(std::bind(&Quack::Application::OnEvent, this, std::placeholders::_1));
+    //GetLayerStack().Push(std::make_shared<LayerImGUI>());
     //GetLayerStack().Push(std::make_shared<LayerImGUI>());
 }
 
@@ -100,6 +127,12 @@ void Quack::Application::SetScene(std::shared_ptr<Quack::Scene> scene) {
 }
 
 void Quack::Application::OnUpdate() {
+    // GetWindow()->OnUpdate();
+    // for (const auto & layer : GetLayerStack()) {
+    //     layer->OnUpdate();
+    // }
+
+    GetContext()->SwapBuffers();
     // GetWindow()->OnUpdate();
     // for (const auto & layer : GetLayerStack()) {
     //     layer->OnUpdate();

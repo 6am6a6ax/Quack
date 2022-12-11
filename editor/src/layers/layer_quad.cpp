@@ -20,8 +20,8 @@ void Quack::Editor::LayerQuad::OnAttach() {
     framebufferDescription.FrameSize = { 1280, 720 };
     _framebuffer = Quack::Application::GetInstance().GetDevice()->CreateFramebuffer(framebufferDescription);
 
-    _model = std::make_shared<Model>("/home/bujhm/dev/cpp/cg/quack/engine/assets/models/suzanne/suzanne.blend");
-    //_model = std::make_shared<Model>("/home/bujhm/dev/cpp/cg/quack/engine/assets/models/building/building.fbx");
+    //_model = std::make_shared<Model>("/home/bujhm/dev/cpp/cg/quack/engine/assets/models/suzanne/suzanne.blend");
+    _model = std::make_shared<Model>("/home/bujhm/dev/cpp/cg/quack/engine/assets/models/building/building.fbx");
 
     _light = DirectionalLight(Mat4f(1.0f), { 2.0f, 2.0f, 2.0f }, {1.0f, 1.0f, 1.0f}, .5f);
 
