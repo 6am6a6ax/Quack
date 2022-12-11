@@ -2,11 +2,10 @@
 
 static GLenum BufferTypeToOpenGLType(Quack::BufferType type) {
     switch (type) {
-        case Quack::BufferType::Vertex:
-            return GL_ARRAY_BUFFER;
-        case Quack::BufferType::Index:
-            return GL_ELEMENT_ARRAY_BUFFER;
+        case Quack::BufferType::Vertex: return GL_ARRAY_BUFFER;
+        case Quack::BufferType::Index:  return GL_ELEMENT_ARRAY_BUFFER;
     }
+    return {};
 }
 
 Quack::GPUBufferOpenGL::GPUBufferOpenGL(const Quack::GPUBuffer::Description & desc)

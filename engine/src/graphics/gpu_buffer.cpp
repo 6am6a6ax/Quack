@@ -103,40 +103,23 @@ Quack::GPUBuffer::Element::Element(Quack::ShaderDataType dataType, const std::st
 
 uint32_t Quack::GPUBuffer::Element::GetComponentCount() const {
     switch (_dataType) {
-        case ShaderDataType::Float:
-            return 1;
-            break;
-        case ShaderDataType::Float2:
-            return 2;
-            break;
-        case ShaderDataType::Float3:
-            return 3;
-            break;
-        case ShaderDataType::Float4:
-            return 4;
-            break;
-        case ShaderDataType::Mat3:
-            return 3;
-            break;
-        case ShaderDataType::Mat4:
-            return 4;
-            break;
-        case ShaderDataType::Int:
-            return 1;
-            break;
-        case ShaderDataType::Int2:
-            return 2;
-            break;
-        case ShaderDataType::Int3:
-            return 3;
-            break;
-        case ShaderDataType::Int4:
-            return 4;
-            break;
-        case ShaderDataType::Bool:
-            return 1;
-            break;
+        case ShaderDataType::Float:  return 1;
+        case ShaderDataType::Float2: return 2;
+        case ShaderDataType::Float3: return 3;
+        case ShaderDataType::Float4: return 4;
+
+        case ShaderDataType::Mat3:   return 3;
+        case ShaderDataType::Mat4:   return 4;
+
+        case ShaderDataType::Int:    return 1;
+        case ShaderDataType::Int2:   return 2;
+        case ShaderDataType::Int3:   return 3;
+        case ShaderDataType::Int4:   return 4;
+
+        case ShaderDataType::Bool:   return 1;
     }
+    
+    return 0;
 }
 
 const std::string &Quack::GPUBuffer::Element::GetName() const {

@@ -7,6 +7,7 @@ static GLint ShaderProgramTypeToOpenGLType(const Quack::ShaderProgramType & shad
         case Quack::ShaderProgramType::Fragment:
             return GL_FRAGMENT_SHADER;
     }
+    return {};
 }
 
 Quack::GPUShaderProgramOpenGL::GPUShaderProgramOpenGL(const Quack::GPUShaderProgramDescription & desc)

@@ -270,7 +270,7 @@ const char* GL_type_to_string(GLenum type) {
   return "other";
 }
 
-Quack::IGPUShaderUniform::List& Quack::GPUShaderOpenGL::GetUniformList() const {
+Quack::IGPUShaderUniform::List Quack::GPUShaderOpenGL::GetUniformList() const {
       int params = -1;
   glGetProgramiv(_resource, GL_LINK_STATUS, &params);
   printf("GL_LINK_STATUS = %i\n", params);
@@ -297,7 +297,7 @@ Quack::IGPUShaderUniform::List& Quack::GPUShaderOpenGL::GetUniformList() const {
     );
     if (size > 1) {
       for(int j = 0; j < size; j++) {
-        char long_name[64];
+        char long_name[128];
         sprintf(long_name, "%s[%i]", name, j);
         int location = glGetAttribLocation(_resource, long_name);
         printf("  %i) type:%s name:%s location:%i\n",
@@ -328,7 +328,7 @@ Quack::IGPUShaderUniform::List& Quack::GPUShaderOpenGL::GetUniformList() const {
         );
         if(size > 1) {
         for(int j = 0; j < size; j++) {
-            char long_name[64];
+            char long_name[128];
             sprintf(long_name, "%s[%i]", name, j);
             int location = glGetUniformLocation(_resource, long_name);
             printf("  %i) type:%s name:%s location:%i\n",

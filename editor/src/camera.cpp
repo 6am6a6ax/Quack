@@ -112,7 +112,7 @@ void Quack::Editor::CameraEditor::OnUpdate(Timestep ts) {
     _viewProj = proj * view;
 }
 
-const Quack::Editor::CameraEditor::Viewport& Quack::Editor::CameraEditor::GetViewport() const {}
+// const Quack::Editor::CameraEditor::Viewport& Quack::Editor::CameraEditor::GetViewport() const {}
 
 const Quack::Mat4f& Quack::Editor::CameraEditor::GetView() const {
     return _view;

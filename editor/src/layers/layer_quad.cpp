@@ -78,7 +78,7 @@ void Quack::Editor::LayerQuad::OnUpdate() {
     viewportSize = ImGui::GetContentRegionAvail();
 
     uint32_t tex = _framebuffer->GetColorAttachment();
-    ImGui::Image((void*)tex, ImVec2{viewportSize.x, viewportSize.y}, ImVec2{0, 1}, ImVec2{1, 0});
+    ImGui::Image(reinterpret_cast<void*>(tex), ImVec2{viewportSize.x, viewportSize.y}, ImVec2{0, 1}, ImVec2{1, 0});
 
     ImGui::End();
     ImGui::PopStyleVar();

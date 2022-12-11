@@ -27,6 +27,7 @@ namespace Quack {
             case ShaderDataType::Bool:
                 return GL_BOOL;
         }
+        return {};
     }
 }
 

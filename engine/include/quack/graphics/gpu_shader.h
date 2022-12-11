@@ -64,7 +64,7 @@ public:
 public:
     // virtual std::vector<std::string> GetAttachedProgramsNames() const = 0;
 
-    virtual const IGPUShaderUniform::List& GetUniformList() const = 0;
+    virtual IGPUShaderUniform::List GetUniformList() const = 0;
 
 public:
     const GPUShaderDescription& GetDescription() const;

@@ -29,7 +29,7 @@ public:
     void OnMouseButtonReleased(MouseButtonReleasedEvent&);
 
 public:
-    const Viewport& GetViewport() const;
+    // const Viewport& GetViewport() const;
 
     const Vector3f& GetTarget() const;
     const Vector3f& GetPosition() const;
