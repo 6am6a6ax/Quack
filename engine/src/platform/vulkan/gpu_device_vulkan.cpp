@@ -65,13 +65,13 @@ Quack::GPUDeviceVulkan::~GPUDeviceVulkan() {
 std::shared_ptr<Quack::GPUSwapChain> Quack::GPUDeviceVulkan::CreateSwapChain(
     const GPUSwapChainDescription& desc) const 
 {
-    // return std::make_shared<GPUSwapChainVulkan>(desc);
+    return std::make_shared<GPUSwapChainVulkan>(desc);
 }
 
 std::shared_ptr<Quack::GPUShaderProgram> Quack::GPUDeviceVulkan::CreateShaderProgram(
     const GPUShaderProgramDescription& desc) const 
 {
-    // return std::make_shared<GPUShaderProgramVulkan>(desc);
+    return std::make_shared<GPUShaderProgramVulkan>(desc);
 }
 
 VkDevice Quack::GPUDeviceVulkan::GetDeviceHandle() const {

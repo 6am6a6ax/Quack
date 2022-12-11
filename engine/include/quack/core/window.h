@@ -77,6 +77,8 @@ public:
     std::shared_ptr<GPUContext> GetContext();
     void SetContext(std::shared_ptr<GPUContext>);
 
+    virtual void* GetHandle() const = 0;
+
 protected:
     WindowDescription _desc;
 };

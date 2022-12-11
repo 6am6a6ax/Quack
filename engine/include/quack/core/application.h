@@ -14,20 +14,21 @@
 #include "quack/render/camera.h"
 
 #include "quack/scene/scene.h"
+#include <memory>
 
 namespace Quack {
 struct ApplicationDescription {
     // Quack::Window * Window;
     std::shared_ptr<Quack::Window> Window;
 
-    Quack::GPUDevice * GPUDevice;
-    Quack::GPUContext * GPUContext;
-    Quack::GPUSwapChain* SwapChain;
-    Quack::LayerStack LayerStack;
-    Quack::AssetLibrary AssetLibrary;
-    Quack::Scene * Scene;
-    Quack::Camera * Camera;
-    Quack::GPUFramebuffer * framebuffer;
+    std::shared_ptr<Quack::GPUDevice> GPUDevice;
+    std::shared_ptr<Quack::GPUContext> GPUContext;
+    std::shared_ptr<Quack::GPUSwapChain> SwapChain;
+    std::shared_ptr<Quack::LayerStack> LayerStack;
+    std::shared_ptr<Quack::AssetLibrary> AssetLibrary;
+    std::shared_ptr<Quack::Scene> Scene;
+    std::shared_ptr<Quack::Camera> Camera;
+    std::shared_ptr<Quack::GPUFramebuffer> framebuffer;
 };
 
 class Application {
@@ -56,9 +57,7 @@ public:
     const ApplicationDescription & GetDescription();
     void SetDescription(const ApplicationDescription &);
 
-    GPUSwapChain* GetSwapChain() const;
-
-    GPUSwapChain* GetSwapChain() const;
+    std::shared_ptr<GPUSwapChain> GetSwapChain() const;
 
     std::shared_ptr<Window> GetWindow();
     void SetWindow(std::shared_ptr<Window>);
@@ -79,7 +78,7 @@ public:
 
     const Timestep& GetTimestep() const;
 
-    GPUContext* GetContext() const;
+    std::shared_ptr<GPUContext> GetContext() const;
 
 private:
     void BindBaseCallbackAndLayerStack();

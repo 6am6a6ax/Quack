@@ -10,8 +10,7 @@ Quack::Application & Quack::Application::GetInstance() {
 void Quack::Application::Init(const Quack::ApplicationDescription & desc) {
     SetDescription(desc);
     BindBaseCallbackAndLayerStack();
-    _desc.GPUContext->Init();
-    _desc.AssetLibrary = AssetLibrary();
+    _desc.AssetLibrary = std::make_shared<AssetLibrary>();
 }
 
 void Quack::Application::Run() {
@@ -68,11 +67,11 @@ void Quack::Application::SetDescription(const Quack::ApplicationDescription & de
     _desc = desc;
 }
 
-Quack::Window * Quack::Application::GetWindow() {
+std::shared_ptr<Quack::Window> Quack::Application::GetWindow() {
     return _desc.Window;
 }
 
-void Quack::Application::SetWindow(Quack::Window * window) {
+void Quack::Application::SetWindow(std::shared_ptr<Quack::Window> window) {
     _desc.Window = window;
 }
 
@@ -117,10 +116,10 @@ const Quack::Timestep& Quack::Application::GetTimestep() const {
     return _timestep;
 }
 
-Quack::GPUContext* Quack::Application::GetContext() const {
+std::shared_ptr<Quack::GPUContext> Quack::Application::GetContext() const {
     return _desc.GPUContext;
 }
 
-Quack::GPUSwapChain* Quack::Application::GetSwapChain() const {
+std::shared_ptr<Quack::GPUSwapChain> Quack::Application::GetSwapChain() const {
     return _desc.SwapChain;
 }
